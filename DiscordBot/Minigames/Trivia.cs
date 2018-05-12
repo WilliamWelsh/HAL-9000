@@ -1,7 +1,7 @@
 ﻿using System;
 using Discord;
 using System.Linq;
-using Gideon.Modules;
+using Gideon.Handlers;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
@@ -228,12 +228,12 @@ namespace Gideon.Minigames
                 await context.Channel.SendMessageAsync("", false, Embed($"Sorry, {userPlaying.Mention} is currently playing.\nYou can request a Respected+ to `!reset trivia` if there is an issue.", ""));
                 return;
             }
-            if(input == "!trivia")
+            if(input == "trivia")
             {
                 await context.Channel.SendMessageAsync("", false, Embed("Please select a mode.\n\n`!trivia solo` - Play alone\n\n`!trivia all` - First to answer wins.", ""));
                 return;
             }
-            await StartTrivia(user, context, input.Replace("!trivia ", ""));
+            await StartTrivia(user, context, input.Replace("trivia ", ""));
         }
 
         private async Task StartTrivia(SocketGuildUser user, SocketCommandContext context, string mode)

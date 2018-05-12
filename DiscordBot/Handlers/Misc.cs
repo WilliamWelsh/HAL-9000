@@ -2,11 +2,12 @@
 using Discord;
 using System.Linq;
 using Discord.Commands;
+using Gideon.Minigames;
 using Discord.WebSocket;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace Gideon.Modules
+namespace Gideon.Handlers
 {
     [RequireContext(ContextType.Guild)]
     public class Misc : ModuleBase<SocketCommandContext>
@@ -19,6 +20,12 @@ namespace Gideon.Modules
                                select (V.IndexOf(obj) != -1) ? X[V.IndexOf(obj)] : obj).Reverse().ToArray());
         }
 
+        TecosHandler TH = Config.TH;
+        Trivia Trivia = Config.MinigameHandler.Trivia;
+        NumberGuess NG = Config.MinigameHandler.NG;
+        TicTacToe TTT = Config.MinigameHandler.TTT;
+        RussianRoulette RR = Config.MinigameHandler.RR;
+
         private static readonly Random getrandom = new Random();
 
         public static int GetRandomNumber(int min, int max)
@@ -26,6 +33,19 @@ namespace Gideon.Modules
             lock (getrandom) { return getrandom.Next(min, max); }
         }
 
+        private string FindPeopleWithRoles(string role)
+        {
+            var rolea = Context.Guild.Roles.FirstOrDefault(x => x.Name == role);
+            string desc = "";
+            foreach (SocketGuildUser user in Context.Guild.Users.ToArray())
+            {
+                if (user.Roles.Contains(rolea))
+                {
+                    desc += user.Mention + "\n";
+                }
+            }
+            return desc;
+        }
 
         Embed Embed(string t, string d, Color c, string f, string thURL)
         {
@@ -59,13 +79,100 @@ namespace Gideon.Modules
         [Command("australia")]
         public async Task AussieText([Remainder]string message) => await Context.Channel.SendMessageAsync("", false, Embed("Australian Translator", ToAussie(message), new Color(255, 140, 0), "Requested by " + Context.User, ""));
 
-        [Command("rr bet")]
-        public async Task RussianRouletteBet(SocketGuildUser UserBeingBetOn, [Remainder]int amount) => await Config.RR.TryToPlaceBet(UserBeingBetOn, Context, amount);
+        // Display a list of MiniGames
+        [Command("games")]
+        public async Task DisplayGames() => await Config.MinigameHandler.DisplayGames(Context.Channel);
 
-        [Command("rr start")]
-        public async Task RussianRouletteHostStart() => await Config.RR.HostStart(Context);
+        #region Tic-Tac-Toe Commands
+        // Tic-Tac-Toe Menu/Start Game
+        [Command("ttt")]
+        public async Task TTTMenu(string input) => await TTT.TryToStartGame(Context, input);
+
+        // Join Tic-Tac-Toe
+        [Command("join ttt")]
+        public async Task JoinTTT() => await TTT.TryToJoinGame(Context);
+
+        // Write X or O in Tic-Tac-Toe
+        [Command("put")]
+        public async Task PutTTTLetter(string letter) => await TTT.PutLetter(Context, letter);
+        #endregion
+
+        #region Russian Roulette Commands
+        // RR Menu
+        [Command("rr")]
+        public async Task RRMenu() => await RR.TryToStartGame(Context, "");
+
+        // Try to start a game of RR
+        [Command("rr")]
+        public async Task RRTryToStart(string input) => await RR.TryToStartGame(Context, input);
+
+        // Join RR
+        [Command("join rr")]
+        public async Task RRJoin() => await RR.TryToJoin(Context);
+
+        // Bet Tecos on an RR Game
+        [Command("rr bet")]
+        public async Task RussianRouletteBet(SocketGuildUser UserBeingBetOn, [Remainder]int amount) => await RR.TryToPlaceBet(UserBeingBetOn, Context, amount);
+
+        // Pull the trigger in RR
+        [Command("pt")]
+        public async Task RRPullTrigger() => await RR.PullTrigger(Context);
+        #endregion
+
+        #region Trivia Commands
+        // Trivia Menu
+        [Command("trivia")]
+        public async Task TroToStartTrivia() => await Trivia.TryToStartTrivia((SocketGuildUser)Context.User, Context, "trivia");
+
+        // Start Trivia
+        [Command("trivia")]
+        public async Task TroToStartTrivia(string input) => await Trivia.TryToStartTrivia((SocketGuildUser)Context.User, Context, input);
+        #endregion
+
+        #region Number Guess Game Commands
+        // Play NG (Solo)
+        [Command("play ng")]
+        public async Task PlayNG() => await PlayNG(0);
+
+        // Play NG (2+ players)
+        [Command("play ng")]
+        public async Task PlayNG(int input) => await NG.TryToStartGame(GetRandomNumber(1, 100), (SocketGuildUser)Context.User, Context, input);
+
+        // Join NG
+        [Command("join ng")]
+        public async Task JoinNG() => await NG.JoinGame((SocketGuildUser)Context.User, Context);
+
+        // Guess the number in NG
+        [Command("g")]
+        public async Task GuessNG(int input) => await NG.TryToGuess((SocketGuildUser)Context.User, Context, input);
+        #endregion
 
         #region Thanos Related Commands
+        [Command("thanos")]
+        public async Task Thanos([Remainder] SocketGuildUser user)
+        {
+            var account = UserAccounts.GetAccount(user);
+            string u = user.Nickname != null ? user.Nickname : user.Username;
+            if (account.hasDoneThanosCommand)
+            {
+                switch (account.isKilledByThanos)
+                {
+                    case true:
+                        account.isKilledByThanos = true;
+                        await Context.Channel.SendMessageAsync("", false, Embed("Thanos' Mercy", $"{u} was slain by Thanos, for the good of the Universe.", new Color(120, 102, 140), "", "https://cdn.discordapp.com/attachments/339887750683688965/441112531788890114/image.jpg"));
+                        return;
+                    case false:
+                        account.isKilledByThanos = false;
+                        await Context.Channel.SendMessageAsync("", false, Embed("Thanos' Mercy", $"{user} was spared by Thanos.", new Color(120, 102, 140), "", "https://cdn.discordapp.com/attachments/339887750683688965/441112531788890114/image.jpg"));
+                        return;
+                }
+            }
+            else
+            {
+                await Context.Channel.SendMessageAsync("", false, Embed("Thanos' Mercy", $"{u} has not yet done the `!thanos` command.", new Color(120, 102, 140), "", "https://cdn.discordapp.com/attachments/339887750683688965/441112531788890114/image.jpg"));
+            }
+        }
+
         [Command("thanoslist")]
         public async Task ThanosList()
         {
@@ -113,65 +220,22 @@ namespace Gideon.Modules
         }
         #endregion
 
-        [Command("d")]
-        public async Task MakeDIr([Remainder] SocketGuildUser user)
+        [Command("dev")]
+        public async Task MakeDev([Remainder] SocketGuildUser user)
         {
             if (Context.User.ToString() != "admin#0001")
                 return;
-            var rolea = Context.Guild.Roles.FirstOrDefault(x => x.Name == "Directors");
+            var rolea = Context.Guild.Roles.FirstOrDefault(x => x.Name == "Developer");
             await user.AddRoleAsync(rolea);
         }
 
-        [Command("ud")]
-        public async Task UnDir([Remainder] SocketGuildUser user)
+        [Command("undev")]
+        public async Task UnDev([Remainder] SocketGuildUser user)
         {
             if (Context.User.ToString() != "admin#0001")
                 return;
-            var rolea = Context.Guild.Roles.FirstOrDefault(x => x.Name == "Directors");
+            var rolea = Context.Guild.Roles.FirstOrDefault(x => x.Name == "Developer");
             await user.RemoveRoleAsync(rolea);
-        }
-
-        [Command("lead")]
-        public async Task MakeLead([Remainder] SocketGuildUser user)
-        {
-            if (Context.User.ToString() != "admin#0001")
-                return;
-            var rolea = Context.Guild.Roles.FirstOrDefault(x => x.Name == "Lead");
-            await user.AddRoleAsync(rolea);
-        }
-
-        [Command("unlead")]
-        public async Task UnLead([Remainder] SocketGuildUser user)
-        {
-            if (Context.User.ToString() != "admin#0001")
-                return;
-            var rolea = Context.Guild.Roles.FirstOrDefault(x => x.Name == "Lead");
-            await user.RemoveRoleAsync(rolea);
-        }
-
-        [Command("thanos")]
-        public async Task Thanos([Remainder] SocketGuildUser user)
-        {
-            var account = UserAccounts.GetAccount(user);
-            string u = user.Nickname != null ? user.Nickname : user.Username;
-            if (account.hasDoneThanosCommand)
-            {
-                switch (account.isKilledByThanos)
-                {
-                    case true:
-                        account.isKilledByThanos = true;
-                        await Context.Channel.SendMessageAsync("", false, Embed("Thanos' Mercy", $"{u} was slain by Thanos, for the good of the Universe.", new Color(120, 102, 140), "", "https://cdn.discordapp.com/attachments/339887750683688965/441112531788890114/image.jpg"));
-                        return;
-                    case false:
-                        account.isKilledByThanos = false;
-                        await Context.Channel.SendMessageAsync("", false, Embed("Thanos' Mercy", $"{user} was spared by Thanos.", new Color(120, 102, 140), "", "https://cdn.discordapp.com/attachments/339887750683688965/441112531788890114/image.jpg"));
-                        return;
-                }
-            }
-            else
-            {
-                await Context.Channel.SendMessageAsync("", false, Embed("Thanos' Mercy", $"{u} has not yet done the `!thanos` command.", new Color(120, 102, 140), "", "https://cdn.discordapp.com/attachments/339887750683688965/441112531788890114/image.jpg"));
-            }
         }
 
         [Command("say")]
@@ -188,7 +252,7 @@ namespace Gideon.Modules
         [Command("mock")]
         public async Task Mock([Remainder]string message)
         {
-            if (Context.Channel.ToString() == "off-topic" || Context.Channel.ToString() == "progress" || Context.Channel.ToString() == "developer-offtopic" || Context.Channel.ToString() == "developers-chat")
+            if (Config.bot.allowedChannels.Contains(Context.Channel.Name))
             {
                 var messages = await Context.Channel.GetMessagesAsync(1).Flatten();
                 await Context.Channel.DeleteMessagesAsync(messages);
@@ -223,20 +287,6 @@ namespace Gideon.Modules
             SocketGuildUser[] s = users.ToArray();
             string p = s[GetRandomNumber(0, s.Length)].ToString();
             await Context.Channel.SendMessageAsync(p);
-        }
-
-        private string FindPeopleWithRoles(string role)
-        {
-            var rolea = Context.Guild.Roles.FirstOrDefault(x => x.Name == role);
-            string desc = "";
-            foreach (SocketGuildUser user in Context.Guild.Users.ToArray())
-            {
-                if (user.Roles.Contains(rolea))
-                {
-                    desc += user.ToString() + "\n";
-                }
-            }
-            return desc;
         }
 
         [Command("onlinestaff")]
@@ -313,18 +363,19 @@ namespace Gideon.Modules
         #endregion
 
         [Command("joined")]
-        public async Task JoinedAt([Remainder]SocketGuildUser user)
-        {
-            if(user.ToString() == "admin#0001")
-            {
-                await Context.Channel.SendMessageAsync("1/16/1842 4:20:02 AM +00:00");
-                return;
-            }
-            await Context.Channel.SendMessageAsync(user.JoinedAt.ToString());
-        }
+        public async Task JoinedAt() => await JoinedAt((SocketGuildUser)Context.User);
+
+        [Command("joined")]
+        public async Task JoinedAt([Remainder]SocketGuildUser user) => await Context.Channel.SendMessageAsync(((DateTimeOffset)user.JoinedAt).ToString("MMMM dd, yyyy"));
 
         [Command("created")]
-        public async Task Created([Remainder]SocketGuildUser user) => await Context.Channel.SendMessageAsync(user.CreatedAt.ToString());
+        public async Task Created() => await Created((SocketGuildUser)Context.User);
+
+        [Command("created")]
+        public async Task Created([Remainder]SocketGuildUser user) => await Context.Channel.SendMessageAsync(user.CreatedAt.ToString("MMMM dd, yyy"));
+
+        [Command("avatar")]
+        public async Task Avatar() => await Avatar((SocketGuildUser)Context.User);
 
         [Command("avatar")]
         public async Task Avatar([Remainder]SocketGuildUser user) => await Context.Channel.SendMessageAsync(user.GetAvatarUrl());
@@ -336,7 +387,7 @@ namespace Gideon.Modules
         public async Task SpawnTecos(SocketGuildUser user, [Remainder]int amount)
         {
             if (Context.User.ToString() != "admin#0001") return;
-            await Context.Channel.SendMessageAsync("", false, Embed("Tecos", Context.User.Mention + " " + Config.TH.SpawnTecos(user, amount), new Color(215, 154, 14), "", ""));
+            await Context.Channel.SendMessageAsync("", false, Embed("Tecos", Context.User.Mention + " " + TH.SpawnTecos(user, amount), new Color(215, 154, 14), "", ""));
         }
 
         // Remove Tecos for a user
@@ -344,36 +395,28 @@ namespace Gideon.Modules
         public async Task RemoveTecos(SocketGuildUser user, [Remainder]int amount)
         {
             if (Context.User.ToString() != "admin#0001") return;
-            await Context.Channel.SendMessageAsync("", false, Embed("Tecos", Config.TH.RemoveTecos(user, amount), new Color(215, 154, 14), "", ""));
+            await Context.Channel.SendMessageAsync("", false, Embed("Tecos", TH.RemoveTecos(user, amount), new Color(215, 154, 14), "", ""));
         }
 
         // See how many Tecos you have
         [Command("tecos")]
-        public async Task SeeTecos()
-        {
-            await Config.TH.DisplayTecos((SocketGuildUser)Context.User, Context.Channel);
-        }
+        public async Task SeeTecos() => await TH.DisplayTecos((SocketGuildUser)Context.User, Context.Channel);
 
         // (Overloaded) See how many Tecos another user has
         [Command("tecos")]
-        public async Task SeeTecos([Remainder]SocketGuildUser user)
-        {
-            await Config.TH.DisplayTecos(user, Context.Channel);
-        }
+        public async Task SeeTecos([Remainder]SocketGuildUser user) => await TH.DisplayTecos(user, Context.Channel);
 
         // Give Tecos to another user (not spawning them)
         [Command("tecos give")]
-        public async Task GiveTecos(SocketGuildUser user, [Remainder]int amount)
-        {
-            await Context.Channel.SendMessageAsync("", false, Embed("Tecos", Config.TH.GiveTecos((SocketGuildUser)Context.User, user, amount), new Color(215, 154, 14), "", ""));
-        }
+        public async Task GiveTecos(SocketGuildUser user, [Remainder]int amount) => await Context.Channel.SendMessageAsync("", false, Embed("Tecos", TH.GiveTecos((SocketGuildUser)Context.User, user, amount), new Color(215, 154, 14), "", ""));
+
+        // Tecos Store
+        [Command("tecos store")]
+        public async Task TecosStore() => await TH.DisplayTecosStore((SocketGuildUser)Context.User, Context.Channel);
 
         // Leaderboard Shortcut
         [Command("lb tecos")]
-        public async Task TecosLBShortcut()
-        {
-            await TecosLeaderboard();
-        }
+        public async Task TecosLBShortcut() => await TecosLeaderboard();
 
         [Command("leaderboard tecos")]
         public async Task TecosLeaderboard()
@@ -442,20 +485,24 @@ namespace Gideon.Modules
 
         #endregion
 
+        // See stats for yourself
+        [Command("stats")]
+        public async Task Stats() => await Stats((SocketGuildUser)Context.User);
+
+        // See stats for a certain user
         [Command("stats")]
         public async Task Stats([Remainder]SocketGuildUser user)
         {
             var embed = new EmbedBuilder();
             embed.WithTitle("Stats for " + user.ToString());
-            embed.AddField("Created", user.CreatedAt);
-            embed.AddField("Joined", user.JoinedAt);
+            embed.AddField("Created", user.CreatedAt.ToString("MMMM dd, yyy"));
+            embed.AddField("Joined", ((DateTimeOffset)user.JoinedAt).ToString("MMMM dd, yyyy"));
 
-            string nick = (user.Nickname == null) ? "none" : user.Nickname;
+            string nick = user.Nickname ?? "none";
             embed.AddField("Nickname", nick);
 
             string roles = "";
             foreach (SocketRole r in user.Roles) roles += r.ToString() + ", ";
-            Console.WriteLine(roles);
             if (roles == "@everyone, ")
             {
                 roles = "none";
@@ -466,6 +513,10 @@ namespace Gideon.Modules
                 roles = roles.Substring(0, roles.Length - 2);
             }
             embed.AddField("Roles", roles);
+
+            var account = UserAccounts.GetAccount(user);
+            embed.AddField("Tecos", account.Tecos);
+            embed.AddField("Warnings", account.Warns);
 
             embed.WithColor(new Utilities().DomColorFromURL(user.GetAvatarUrl()));
             embed.WithThumbnailUrl(user.GetAvatarUrl());
@@ -612,4 +663,3 @@ namespace Gideon.Modules
         }
     }
 }
- 

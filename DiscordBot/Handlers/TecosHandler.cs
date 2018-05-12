@@ -1,12 +1,12 @@
 ﻿using Discord.WebSocket;
 using System.Threading.Tasks;
 
-namespace Gideon.Modules
+namespace Gideon.Handlers
 {
     class TecosHandler
     {
-        Discord.Color EmbedColor = new Discord.Color(215, 154, 14);
-        string TecosIcon = "https://i.imgur.com/w09rWQg.png";
+        private static Discord.Color EmbedColor = new Discord.Color(215, 154, 14);
+        private static string TecosIcon = "https://i.imgur.com/w09rWQg.png";
 
         public string GiveTecos(SocketGuildUser sender, SocketGuildUser reciever, int amount)
         {
@@ -68,6 +68,11 @@ namespace Gideon.Modules
             string name = user.Nickname != null ? user.Nickname : user.Username;
             string footer = UserAccounts.GetAccount(user).hasDoubleTecoBoost ? "Double Teco Boost is active." : "";
             await channel.SendMessageAsync("", false, Utilities.Embed($"{name}", $"{UserAccounts.GetAccount(user).Tecos} Tecos", EmbedColor, footer, TecosIcon));
+        }
+
+        public async Task DisplayTecosStore(SocketGuildUser user, ISocketMessageChannel channel)
+        {
+            await channel.SendMessageAsync("", false, Utilities.Embed($"Tecos Store", $"Double Teco Boost - ??? Tecos\n`Doubles your Tecos income for 24 hours!`", EmbedColor, $"You have {UserAccounts.GetAccount(user).Tecos} Tecos.", TecosIcon));
         }
     }
 }

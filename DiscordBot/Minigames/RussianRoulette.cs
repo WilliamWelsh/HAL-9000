@@ -1,7 +1,7 @@
 ﻿using System;
 using Discord;
 using System.Linq;
-using Gideon.Modules;
+using Gideon.Handlers;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
@@ -93,6 +93,7 @@ namespace Gideon.Minigames
 
         public async Task TryToStartGame(SocketCommandContext context, string input)
         {
+            if (input == "start") await HostStart(context);
             if (input.StartsWith("!rr bet")) return;
             if (isGameGoing)
             {
@@ -151,6 +152,7 @@ namespace Gideon.Minigames
             if ((SocketGuildUser)context.User != host) return;
             await context.Channel.SendMessageAsync("", false, GameEmbed($"Initial round.\n\nWaiting for {Players.ElementAt(0).Mention} to pull the trigger. (`!pt`)", ""));
             canGameProgress = true;
+            return;
         }
 
         public async Task PullTrigger(SocketCommandContext context)

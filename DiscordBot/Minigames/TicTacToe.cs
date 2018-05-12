@@ -51,7 +51,7 @@ namespace Gideon.Minigames
             host = (SocketGuildUser)context.User;
             AddPlayer(host, letter.ToUpper());
             isGameGoing = true;
-            await context.Channel.SendMessageAsync("", false, Embed($"{host.Mention} has started a game!\n\nType `!join ttt` to join!", "Waiting for someone player to join..."));
+            await context.Channel.SendMessageAsync("", false, Embed($"{host.Mention} has started a game!\n\nType `!join ttt` to join!", "Waiting for someone to join..."));
         }
 
         private void AddPlayer(SocketGuildUser user, string letter)
@@ -160,18 +160,20 @@ namespace Gideon.Minigames
         private async Task DeclareWinner(SocketCommandContext context, string winningLetter)
         {
             SocketGuildUser winner, loser;
-            if(Players.ElementAt(0).letter == winningLetter.ToLower())
-            {
-                winner = Players.ElementAt(1).user;
-                loser = Players.ElementAt(0).user;
-            }
-            else
+            if(Players.ElementAt(0).letter == winningLetter)
             {
                 winner = Players.ElementAt(0).user;
                 loser = Players.ElementAt(1).user;
             }
+            else
+            {
+                winner = Players.ElementAt(1).user;
+                loser = Players.ElementAt(0).user;
+            }
 
-            await context.Channel.SendMessageAsync("", false, Embed($"{WriteBoard()}\n{winner.Mention} has won <IDK> Tecos!\n\n{loser.Mention} has lost <IDK> Tecos.", ""));
+            await context.Channel.SendMessageAsync("", false, Embed($"{WriteBoard()}\n{winner.Mention} has won 5 Tecos!\n\n{loser.Mention} has lost 5 Tecos.", ""));
+            Config.TH.AdjustTecos(winner, 5);
+            Config.TH.AdjustTecos(loser, -5);
             Reset();
             return;
         }

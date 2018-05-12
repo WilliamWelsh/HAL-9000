@@ -1,7 +1,7 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using Gideon.Modules;
+using Gideon.Handlers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,13 +48,14 @@ namespace Gideon.Minigames
             Players.Add(newPlayer);
         }
 
-        public async Task TryToStartGame(int RandomNumber, SocketGuildUser user, SocketCommandContext context, string input)
+        public async Task TryToStartGame(int RandomNumber, SocketGuildUser user, SocketCommandContext context, int players)
         {
             if (isGamingGoing) return;
             isGamingGoing = true;
             Number = RandomNumber;
             AddPlayer(user);
-            Int32.TryParse(input.Replace("!play ng", ""), out PlayerSlots);
+            Console.WriteLine(players);
+            PlayerSlots = players;
             if (PlayerSlots == 0)
                 await context.Channel.SendMessageAsync("", false, embed($"{user.Mention} has started a solo game.\n\nI am thinking of a number between 1 and 100. You get one try.", "!g number to guess.", false));
             else
@@ -87,7 +88,7 @@ namespace Gideon.Minigames
             await context.Channel.SendMessageAsync("", false, embed("I am thinking of a number between 1 and 100. You get one try.", "!g number to guess.", false));
         }
 
-        public async Task TryToGuess(SocketGuildUser user, SocketCommandContext context, string input)
+        public async Task TryToGuess(SocketGuildUser user, SocketCommandContext context, int input)
         {
             if (!isGamingGoing) return;
             if (PlayerSlots != Players.Count && PlayerSlots != 0)
@@ -102,15 +103,13 @@ namespace Gideon.Minigames
                 }
             }
             if (!isPlaying) return;
-            int Guess;
-            Int32.TryParse(input.Replace("!g ", ""), out Guess);
             for (int i = 0; i < Players.Count; i++)
             {
                 if(Players.ElementAt(i).user == user)
                 {
                     var p = Players.ElementAt(i);
                     p.hasAnswered = true;
-                    p.guess = Guess;
+                    p.guess = input;
                     Players.RemoveAt(i);
                     Players.Add(p);
                 }

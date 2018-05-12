@@ -1,7 +1,6 @@
 ﻿using System;
 using Discord;
 using System.Linq;
-using Gideon.Minigames;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Reflection;
@@ -25,11 +24,6 @@ namespace Gideon
         public string PayAttentionToUser = "";
         public bool isPayingAttentionToUser = false;
         public bool PayAttentionToUserDone = false;
-
-        Trivia Trivia = new Trivia();
-        NumberGuess NGGame = new NumberGuess();
-        TicTacToe TTT = new TicTacToe();
-        RussianRoulette RR = new RussianRoulette();
 
         private static readonly Random getrandom = new Random();
 
@@ -73,15 +67,6 @@ namespace Gideon
         {
             DateTime t = DateTime.Now.AddHours(h);
             return p + ":" + t.ToString(" h:mm tt, dddd, MMMM d.");
-        }
-
-        Embed embed(string desc)
-        {
-            var embed = new EmbedBuilder();
-            embed.WithTitle("Time Teller");
-            embed.WithDescription(desc);
-            embed.WithColor(new Color(127, 166, 208));
-            return embed;
         }
 
         Embed embedYT(string ID, string name)
@@ -166,9 +151,9 @@ namespace Gideon
             string m = msg.Content.ToLower();
 
             if (msg.Author.ToString() == PayAttentionToUser && isPayingAttentionToUser)
-            {
                 m = "!" + m;
-            }
+
+
             /*
             if(msg.Author.ToString() == "Username#2720")
             {
@@ -196,7 +181,7 @@ namespace Gideon
             {
                 if (!isRespectedPlus(context, (SocketGuildUser)msg.Author)) return;
                 await msg.Channel.SendMessageAsync($"{context.User.Mention} has reset Trivia.");
-                Trivia.ResetTrivia();
+                Config.MinigameHandler.Trivia.ResetTrivia();
                 return;
             }
 
@@ -204,21 +189,22 @@ namespace Gideon
             {
                 if (!isRespectedPlus(context, (SocketGuildUser)msg.Author)) return;
                 await msg.Channel.SendMessageAsync($"{context.User.Mention} has reset Russian Roulette.");
-                Config.RR.Reset();
+                Config.MinigameHandler.RR.Reset();
                 return;
             }
 
             if (m == "!reset ttt")
             {
                 if (!isRespectedPlus(context, (SocketGuildUser)msg.Author)) return;
-                TTT.Reset();
                 await msg.Channel.SendMessageAsync($"{msg.Author.Mention} has reset Tic-Tac-Toe.");
+                Config.MinigameHandler.TTT.Reset();
                 return;
             }
 
             if (m == "!reset ng")
             {
-                NGGame.Reset();
+                await msg.Channel.SendMessageAsync($"{msg.Author.Mention} has reset the Number Guess game.");
+                Config.MinigameHandler.NG.Reset();
                 return;
             }
 
@@ -263,91 +249,11 @@ namespace Gideon
 
 
 
+            
 
-            if(m.StartsWith("!put"))
-            {
-                await TTT.PutLetter(context, m);
-                return;
-            }
-
-            if (m.StartsWith("!ttt"))
-            {
-                await TTT.TryToStartGame(context, m);
-                return;
-            }
-
-            if (m == "!join ttt")
-            {
-                await TTT.TryToJoinGame(context);
-                return;
-            }
-
-
-
-            if(m.StartsWith("!rr"))
-            {
-                await Config.RR.TryToStartGame(context, m);
-                return;
-            }
-
-            if (m == "!join rr")
-            {
-                await Config.RR.TryToJoin(context);
-                return;
-            }
-
-            if (m == "!pt")
-            {
-                await Config.RR.PullTrigger(context);
-                return;
-            }
-
-
-
-
-
-
-            if (m.StartsWith("!play ng"))
-            {
-                await NGGame.TryToStartGame(GetRandomNumber(1, 100), (SocketGuildUser)msg.Author, context, m);
-            }
-
-            if (m == "!join ng")
-            {
-                await NGGame.JoinGame((SocketGuildUser)msg.Author, context);
-            }
-
-            if (m.StartsWith("!g"))
-            {
-                await NGGame.TryToGuess((SocketGuildUser)msg.Author, context, m);
-            }
-
-
-
-
-            if(m.StartsWith("!trivia"))
-                await Trivia.TryToStartTrivia((SocketGuildUser)msg.Author, context, m);
-
+            // Answer trivia
             if (m == "a" || m == "b" || m == "c" || m == "d")
-                await Trivia.AnswerTrivia((SocketGuildUser)msg.Author, context, m);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                await Config.MinigameHandler.Trivia.AnswerTrivia((SocketGuildUser)msg.Author, context, m);
 
             if (m.Contains("teco > cottage"))
             {
@@ -401,9 +307,7 @@ namespace Gideon
             }
 
             if (m.Contains("lennyface"))
-            {
                 await context.Channel.SendMessageAsync("( ͡° ͜ʖ ͡°)");
-            }
 
             var Ats = msg.Attachments.ToArray();
 
@@ -476,7 +380,7 @@ namespace Gideon
             {
                 if (m == "!time " + timePeople[i].ToLower() || m.StartsWith("!" + timePeople[i].ToLower()) && (m.Substring(msg.Content.Length - 4) == "time"))
                 {
-                    await msg.Channel.SendMessageAsync("", false, embed(TellTime(timeHourDif[i], timePeople[i])));
+                    await msg.Channel.SendMessageAsync("", false, Utilities.Embed("Time Teller", TellTime(timeHourDif[i], timePeople[i]), new Color(127, 166, 208), "", ""));
                     PayAttentionToUserDone = isDonePayingAttention(msg.Author.ToString());
                     return;
                 }
@@ -550,6 +454,10 @@ namespace Gideon
             if (m.Contains("@everyone"))
             {
                 await new Utilities().AutoWarn(context, (SocketGuildUser)msg.Author, "using @ everyone.");
+            }
+            else if (m.Contains("@here"))
+            {
+                await new Utilities().AutoWarn(context, (SocketGuildUser)msg.Author, "using @ here.");
             }
         }
     }
