@@ -13,6 +13,18 @@ namespace Gideon
 {
     class Utilities
     {
+        // Generic Embed template
+        public static Embed Embed(string t, string d, Discord.Color c, string f, string thURL)
+        {
+            var embed = new EmbedBuilder();
+            embed.WithTitle(t);
+            embed.WithDescription(d);
+            embed.WithColor(c);
+            embed.WithFooter(f);
+            embed.WithThumbnailUrl(thURL);
+            return embed;
+        }
+
         // Get a dominant color from an image (url)
         public Discord.Color DomColorFromURL(string url)
         {

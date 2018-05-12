@@ -1,9 +1,14 @@
-﻿using Discord.WebSocket;
+﻿using Discord.Commands;
+using Discord.WebSocket;
+using System.Threading.Tasks;
 
 namespace Gideon.Modules
 {
     class TecosHandler
     {
+        Discord.Color EmbedColor = new Discord.Color(215, 154, 14);
+        string TecosIcon = "https://i.imgur.com/w09rWQg.png";
+
         public string GiveTecos(SocketGuildUser sender, SocketGuildUser reciever, int amount)
         {
             var SenderAccount = UserAccounts.GetAccount(sender);
@@ -18,13 +23,52 @@ namespace Gideon.Modules
             return $"{sender.Mention} gave {reciever.Mention} {amount} Tecos.";
         }
 
-        public void AdjustTecos(SocketGuildUser user, int amount)
+        public string SpawnTecos(SocketGuildUser user, int amount)
         {
             var account = UserAccounts.GetAccount(user);
             account.Tecos += amount;
+            UserAccounts.SaveAccounts();
+            return $"spawned {user.Mention} {amount} Tecos.";
+        }
+
+        public string RemoveTecos(SocketGuildUser user, int amount)
+        {
+            var account = UserAccounts.GetAccount(user);
+            account.Tecos -= amount;
             if (account.Tecos < 0)
                 account.Tecos = 0;
             UserAccounts.SaveAccounts();
+            return $"{user.Mention} lost {amount} Tecos.";
+        }
+
+        public void AdjustTecos(SocketGuildUser user, int amount)
+        {
+            var account = UserAccounts.GetAccount(user);
+            if(account.hasDoubleTecoBoost && amount > 0)
+            {
+                account.Tecos += (amount * 2);
+            }
+            else
+            {
+                account.Tecos += amount;
+            }
+            if (account.Tecos < 0)
+                account.Tecos = 0;
+            UserAccounts.SaveAccounts();
+        }
+
+        public void AdjustBoost(SocketGuildUser user, bool boolean)
+        {
+            var account = UserAccounts.GetAccount(user);
+            account.hasDoubleTecoBoost = boolean;
+            UserAccounts.SaveAccounts();
+        }
+
+        public async Task DisplayTecos(SocketGuildUser user, ISocketMessageChannel channel)
+        {
+            string name = user.Nickname != null ? user.Nickname : user.Username;
+            string footer = UserAccounts.GetAccount(user).hasDoubleTecoBoost ? "Double Teco Boost is active." : "";
+            await channel.SendMessageAsync("", false, Utilities.Embed($"{name}", $"{UserAccounts.GetAccount(user).Tecos} Tecos", EmbedColor, footer, TecosIcon));
         }
     }
 }

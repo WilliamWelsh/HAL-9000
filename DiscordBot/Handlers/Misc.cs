@@ -20,9 +20,6 @@ namespace Gideon.Modules
                                select (V.IndexOf(obj) != -1) ? X[V.IndexOf(obj)] : obj).Reverse().ToArray());
         }
 
-        TecosHandler TH = new TecosHandler();
-        RussianRoulette RR = new RussianRoulette();
-
         private static readonly Random getrandom = new Random();
 
         public static int GetRandomNumber(int min, int max)
@@ -81,7 +78,7 @@ namespace Gideon.Modules
         [Command("tecos give")]
         public async Task GiveTecos(SocketGuildUser user, [Remainder]int amount)
         {
-            await Context.Channel.SendMessageAsync("", false, Embed("Tecos", TH.GiveTecos((SocketGuildUser)Context.User, user, amount), new Color(215, 154, 14), "", ""));
+            await Context.Channel.SendMessageAsync("", false, Embed("Tecos", Config.TH.GiveTecos((SocketGuildUser)Context.User, user, amount), new Color(215, 154, 14), "", ""));
         }
 
         [Command("leaderboard tecos")]
@@ -147,6 +144,12 @@ namespace Gideon.Modules
             }
 
             await Context.Channel.SendMessageAsync("", false, embed);
+        }
+
+        [Command("lb tecos")]
+        public async Task TecosLBShortcut()
+        {
+            await TecosLeaderboard();
         }
 
         [Command("thanoslist")]
@@ -446,19 +449,38 @@ namespace Gideon.Modules
             await Context.Channel.SendMessageAsync(user.GetAvatarUrl());
         }
 
-        [Command("tecos")]
-        public async Task SeeCredits([Remainder]SocketGuildUser user)
+        #region Tecos Related Commands
+
+        // Spawn Tecos for a user
+        [Command("tecos spawn")]
+        public async Task SpawnTecos(SocketGuildUser user, [Remainder]int amount)
         {
-            string name = user.Nickname != null ? user.Nickname : user.Username;
-            await Context.Channel.SendMessageAsync("", false, Embed($"Tecos - {name}", UserAccounts.GetAccount(user).Tecos.ToString(), new Color(215, 154, 14), "", "https://i.imgur.com/w09rWQg.png"));
+            if (Context.User.ToString() != "admin#0001") return;
+            await Context.Channel.SendMessageAsync("", false, Embed("Tecos", Context.User.Mention + " " + Config.TH.SpawnTecos(user, amount), new Color(215, 154, 14), "", ""));
         }
 
-        [Command("tecos")]
-        public async Task SeeCredits()
+        // Remove Tecos for a user
+        [Command("tecos remove")]
+        public async Task RemoveTecos(SocketGuildUser user, [Remainder]int amount)
         {
-            string name = (Context.User as SocketGuildUser).Nickname != null ? (Context.User as SocketGuildUser).Nickname : Context.User.Username;
-            await Context.Channel.SendMessageAsync("", false, Embed($"Tecos - {name}", UserAccounts.GetAccount(Context.User).Tecos.ToString(), new Color(215, 154, 14), "", "https://i.imgur.com/w09rWQg.png"));
+            if (Context.User.ToString() != "admin#0001") return;
+            await Context.Channel.SendMessageAsync("", false, Embed("Tecos", Config.TH.RemoveTecos(user, amount), new Color(215, 154, 14), "", ""));
         }
+
+        // See how many Tecos you have
+        [Command("tecos")]
+        public async Task SeeTecos()
+        {
+            await Config.TH.DisplayTecos((SocketGuildUser)Context.User, Context.Channel);
+        }
+
+        // (Overloaded) See how many Tecos another user has
+        [Command("tecos")]
+        public async Task SeeTecos([Remainder]SocketGuildUser user)
+        {
+            await Config.TH.DisplayTecos(user, Context.Channel);
+        }
+        #endregion
 
         [Command("stats")]
         public async Task Stats([Remainder]SocketGuildUser user)

@@ -238,7 +238,7 @@ namespace Gideon
                     await msg.Channel.SendMessageAsync("Black Lightning is not going to be in the game because he is not in the Arrowverse.");
             }
 
-            if (m.Contains("video") && m.Contains("when"))
+            if (m.Contains("video") && m.Contains("when") || m == "update video soon?")
             {
                 await msg.Channel.SendMessageAsync("There is no set date for the next update video.");
             }
@@ -258,7 +258,7 @@ namespace Gideon
                 await msg.Channel.SendMessageAsync("This game will be free.");
             }
 
-            if (m == "cottage > teco")
+            if (m.Contains("cottage > teco"))
             {
                 await msg.Channel.SendMessageAsync("https://i.imgur.com/ZPkm0nc.png");
                 return;
@@ -353,7 +353,7 @@ namespace Gideon
 
 
 
-            if (m == "teco > cottage")
+            if (m.Contains("teco > cottage"))
             {
                 await msg.Channel.SendMessageAsync("https://i.imgur.com/oghnB1D.png");
                 return;
@@ -362,8 +362,10 @@ namespace Gideon
             if (msg.Author.ToString() == "Username#2720")
             {
                 if (m == "!slander approves" || m == "!siander approves")
+                {
                     await msg.Channel.SendMessageAsync("https://i.imgur.com/QSL86jU.png");
-                return;
+                    return;
+                }
             }
 
             if (msg.Content == "Gideon!" && !isPayingAttentionToUser)

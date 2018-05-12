@@ -123,6 +123,7 @@ namespace Gideon.Minigames
             SlotValues[Slot] = Players.ElementAt(currentTurn).letter;
             await CheckForWin(context, "X");
             await CheckForWin(context, "O");
+            await CheckForDraw(context);
             currentTurn = currentTurn == 0 ? 1 : 0;
 
             await context.Channel.SendMessageAsync("", false, Embed($"{WriteBoard()}\n{Players.ElementAt(currentTurn).user.Mention}'s turn.", ""));
@@ -141,8 +142,8 @@ namespace Gideon.Minigames
                 SlotValues[6] == letter && SlotValues[7] == letter && SlotValues[8] == letter ||
 
             // Diagonal
-                SlotValues[0] == letter && SlotValues[5] == letter && SlotValues[8] == letter ||
-                SlotValues[6] == letter && SlotValues[5] == letter && SlotValues[2] == letter)
+                SlotValues[0] == letter && SlotValues[4] == letter && SlotValues[8] == letter ||
+                SlotValues[6] == letter && SlotValues[4] == letter && SlotValues[2] == letter)
             {
                 await DeclareWinner(context, letter);
             }
@@ -154,20 +155,28 @@ namespace Gideon.Minigames
             {
                 if (s == " ") return;
             }
-            await context.Channel.SendMessageAsync("", false, Embed($"{WriteBoard()}\nit's a draw!", "Nobody loses any Tecos."));
+            await context.Channel.SendMessageAsync("", false, Embed($"{WriteBoard()}\nIt's a draw!", "Nobody loses any Tecos."));
             Reset();
+            return;
         }
 
         private async Task DeclareWinner(SocketCommandContext context, string winningLetter)
         {
-            SocketGuildUser winner;
+            SocketGuildUser winner, loser;
             if(Players.ElementAt(0).letter == winningLetter.ToLower())
-                winner = Players.ElementAt(0).user;
-            else
+            {
                 winner = Players.ElementAt(1).user;
+                loser = Players.ElementAt(0).user;
+            }
+            else
+            {
+                winner = Players.ElementAt(0).user;
+                loser = Players.ElementAt(1).user;
+            }
 
-            await context.Channel.SendMessageAsync("", false, Embed($"{WriteBoard()}\n{winner.Mention} has won <IDK> Tecos!\n\nThe other player has lost <IDK> Tecos.", ""));
+            await context.Channel.SendMessageAsync("", false, Embed($"{WriteBoard()}\n{winner.Mention} has won <IDK> Tecos!\n\n{loser.Mention} has lost <IDK> Tecos.", ""));
             Reset();
+            return;
         }
         
         public void Reset()
@@ -176,6 +185,10 @@ namespace Gideon.Minigames
             Players.Clear();
             isGameGoing = false;
             host = null;
+            for(int i = 0; i < SlotValues.Length; i++)
+            {
+                SlotValues[i] = " ";
+            }
         }
     }
 }

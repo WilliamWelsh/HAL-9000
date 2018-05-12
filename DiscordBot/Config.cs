@@ -1,4 +1,5 @@
 ﻿using Gideon.Minigames;
+using Gideon.Modules;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
@@ -17,6 +18,7 @@ namespace Gideon
                                         "Renz#3903", "KaraZor#8671", "Jack_Hartley97#6754", "Jack_Hartley97#7912",
                                         "Jonathan TRG#2932" };
 
+        public static TecosHandler TH = new TecosHandler();
         public static RussianRoulette RR = new RussianRoulette();
 
         static Config()

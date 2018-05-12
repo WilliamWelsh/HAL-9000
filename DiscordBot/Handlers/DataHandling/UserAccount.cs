@@ -6,6 +6,7 @@ namespace Gideon
     {
         public ulong UserID { get; set; }
         public int Tecos { get; set; }
+        public bool hasDoubleTecoBoost { get; set; }
         public bool isKilledByThanos { get; set; }
         public bool hasDoneThanosCommand { get; set; }
         public uint Warns { get; set; }

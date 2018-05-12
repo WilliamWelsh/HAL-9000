@@ -50,7 +50,8 @@ namespace Gideon
                 UserID = id,
                 isKilledByThanos = false,
                 hasDoneThanosCommand = false,
-                Tecos = 0
+                Tecos = 0,
+                hasDoubleTecoBoost = false
             };
             accounts.Add(newAccount);
             SaveAccounts();
