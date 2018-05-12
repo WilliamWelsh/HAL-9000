@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Discord;
+using System.Linq;
 using Discord.Commands;
 using Discord.WebSocket;
-using Gideon.Minigames;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Gideon.Modules
 {
@@ -38,7 +37,7 @@ namespace Gideon.Modules
             embed.WithThumbnailUrl(thURL);
             return embed;
         }
-
+        
         [Command("addallowedchannel")]
         public async Task AddAllowedChannel([Remainder]string channel)
         {
@@ -58,100 +57,15 @@ namespace Gideon.Modules
         }
 
         [Command("australia")]
-        public async Task AussieText([Remainder]string message)
-        {
-            await Context.Channel.SendMessageAsync("", false, Embed("Australian Translator", ToAussie(message), new Color(255, 140, 0), "Requested by " + Context.User, ""));
-        }
+        public async Task AussieText([Remainder]string message) => await Context.Channel.SendMessageAsync("", false, Embed("Australian Translator", ToAussie(message), new Color(255, 140, 0), "Requested by " + Context.User, ""));
 
         [Command("rr bet")]
-        public async Task RussianRouletteBet(SocketGuildUser UserBeingBetOn, [Remainder]int amount)
-        {
-            await Config.RR.TryToPlaceBet(UserBeingBetOn, Context, amount);
-        }
+        public async Task RussianRouletteBet(SocketGuildUser UserBeingBetOn, [Remainder]int amount) => await Config.RR.TryToPlaceBet(UserBeingBetOn, Context, amount);
 
         [Command("rr start")]
-        public async Task RussianRouletteHostStart()
-        {
-            await Config.RR.HostStart(Context);
-        }
+        public async Task RussianRouletteHostStart() => await Config.RR.HostStart(Context);
 
-        [Command("tecos give")]
-        public async Task GiveTecos(SocketGuildUser user, [Remainder]int amount)
-        {
-            await Context.Channel.SendMessageAsync("", false, Embed("Tecos", Config.TH.GiveTecos((SocketGuildUser)Context.User, user, amount), new Color(215, 154, 14), "", ""));
-        }
-
-        [Command("leaderboard tecos")]
-        public async Task TecosLeaderboard()
-        {
-            List<int> list = new List<int>();
-            for(int i = 0; i < Context.Guild.Users.Count; i++)
-            {
-                list.Add(UserAccounts.GetAccount(Context.Guild.Users.ElementAt(i)).Tecos);
-            }
-
-            int[] MostTecosArray = new int[5];
-            int indexMin = 0;
-            var IntArray = list.ToArray();
-            MostTecosArray[indexMin] = IntArray[0];
-            int min = MostTecosArray[indexMin];
-
-            for (int i = 1; i < IntArray.Length; i++)
-            {
-                if (i < 5)
-                {
-                    MostTecosArray[i] = IntArray[i];
-                    if (MostTecosArray[i] < min)
-                    {
-                        min = MostTecosArray[i];
-                        indexMin = i;
-                    }
-                }
-                else if (IntArray[i] > min)
-                {
-                    min = IntArray[i];
-                    MostTecosArray[indexMin] = min;
-                    for (int r = 0; r < 5; r++)
-                    {
-                        if (MostTecosArray[r] < min)
-                        {
-                            min = MostTecosArray[r];
-                            indexMin = r;
-                        }
-                    }
-                }
-            }
-
-            var embed = new EmbedBuilder();
-            embed.WithTitle("Tecos Leaderboard");
-            embed.WithColor(new Color(215, 154, 14));
-
-            Array.Sort(MostTecosArray);
-            Array.Reverse(MostTecosArray);
-            List<SocketGuildUser> PeopleOnLB = new List<SocketGuildUser>();
-            for(int i = 0; i < 5; i++)
-            {
-                for(int n = 0; n < Context.Guild.Users.Count; n++)
-                {
-                    if(UserAccounts.GetAccount(Context.Guild.Users.ElementAt(n)).Tecos == MostTecosArray[i] && !PeopleOnLB.Contains(Context.Guild.Users.ElementAt(n)))
-                    {
-                        string name = Context.Guild.Users.ElementAt(n).Nickname != null ? Context.Guild.Users.ElementAt(n).Nickname : Context.Guild.Users.ElementAt(n).Username;
-                        embed.AddField($"{i + 1} - {name}", MostTecosArray[i] + " Tecos");
-                        PeopleOnLB.Add(Context.Guild.Users.ElementAt(n));
-                        break;
-                    }
-                }
-            }
-
-            await Context.Channel.SendMessageAsync("", false, embed);
-        }
-
-        [Command("lb tecos")]
-        public async Task TecosLBShortcut()
-        {
-            await TecosLeaderboard();
-        }
-
+        #region Thanos Related Commands
         [Command("thanoslist")]
         public async Task ThanosList()
         {
@@ -197,6 +111,7 @@ namespace Gideon.Modules
                     return;
             }
         }
+        #endregion
 
         [Command("d")]
         public async Task MakeDIr([Remainder] SocketGuildUser user)
@@ -299,10 +214,7 @@ namespace Gideon.Modules
         }
 
         [Command("audition")]
-        public async Task Audition()
-        {
-            await Context.Channel.SendMessageAsync("Audition here: http://www.behindthevoiceactors.com/members/Tecosaurus/casting-call/Crisis-on-Earth-One-An-Arrowverse-Fan-Game/");
-        }
+        public async Task Audition() => await Context.Channel.SendMessageAsync("Audition here: http://www.behindthevoiceactors.com/members/Tecosaurus/casting-call/Crisis-on-Earth-One-An-Arrowverse-Fan-Game/");
 
         [Command("someone")]
         public async Task GetRandomPerson()
@@ -371,60 +283,34 @@ namespace Gideon.Modules
             string n = Context.Guild.Users.ToArray().Length.ToString();
             await Context.Channel.SendMessageAsync("There are currently " + n + " members online.");
         }
-
-        [Command("respected")]
-        public async Task Respected()
-        {
-            await Context.Channel.SendMessageAsync("", false, Embed("Respected", FindPeopleWithRoles("Respected"), new Color(255, 105, 180), "", ""));
-        }
-
         [Command("tecoverse")]
-        public async Task Tecoverse()
-        {
-            await Context.Channel.SendMessageAsync("https://discord.gg/yD7Rxnu");
-        }
+        public async Task Tecoverse() => await Context.Channel.SendMessageAsync("https://discord.gg/yD7Rxnu");
+
+        #region View People in Rank Commands
+        [Command("respected")]
+        public async Task Respected() => await Context.Channel.SendMessageAsync("", false, Embed("Respected", FindPeopleWithRoles("Respected"), new Color(255, 105, 180), "", ""));
 
         [Command("assisted")]
-        public async Task Interns()
-        {
-            await Context.Channel.SendMessageAsync("", false, Embed("Assisted", FindPeopleWithRoles("Assisted"), new Color(102, 0, 204), "", ""));
-        }
+        public async Task Interns() => await Context.Channel.SendMessageAsync("", false, Embed("Assisted", FindPeopleWithRoles("Assisted"), new Color(102, 0, 204), "", ""));
 
         [Command("helpers")]
-        public async Task Helpers()
-        {
-            await Context.Channel.SendMessageAsync("", false, Embed("Helpers", FindPeopleWithRoles("Helpers"), new Color(255, 255, 0), "", ""));
-        }
+        public async Task Helpers() => await Context.Channel.SendMessageAsync("", false, Embed("Helpers", FindPeopleWithRoles("Helpers"), new Color(255, 255, 0), "", ""));
 
         [Command("director")]
-        public async Task Director()
-        {
-            await Context.Channel.SendMessageAsync("", false, Embed("Director", FindPeopleWithRoles("Director"), new Color(0, 153, 0), "", ""));
-        }
-
-        [Command("developers")]
-        public async Task Developers()
-        {
-            await Context.Channel.SendMessageAsync("", false, Embed("Developers", FindPeopleWithRoles("Developer"), new Color(255, 0, 0), "", ""));
-        }
-
-        [Command("phantomzone")]
-        public async Task PhantomZone()
-        {
-            await Context.Channel.SendMessageAsync("", false, Embed("Phantom Zoned People", FindPeopleWithRoles("Phantom Zone"), new Color(84, 110, 122), "", ""));
-        }
+        public async Task Director() => await Context.Channel.SendMessageAsync("", false, Embed("Director", FindPeopleWithRoles("Director"), new Color(0, 153, 0), "", ""));
 
         [Command("devs")]
-        public async Task Devs()
-        {
-            await Context.Channel.SendMessageAsync("", false, Embed("Developers", FindPeopleWithRoles("Developer"), new Color(255, 0, 0), "", ""));
-        }
+        public async Task ShowDevsShortcut() => await Context.Channel.SendMessageAsync("", false, Embed("Developers", FindPeopleWithRoles("Developer"), new Color(255, 0, 0), "", ""));
+
+        [Command("developers")]
+        public async Task ShowDevs() => await Context.Channel.SendMessageAsync("", false, Embed("Developers", FindPeopleWithRoles("Developer"), new Color(255, 0, 0), "", ""));
+
+        [Command("phantomzone")]
+        public async Task PhantomZone() => await Context.Channel.SendMessageAsync("", false, Embed("Phantom Zoned People", FindPeopleWithRoles("Phantom Zone"), new Color(84, 110, 122), "", ""));
 
         [Command("leads")]
-        public async Task Leads()
-        {
-            await Context.Channel.SendMessageAsync("", false, Embed("Leads", FindPeopleWithRoles("Lead"), new Color(255, 165, 0), "", ""));
-        }
+        public async Task Leads() => await Context.Channel.SendMessageAsync("", false, Embed("Leads", FindPeopleWithRoles("Lead"), new Color(255, 165, 0), "", ""));
+        #endregion
 
         [Command("joined")]
         public async Task JoinedAt([Remainder]SocketGuildUser user)
@@ -438,16 +324,10 @@ namespace Gideon.Modules
         }
 
         [Command("created")]
-        public async Task Created([Remainder]SocketGuildUser user)
-        {
-            await Context.Channel.SendMessageAsync(user.CreatedAt.ToString());
-        }
+        public async Task Created([Remainder]SocketGuildUser user) => await Context.Channel.SendMessageAsync(user.CreatedAt.ToString());
 
         [Command("avatar")]
-        public async Task Avatar([Remainder]SocketGuildUser user)
-        {
-            await Context.Channel.SendMessageAsync(user.GetAvatarUrl());
-        }
+        public async Task Avatar([Remainder]SocketGuildUser user) => await Context.Channel.SendMessageAsync(user.GetAvatarUrl());
 
         #region Tecos Related Commands
 
@@ -480,6 +360,86 @@ namespace Gideon.Modules
         {
             await Config.TH.DisplayTecos(user, Context.Channel);
         }
+
+        // Give Tecos to another user (not spawning them)
+        [Command("tecos give")]
+        public async Task GiveTecos(SocketGuildUser user, [Remainder]int amount)
+        {
+            await Context.Channel.SendMessageAsync("", false, Embed("Tecos", Config.TH.GiveTecos((SocketGuildUser)Context.User, user, amount), new Color(215, 154, 14), "", ""));
+        }
+
+        // Leaderboard Shortcut
+        [Command("lb tecos")]
+        public async Task TecosLBShortcut()
+        {
+            await TecosLeaderboard();
+        }
+
+        [Command("leaderboard tecos")]
+        public async Task TecosLeaderboard()
+        {
+            List<int> list = new List<int>();
+            for (int i = 0; i < Context.Guild.Users.Count; i++)
+            {
+                list.Add(UserAccounts.GetAccount(Context.Guild.Users.ElementAt(i)).Tecos);
+            }
+
+            int[] MostTecosArray = new int[5];
+            int indexMin = 0;
+            var IntArray = list.ToArray();
+            MostTecosArray[indexMin] = IntArray[0];
+            int min = MostTecosArray[indexMin];
+
+            for (int i = 1; i < IntArray.Length; i++)
+            {
+                if (i < 5)
+                {
+                    MostTecosArray[i] = IntArray[i];
+                    if (MostTecosArray[i] < min)
+                    {
+                        min = MostTecosArray[i];
+                        indexMin = i;
+                    }
+                }
+                else if (IntArray[i] > min)
+                {
+                    min = IntArray[i];
+                    MostTecosArray[indexMin] = min;
+                    for (int r = 0; r < 5; r++)
+                    {
+                        if (MostTecosArray[r] < min)
+                        {
+                            min = MostTecosArray[r];
+                            indexMin = r;
+                        }
+                    }
+                }
+            }
+
+            var embed = new EmbedBuilder();
+            embed.WithTitle("Tecos Leaderboard");
+            embed.WithColor(new Color(215, 154, 14));
+
+            Array.Sort(MostTecosArray);
+            Array.Reverse(MostTecosArray);
+            List<SocketGuildUser> PeopleOnLB = new List<SocketGuildUser>();
+            for (int i = 0; i < 5; i++)
+            {
+                for (int n = 0; n < Context.Guild.Users.Count; n++)
+                {
+                    if (UserAccounts.GetAccount(Context.Guild.Users.ElementAt(n)).Tecos == MostTecosArray[i] && !PeopleOnLB.Contains(Context.Guild.Users.ElementAt(n)))
+                    {
+                        string name = Context.Guild.Users.ElementAt(n).Nickname != null ? Context.Guild.Users.ElementAt(n).Nickname : Context.Guild.Users.ElementAt(n).Username;
+                        embed.AddField($"{i + 1} - {name}", MostTecosArray[i] + " Tecos");
+                        PeopleOnLB.Add(Context.Guild.Users.ElementAt(n));
+                        break;
+                    }
+                }
+            }
+
+            await Context.Channel.SendMessageAsync("", false, embed);
+        }
+
         #endregion
 
         [Command("stats")]
@@ -533,10 +493,7 @@ namespace Gideon.Modules
         }
 
         [Command("warns")]
-        public async Task ViewWarns(SocketGuildUser user)
-        {
-            await Context.Channel.SendMessageAsync("", false, new Utilities().AllWarnsEmbed(user, UserAccounts.GetAccount(user)));
-        }
+        public async Task ViewWarns(SocketGuildUser user) => await Context.Channel.SendMessageAsync("", false, new Utilities().AllWarnsEmbed(user, UserAccounts.GetAccount(user)));
 
         [Command("warns remove")]
         public async Task RemoveWarn(SocketGuildUser user, [Remainder]string number)
@@ -564,10 +521,7 @@ namespace Gideon.Modules
         }
 
         [Command("gideon")]
-        public async Task GideonGreet()
-        {
-            await Context.Channel.SendMessageAsync($"Greetings. How may I be of service, {Context.User.Mention}?\n!help");
-        }
+        public async Task GideonGreet() => await Context.Channel.SendMessageAsync($"Greetings. How may I be of service, {Context.User.Mention}?\n!help");
 
         [Command("movie")]
         public async Task SearchMovie([Remainder]string search)
@@ -621,6 +575,12 @@ namespace Gideon.Modules
 
             await Context.Channel.SendMessageAsync("", false, embed);
         }
+
+        [Command("source")]
+        public async Task GetSourceCode1() => await Context.Channel.SendMessageAsync("https://github.com/WilliamWelsh/GideonBot");
+
+        [Command("sourcode")]
+        public async Task GetSourceCode2() => await Context.Channel.SendMessageAsync("https://github.com/WilliamWelsh/GideonBot");
 
         [Command("help")]
         public async Task Help()

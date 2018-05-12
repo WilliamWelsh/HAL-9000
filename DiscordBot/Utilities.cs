@@ -1,12 +1,11 @@
-﻿// Contains 
+﻿using Discord;
+using System.IO;
+using System.Net;
+using System.Linq;
+using System.Drawing;
 using ColorThiefDotNet;
-using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace Gideon

@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System.IO;
 using Newtonsoft.Json;
-using System.IO;
+using System.Collections.Generic;
 
 namespace Gideon
 {
@@ -19,9 +19,6 @@ namespace Gideon
             return JsonConvert.DeserializeObject<List<UserAccount>>(json);
         }
 
-        public static bool SaveExists(string filePath)
-        {
-            return File.Exists(filePath);
-        }
+        public static bool SaveExists(string filePath) => File.Exists(filePath);
     }
 }

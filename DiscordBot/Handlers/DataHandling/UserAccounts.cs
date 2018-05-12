@@ -1,6 +1,6 @@
-﻿using Discord.WebSocket;
+﻿using System.Linq;
+using Discord.WebSocket;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Gideon
 {
@@ -23,15 +23,9 @@ namespace Gideon
             }
         }
 
-        public static void SaveAccounts()
-        {
-            DataStoreage.SaveUserAccounts(accounts, accountsFile);
-        }
+        public static void SaveAccounts() => DataStoreage.SaveUserAccounts(accounts, accountsFile);
 
-        public static UserAccount GetAccount(SocketUser user)
-        {
-            return GetOrCreateUserAccount(user.Id);
-        }
+        public static UserAccount GetAccount(SocketUser user) => GetOrCreateUserAccount(user.Id);
 
         private static UserAccount GetOrCreateUserAccount(ulong id)
         {

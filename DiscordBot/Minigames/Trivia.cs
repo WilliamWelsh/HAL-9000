@@ -1,11 +1,11 @@
-﻿using Discord;
+﻿using System;
+using Discord;
+using System.Linq;
+using Gideon.Modules;
 using Discord.Commands;
 using Discord.WebSocket;
-using Gideon.Modules;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Gideon.Minigames
 {

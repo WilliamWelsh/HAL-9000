@@ -1,11 +1,10 @@
-﻿using Discord.Commands;
+﻿using System;
 using Discord;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Discord.Commands;
 using Discord.WebSocket;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Gideon.Minigames
 {
@@ -79,14 +78,12 @@ namespace Gideon.Minigames
             await context.Channel.SendMessageAsync("", false, Embed($"{newPlayer.Mention} has joined as \"{letter}\"!\n\nWaiting for {Players.ElementAt(0).user.Mention} to play...\n\n`!put #` - Put your letter at whichever slot number # you choose.\n\n{WriteBoard()}", ""));
         }
 
-        public string WriteBoard()
-        {
-            // Has to be indented this way to comply with Discord's code tags/Markdwon
-            return $@"```
+        public string WriteBoard() =>
+            // Has to be indented this way to comply with Discord's code tags/Markdown
+            $@"```
 |{SlotValues[0]}|{SlotValues[1]}|{SlotValues[2]}|
 |{SlotValues[3]}|{SlotValues[4]}|{SlotValues[5]}|
 |{SlotValues[6]}|{SlotValues[7]}|{SlotValues[8]}|```";
-        }
 
         public async Task PutLetter(SocketCommandContext context, string input)
         {

@@ -11,10 +11,7 @@ namespace Gideon
             lock (getrandom) { return getrandom.Next(min, max); }
         }
 
-        public string GetRandomPic(ref string[] source)
-        {
-            return source[GetRandomNumber(0, source.Length)];
-        }
+        public string GetRandomPic(ref string[] source) => source[GetRandomNumber(0, source.Length)];
 
         public string[] Michael = {
                 "http://digitalspyuk.cdnds.net/17/29/980x490/landscape-1500763587-trek3.jpg",

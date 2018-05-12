@@ -1,8 +1,8 @@
-﻿using Gideon.Minigames;
+﻿using System.IO;
 using Gideon.Modules;
 using Newtonsoft.Json;
+using Gideon.Minigames;
 using System.Collections.Generic;
-using System.IO;
 
 namespace Gideon
 {
@@ -28,8 +28,7 @@ namespace Gideon
 
             if (!File.Exists(configFolder + "/" + configFile))
             {
-                bot = new BotConfig();
-                bot.allowedChannels = new List<string>();
+                bot = new BotConfig { allowedChannels = new List<string>() };
                 string json = JsonConvert.SerializeObject(bot, Formatting.Indented);
                 File.WriteAllText(configFolder + "/" + configFile, json);
             }

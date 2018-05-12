@@ -1,6 +1,6 @@
-﻿using Discord.WebSocket;
+﻿using System;
 using Discord;
-using System;
+using Discord.WebSocket;
 using System.Threading.Tasks;
 
 namespace Gideon
@@ -16,10 +16,7 @@ namespace Gideon
         public async Task StartAsync()
         {
             if (Config.bot.DisordBotToken == "" || Config.bot.DisordBotToken == null) return;
-            _client = new DiscordSocketClient(new DiscordSocketConfig
-            {
-                LogLevel = LogSeverity.Verbose
-            });
+            _client = new DiscordSocketClient(new DiscordSocketConfig { LogLevel = LogSeverity.Verbose });
             _client.Log += Log;
             await _client.LoginAsync(TokenType.Bot, Config.bot.DisordBotToken);
             await _client.StartAsync();
@@ -28,9 +25,6 @@ namespace Gideon
             await Task.Delay(-1);
         }
 
-        private async Task Log(LogMessage msg)
-        {
-            Console.WriteLine(msg.Message);
-        }
+        private async Task Log(LogMessage msg) => Console.WriteLine(msg.Message);
     }
 }

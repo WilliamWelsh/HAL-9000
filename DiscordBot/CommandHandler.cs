@@ -1,13 +1,11 @@
-﻿using Discord.WebSocket;
-using Discord.Commands;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Reflection;
+﻿using System;
 using Discord;
+using System.Linq;
 using Gideon.Minigames;
-using System.Collections.Generic;
-using Gideon.Modules;
+using Discord.Commands;
+using Discord.WebSocket;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Gideon
 {
@@ -53,10 +51,7 @@ namespace Gideon
             return false;
         }
 
-        public void StopPayingAttention()
-        {
-            PayAttentionToUserDone = true;
-        }
+        public void StopPayingAttention() => PayAttentionToUserDone = true;
 
         bool isRespectedPlus(SocketCommandContext c, SocketGuildUser u)
         {
@@ -205,10 +200,11 @@ namespace Gideon
                 return;
             }
 
-            if (m == "!reset roulette")
+            if (m == "!reset rr")
             {
                 if (!isRespectedPlus(context, (SocketGuildUser)msg.Author)) return;
-                //TODO
+                await msg.Channel.SendMessageAsync($"{context.User.Mention} has reset Russian Roulette.");
+                Config.RR.Reset();
                 return;
             }
 
