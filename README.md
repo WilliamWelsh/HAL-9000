@@ -1,5 +1,5 @@
 # Gideon Bot
-[<img src="https://discordapp.com/api/guilds/333843634606702602/widget.png?style=shield">](https://discord.gg/red)  
+[<img src="https://discordapp.com/api/guilds/333843634606702602/widget.png?style=shield">](https://discord.gg/Rt72SMf)  
 A multi-purpose Discord bot written in C# for my friend's Discord server. The bot is themed and tailored for this specific server. This bot has several uses such as games, moderation tools, useful tools and resources, and pointless statistical data.
 
 ## Commands
@@ -20,6 +20,8 @@ A multi-purpose Discord bot written in C# for my friend's Discord server. The bo
 `!joined` View when you joined the server.  
 `!created` View when you created your account.  
 #### Roles
+`!onlinestaff` View current online staff members.  
+`!director` View the Director.  
 `!leads` View members with the "Lead" role.  
 `!devs` or `!developers` View members with the "Developer" role.  
 `!helpers` View members with the "Helper" role.  
@@ -33,10 +35,18 @@ A multi-purpose Discord bot written in C# for my friend's Discord server. The bo
 `!rr 2` Start a game of Russian Roulette with two players.  
 `!ttt` Start a game of Tic-Tac-Toe.  
 #### Extras
-`!tecos` View your Tecos balance.  
 `!tecos @mentionedUser` View someone's Tecos balance.  
 `!lb tecos` View the leaderboard for Tecos.  
 `!movie (movie name)` Get stats for a movie.  
 `!tv (tv show name)` Get stats for a TV show.  
 `!mock (text to mock)` Mock some text like that one Spongebob meme.  
 `!someone` Mention a random user.  
+`!source` or `!sourcecode` View Gideon's source code.  
+#### Misc and Notes
+`!time (user)` (limited) View the local time for a user.  
+`!dev time` View the local time for the developers.
+`!alani` Posts a random picture of Alani.  
+`!constantine` Posts a random picture of Constantine.  
+`lennyface` Posts a lennyface.  
+Gideon tries to automatically answer a variety of questions.  
+Gideon automatically removes messages that contain banned words.  
