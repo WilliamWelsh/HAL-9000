@@ -1,13 +1,13 @@
 ﻿using System;
 using Discord;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
 using Discord.Commands;
 using Gideon.Minigames;
 using Discord.WebSocket;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Net.Http;
-using System.IO;
 
 namespace Gideon.Handlers
 {
@@ -58,8 +58,7 @@ namespace Gideon.Handlers
         [Command("addallowedchannel")]
         public async Task AddAllowedChannel([Remainder]string channel)
         {
-            if (Context.User.ToString() != "admin#0001")
-                return;
+            if (Context.User.Id != 354458973572956160) return;
             Config.ModifyChannelWhitelist(channel, true);
             await Context.Channel.SendMessageAsync($"#{channel} has been added to the whitelist.");
         }
@@ -67,8 +66,7 @@ namespace Gideon.Handlers
         [Command("removeallowedchannel")]
         public async Task RemoveAllowedChannel([Remainder]string channel)
         {
-            if (Context.User.ToString() != "admin#0001")
-                return;
+            if (Context.User.Id != 354458973572956160) return;
             Config.ModifyChannelWhitelist(channel, false);
             await Context.Channel.SendMessageAsync($"#{channel} has been removed to the whitelist.");
         }
@@ -205,8 +203,9 @@ namespace Gideon.Handlers
                     letters[n] = char.ToUpper(letters[n]);
                 }
                 string new_s = new string(letters);
+                string name = ((SocketGuildUser)Context.User).Nickname ?? Context.User.Username;
 
-                await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("", new_s, new Color(255, 255, 0), $"Mocked by {Context.User}", "http://i0.kym-cdn.com/photos/images/masonry/001/255/479/85b.png"));
+                await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("", new_s, new Color(255, 255, 0), $"Mocked by {name}", "http://i0.kym-cdn.com/photos/images/masonry/001/255/479/85b.png"));
                 return;
             }
             
@@ -439,56 +438,29 @@ namespace Gideon.Handlers
                 await Context.Channel.SendMessageAsync($"Date updated. To remove, set it to `n/a`. Preview:\nThe next video comes out { Config.botResources.nextVideoDate}.");
         }
 
+        // View local time for yourself (not sure why)
+        [Command("time")]
+        public async Task ViewTime() => await Config.StatsHandler.DisplayTime(Context, (SocketGuildUser)Context.User);
+
+        // View local time for a user
+        [Command("time")]
+        public async Task ViewTime(SocketGuildUser user) => await Config.StatsHandler.DisplayTime(Context, user);
+
+        // View your country (not sure why)
+        [Command("country")]
+        public async Task ViewCountry() => await Config.StatsHandler.DisplayCountry(Context, (SocketGuildUser)Context.User);
+
+        // View a User's country
+        [Command("country")]
+        public async Task ViewCountry(SocketGuildUser user) => await Config.StatsHandler.DisplayCountry(Context, user);
+
         // See stats for yourself
         [Command("stats")]
-        public async Task Stats() => await Stats((SocketGuildUser)Context.User);
+        public async Task DisplayUserStats() => await DisplayUserStats((SocketGuildUser)Context.User);
 
         // See stats for a certain user
         [Command("stats")]
-        public async Task Stats([Remainder]SocketGuildUser user)
-        {
-            var embed = new EmbedBuilder();
-            embed.WithTitle("Stats for " + user.ToString());
-            embed.AddField("Created", Config.StatsHandler.GetCreatedDate(user));
-            embed.AddField("Joined", Config.StatsHandler.GetJoinedDate(user));
-
-            string nick = user.Nickname ?? "none";
-            embed.AddField("Nickname", nick);
-
-            string roles = "";
-            foreach (SocketRole r in user.Roles) roles += r.ToString() + ", ";
-            if (roles == "@everyone, ")
-            {
-                roles = "none";
-            }
-            else
-            {
-                roles = roles.Substring(11, roles.Length - 11);
-                roles = roles.Substring(0, roles.Length - 2);
-            }
-            embed.AddField("Roles", roles);
-
-            var account = UserAccounts.GetAccount(user);
-            embed.AddField("Tecos", account.Tecos.ToString("#,##0"));
-            embed.AddField("Warnings", account.Warns);
-            embed.AddField("Nationality", account.nationality);
-
-            switch (account.localTime)
-            {
-                case 999:
-                    embed.AddField("Local Time", "Not set.");
-                    break;
-                default:
-                    DateTime t = DateTime.Now.AddHours(account.localTime);
-                    embed.AddField("Local Time", $"{t.ToString("h:mm tt, dddd, MMMM d")}");
-                    break;
-            }
-
-            embed.WithColor(Config.Utilities.DomColorFromURL(user.GetAvatarUrl()));
-            embed.WithThumbnailUrl(user.GetAvatarUrl());
-
-            await Context.Channel.SendMessageAsync("", false, embed);
-        }
+        public async Task DisplayUserStats([Remainder]SocketGuildUser user) => await Config.StatsHandler.DisplayUserStats(Context, user);
 
         // View custom server emotes
         [Command("emotes")]
@@ -504,19 +476,7 @@ namespace Gideon.Handlers
 
         // View server stats
         [Command("serverstats")]
-        public async Task ServerStats()
-        {
-            var embed = new EmbedBuilder();
-            embed.WithTitle(Context.Guild.Name);
-            embed.AddField("Created", Context.Guild.CreatedAt.ToString("dddd, MMMM d, yyyy"));
-            embed.AddField("Owner", Context.Guild.Owner.Mention);
-            embed.AddField("Emotes", Context.Guild.Emotes.Count);
-            embed.AddField("Members", Context.Guild.MemberCount.ToString("#,##0"));
-            embed.WithColor(new Utilities().DomColorFromURL(Context.Guild.IconUrl));
-            embed.WithThumbnailUrl(Context.Guild.IconUrl);
-
-            await Context.Channel.SendMessageAsync("", false, embed);
-        }
+        public async Task ServerStats() => await Config.StatsHandler.DisplayServerStats(Context);
 
         // Set the time for a user
         [Command("time set")]
@@ -530,12 +490,12 @@ namespace Gideon.Handlers
         }
 
         // Set the nationality for a user
-        [Command("nationality set")]
-        public async Task UserNationalitySet(SocketGuildUser target, [Remainder]string name)
+        [Command("country set")]
+        public async Task UserSetCountry(SocketGuildUser target, [Remainder]string name)
         {
             if (!UserAccounts.GetAccount(Context.User).superadmin) return;
             UserAccount targetAccount = UserAccounts.GetAccount(target);
-            targetAccount.nationality = name;
+            targetAccount.Country = name;
             UserAccounts.SaveAccounts();
             await Context.Channel.SendMessageAsync("User updated.");
         }

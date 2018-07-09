@@ -44,7 +44,7 @@ namespace Gideon
                 UserID = id,
                 superadmin = false,
                 localTime = 999,
-                nationality = "Not set.",
+                Country = "Not set.",
                 Tecos = 0,
                 hasDoubleTecoBoost = false
             };

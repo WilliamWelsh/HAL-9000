@@ -156,7 +156,7 @@
     <Compile Include="Handlers\StatsHandler.cs" />
     <Compile Include="Handlers\WarnHandler.cs" />
     <Compile Include="ImageFetcher.cs" />
-    <Compile Include="MediaFetchHandler.cs" />
+    <Compile Include="Handlers\MediaFetchHandler.cs" />
     <Compile Include="Minigames\8ball.cs" />
     <Compile Include="Minigames\NumberGuess.cs" />
     <Compile Include="Minigames\RussianRoulette.cs" />
