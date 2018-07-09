@@ -50,7 +50,11 @@ A multi-purpose Discord bot written in C# for my friend's Discord server. The bo
 `lennyface` Posts a lennyface.  
 Gideon tries to automatically answer a variety of questions.  
 <<<<<<< HEAD
+<<<<<<< HEAD
 Gideon automatically removes messages that contain banned words.  
+=======
+Gideon automatically removes messages that contain banned words.  
+>>>>>>> fe452489b807d0040961146d3f0b27b646200102
 =======
 Gideon automatically removes messages that contain banned words.  
 >>>>>>> fe452489b807d0040961146d3f0b27b646200102
