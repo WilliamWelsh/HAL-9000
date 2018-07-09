@@ -1,6 +1,3 @@
-C:\Users\William\source\repos\GideonBot\DiscordBot\bin\Debug\DiscordBot.exe.config
-C:\Users\William\source\repos\GideonBot\DiscordBot\bin\Debug\DiscordBot.exe
-C:\Users\William\source\repos\GideonBot\DiscordBot\bin\Debug\DiscordBot.pdb
 C:\Users\William\source\repos\GideonBot\DiscordBot\bin\Debug\Microsoft.Win32.Primitives.dll
 C:\Users\William\source\repos\GideonBot\DiscordBot\bin\Debug\netstandard.dll
 C:\Users\William\source\repos\GideonBot\DiscordBot\bin\Debug\System.AppContext.dll
@@ -125,8 +122,11 @@ C:\Users\William\source\repos\GideonBot\DiscordBot\bin\Debug\Newtonsoft.Json.xml
 C:\Users\William\source\repos\GideonBot\DiscordBot\bin\Debug\System.Collections.Immutable.xml
 C:\Users\William\source\repos\GideonBot\DiscordBot\bin\Debug\System.Diagnostics.DiagnosticSource.xml
 C:\Users\William\source\repos\GideonBot\DiscordBot\bin\Debug\System.Interactive.Async.xml
-C:\Users\William\source\repos\GideonBot\DiscordBot\obj\Debug\DiscordBot.exe.config
 C:\Users\William\source\repos\GideonBot\DiscordBot\obj\Debug\GideonBot.csproj.CoreCompileInputs.cache
-C:\Users\William\source\repos\GideonBot\DiscordBot\obj\Debug\DiscordBot.exe
-C:\Users\William\source\repos\GideonBot\DiscordBot\obj\Debug\DiscordBot.pdb
 C:\Users\William\source\repos\GideonBot\DiscordBot\obj\Debug\GideonBot.csprojResolveAssemblyReference.cache
+C:\Users\William\source\repos\GideonBot\DiscordBot\obj\Debug\Gideon.exe.config
+C:\Users\William\source\repos\GideonBot\DiscordBot\bin\Debug\Gideon.exe.config
+C:\Users\William\source\repos\GideonBot\DiscordBot\bin\Debug\Gideon.exe
+C:\Users\William\source\repos\GideonBot\DiscordBot\bin\Debug\Gideon.pdb
+C:\Users\William\source\repos\GideonBot\DiscordBot\obj\Debug\Gideon.exe
+C:\Users\William\source\repos\GideonBot\DiscordBot\obj\Debug\Gideon.pdb

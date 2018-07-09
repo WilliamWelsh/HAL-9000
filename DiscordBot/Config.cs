@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using Gideon.Handlers;
 using Newtonsoft.Json;
-using Gideon.Minigames;
 using System.Collections.Generic;
 
 namespace Gideon
@@ -10,14 +9,18 @@ namespace Gideon
     {
         private const string configFolder = "Resources";
         private const string configFile = "config.json";
+        private const string resourcesFile = "resources.json";
+        private const string questionsFile = "questions.json";
 
         public static BotConfig bot;
+        public static BotResources botResources;
+        public static BotQuestions botQuestions;
 
-        public static string[] Staff = { "admin#0001", "Gannon#7623", "Cottage#5796", "Tecosaurus#6343",
-                                        "Ralph282#9943", "Professor Zoom#6274", "Galva_#0939", "NoahCody#0214",
-                                        "Renz#3903", "KaraZor#8671", "Jack_Hartley97#6754", "Jack_Hartley97#7912",
-                                        "Jonathan TRG#2932" };
-
+        public static QuestionHandler QuestionHandler = new QuestionHandler();
+        public static ImageFetcher ImageFetcher = new ImageFetcher();
+        public static Utilities Utilities = new Utilities();
+        public static WarnHandler WarnHandler = new WarnHandler();
+        public static StatsHandler StatsHandler = new StatsHandler();
         public static TecosHandler TH = new TecosHandler();
         public static MinigameHandler MinigameHandler = new MinigameHandler();
 
@@ -28,7 +31,6 @@ namespace Gideon
 
             if (!File.Exists(configFolder + "/" + configFile))
             {
-                bot = new BotConfig { allowedChannels = new List<string>() };
                 string json = JsonConvert.SerializeObject(bot, Formatting.Indented);
                 File.WriteAllText(configFolder + "/" + configFile, json);
             }
@@ -37,16 +39,45 @@ namespace Gideon
                 string json = File.ReadAllText(configFolder + "/" + configFile);
                 bot = JsonConvert.DeserializeObject<BotConfig>(json);
             }
+
+            if (!File.Exists(configFolder + "/" + resourcesFile))
+            {
+                string json = JsonConvert.SerializeObject(botResources, Formatting.Indented);
+                File.WriteAllText(configFolder + "/" + resourcesFile, json);
+            }
+            else
+            {
+                string json = File.ReadAllText(configFolder + "/" + resourcesFile);
+                botResources = JsonConvert.DeserializeObject<BotResources>(json);
+            }
+
+            if (!File.Exists(configFolder + "/" + questionsFile))
+            {
+                string json = JsonConvert.SerializeObject(botQuestions, Formatting.Indented);
+                File.WriteAllText(configFolder + "/" + questionsFile, json);
+            }
+            else
+            {
+                string json = File.ReadAllText(configFolder + "/" + questionsFile);
+                botQuestions = JsonConvert.DeserializeObject<BotQuestions>(json);
+            }
         }
 
         public static void ModifyChannelWhitelist(string channel, bool isAdding)
         {
             if(isAdding)
-                bot.allowedChannels.Add(channel);
+                botResources.allowedChannels.Add(channel);
             else
-                bot.allowedChannels.Remove(channel);
-            string json = JsonConvert.SerializeObject(bot, Formatting.Indented);
-            File.WriteAllText(configFolder + "/" + configFile, json);
+                botResources.allowedChannels.Remove(channel);
+            string json = JsonConvert.SerializeObject(botResources, Formatting.Indented);
+            File.WriteAllText(configFolder + "/" + resourcesFile, json);
+        }
+
+        public static void ModifyNextVideoDate(string input)
+        {
+            botResources.nextVideoDate = input;
+            string json = JsonConvert.SerializeObject(botResources, Formatting.Indented);
+            File.WriteAllText(configFolder + "/" + resourcesFile, json);
         }
     }
 
@@ -55,7 +86,24 @@ namespace Gideon
         public string DisordBotToken;
         public string MovieTVAPIKey;
         public string YouTubeAPIKey;
-        public string cmdPrefix;
+    }
+
+    public struct BotResources
+    {
+        public string nextVideoDate;
+        public List<string> bannedWords;
         public List<string> allowedChannels;
+    }
+
+    public struct BotQuestions
+    {
+        public List<string> WhenIsNextVideo;
+        public List<string> HowMuchDoesGameCost;
+        public List<string> WhichPlatform;
+        public List<string> IsBlackLightningInGame;
+        public List<string> IsBatmanInGame;
+        public List<string> IsBatwomanInGame;
+        public List<string> WhereIsDownload;
+        public List<string> WhenDoesGameComeOut;
     }
 }

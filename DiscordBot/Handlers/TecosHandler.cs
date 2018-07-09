@@ -67,12 +67,12 @@ namespace Gideon.Handlers
         {
             string name = user.Nickname != null ? user.Nickname : user.Username;
             string footer = UserAccounts.GetAccount(user).hasDoubleTecoBoost ? "Double Teco Boost is active." : "";
-            await channel.SendMessageAsync("", false, Utilities.Embed($"{name}", $"{UserAccounts.GetAccount(user).Tecos} Tecos", EmbedColor, footer, TecosIcon));
+            await channel.SendMessageAsync("", false, Config.Utilities.Embed($"{name}", $"{UserAccounts.GetAccount(user).Tecos} Tecos", EmbedColor, footer, TecosIcon));
         }
 
         public async Task DisplayTecosStore(SocketGuildUser user, ISocketMessageChannel channel)
         {
-            await channel.SendMessageAsync("", false, Utilities.Embed($"Tecos Store", $"Double Teco Boost - ??? Tecos\n`Doubles your Tecos income for 24 hours!`", EmbedColor, $"You have {UserAccounts.GetAccount(user).Tecos} Tecos.", TecosIcon));
+            await channel.SendMessageAsync("", false, Config.Utilities.Embed($"Tecos Store", $"Double Teco Boost - ??? Tecos\n`Doubles your Tecos income for 24 hours!`", EmbedColor, $"You have {UserAccounts.GetAccount(user).Tecos} Tecos.", TecosIcon));
         }
     }
 }

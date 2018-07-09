@@ -1,7 +1,6 @@
 ﻿using System;
 using Discord;
 using System.Linq;
-using Gideon.Handlers;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
@@ -11,8 +10,6 @@ namespace Gideon.Minigames
 {
     class Trivia
     {
-        TecosHandler TH = new TecosHandler();
-
         string[] Questions = { "What is Beebo the God of",
         "What is name of the CCPD Captain",
         "Which Earth is Accelerated Man on",
@@ -202,6 +199,8 @@ namespace Gideon.Minigames
         string correctAnswer;
         string triviaMode;
 
+        DateTime StartTime;
+
         List<SocketGuildUser> PlayersAnswered = new List<SocketGuildUser>();
 
         Embed Embed(string Description, string Footer)
@@ -223,7 +222,12 @@ namespace Gideon.Minigames
 
         public async Task TryToStartTrivia(SocketGuildUser user, SocketCommandContext context, string input)
         {
-            if (isTriviaBeingPlayed)
+            if (context.Channel.Name != "minigames")
+            {
+                await context.Channel.SendMessageAsync($"Please use the #minigames chat for that, {context.User.Mention}.");
+                return;
+            }
+            if (isTriviaBeingPlayed && (DateTime.Now - StartTime).TotalSeconds < 60)
             {
                 await context.Channel.SendMessageAsync("", false, Embed($"Sorry, {userPlaying.Mention} is currently playing.\nYou can request a Respected+ to `!reset trivia` if there is an issue.", ""));
                 return;
@@ -233,7 +237,17 @@ namespace Gideon.Minigames
                 await context.Channel.SendMessageAsync("", false, Embed("Please select a mode.\n\n`!trivia solo` - Play alone\n\n`!trivia all` - First to answer wins.", ""));
                 return;
             }
+            if (isTriviaBeingPlayed && (DateTime.Now - StartTime).TotalSeconds > 60)
+            {
+                await CancelGame(userPlaying, context);
+            }
             await StartTrivia(user, context, input.Replace("trivia ", ""));
+        }
+
+        private async Task CancelGame(SocketGuildUser user, SocketCommandContext context)
+        {
+            Config.TH.AdjustTecos(user, -1);
+            await context.Channel.SendMessageAsync("", false, Embed($"{user.Mention} took too long to answer and lost 1 teco.", ""));
         }
 
         private async Task StartTrivia(SocketGuildUser user, SocketCommandContext context, string mode)
@@ -241,6 +255,7 @@ namespace Gideon.Minigames
             userPlaying = user;
             triviaMode = mode;
             isTriviaBeingPlayed = true;
+            StartTime = DateTime.Now;
             int QuestionNum = GetRandomNumber(0, Questions.Length);
 
             string[] Fakes = {"","","",""};
@@ -294,12 +309,12 @@ namespace Gideon.Minigames
                 if (input == correctAnswer)
                 {
                     await context.Channel.SendMessageAsync("", false, Embed("Correct.", $"{name} has been awarded 1 Teco."));
-                    TH.AdjustTecos(user, 1);
+                    Config.TH.AdjustTecos(user, 1);
                     ResetTrivia();
                     return;
                 }
                 await context.Channel.SendMessageAsync("", false, Embed($"Wrong, it is {correctAnswer.ToUpper()}.", $"{name} lost 1 Teco."));
-                TH.AdjustTecos(user, -1);
+                Config.TH.AdjustTecos(user, -1);
                 ResetTrivia();
                 return;
             }
@@ -319,7 +334,7 @@ namespace Gideon.Minigames
                 {
                     string name = user.Nickname != null ? user.Nickname : user.ToString();
                     await context.Channel.SendMessageAsync("", false, Embed($"Correct, {user.Mention} won!", $"{name} has been awarded 1 Teco."));
-                    TH.AdjustTecos(user, 1);
+                    Config.TH.AdjustTecos(user, 1);
                     ResetTrivia();
                     return;
                 }

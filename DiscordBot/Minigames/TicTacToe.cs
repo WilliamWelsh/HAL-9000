@@ -30,6 +30,11 @@ namespace Gideon.Minigames
 
         public async Task TryToStartGame(SocketCommandContext context, string input)
         {
+            if (context.Channel.Name != "minigames")
+            {
+                await context.Channel.SendMessageAsync($"Please use the #minigames chat for that, {context.User.Mention}.");
+                return;
+            }
             if (isGameGoing)
             {
                 await context.Channel.SendMessageAsync("", false, Embed("Sorry, but a game has already started.\nYou can request a Respected+ to `!reset ttt` if there is an issue.", ""));
@@ -64,7 +69,12 @@ namespace Gideon.Minigames
 
         public async Task TryToJoinGame(SocketCommandContext context)
         {
-            if(!isGameGoing)
+            if (context.Channel.Name != "minigames")
+            {
+                await context.Channel.SendMessageAsync($"Please use the #minigames chat for that, {context.User.Mention}.");
+                return;
+            }
+            if (!isGameGoing)
             {
                 await context.Channel.SendMessageAsync("", false, Embed("There is no game going.\n\nType `!ttt` to start one.", ""));
                 return;
@@ -87,6 +97,11 @@ namespace Gideon.Minigames
 
         public async Task PutLetter(SocketCommandContext context, string input)
         {
+            if (context.Channel.Name != "minigames")
+            {
+                await context.Channel.SendMessageAsync($"Please use the #minigames chat for that, {context.User.Mention}.");
+                return;
+            }
             if (!isGameGoing)
             {
                 await context.Channel.SendMessageAsync("", false, Embed("There is no game going.\n\nType `!ttt` to start one.", ""));

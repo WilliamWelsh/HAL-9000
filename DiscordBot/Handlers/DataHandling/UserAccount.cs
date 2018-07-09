@@ -7,8 +7,9 @@ namespace Gideon
         public ulong UserID { get; set; }
         public int Tecos { get; set; }
         public bool hasDoubleTecoBoost { get; set; }
-        public bool isKilledByThanos { get; set; }
-        public bool hasDoneThanosCommand { get; set; }
+        public bool superadmin { get; set; }
+        public int localTime { get; set; }
+        public string nationality { get; set; }
         public uint Warns { get; set; }
         public List<string> warnReasons = new List<string>();
         public List<string> Warners = new List<string>();

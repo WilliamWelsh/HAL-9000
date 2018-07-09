@@ -1,4 +1,5 @@
-﻿using Discord;
+﻿using System;
+using Discord;
 using System.IO;
 using System.Net;
 using System.Linq;
@@ -6,14 +7,20 @@ using System.Drawing;
 using ColorThiefDotNet;
 using Discord.Commands;
 using Discord.WebSocket;
-using System.Threading.Tasks;
 
 namespace Gideon
 {
     class Utilities
     {
+        // Get a true random number
+        private static readonly Random getrandom = new Random();
+        public int GetRandomNumber(int min, int max)
+        {
+            lock (getrandom) { return getrandom.Next(min, max); }
+        }
+
         // Generic Embed template
-        public static Embed Embed(string t, string d, Discord.Color c, string f, string thURL)
+        public Embed Embed(string t, string d, Discord.Color c, string f, string thURL)
         {
             var embed = new EmbedBuilder();
             embed.WithTitle(t);
@@ -49,145 +56,36 @@ namespace Gideon
             return new Discord.Color(r, g, b);
         }
 
-        // Get the warning thread as a variable
-        private ISocketMessageChannel warningThread(SocketCommandContext context)
+        // Return whether a user is Respected or higher
+        public bool isRespectedPlus(SocketCommandContext c, SocketGuildUser u)
         {
-            var channels = context.Guild.Channels;
-            SocketGuildChannel c = null;
-            foreach (SocketGuildChannel s in channels)
-            {
-                if (s.Name == "warning-thread") c = s;
-            }
-            return c as ISocketMessageChannel;
+            var Respected = c.Guild.Roles.FirstOrDefault(x => x.Name == "Respected");
+            var Helper = c.Guild.Roles.FirstOrDefault(x => x.Name == "Helpers");
+            var Developer = c.Guild.Roles.FirstOrDefault(x => x.Name == "Developer");
+            var Lead = c.Guild.Roles.FirstOrDefault(x => x.Name == "Lead");
+            var Director = c.Guild.Roles.FirstOrDefault(x => x.Name == "Director");
+            if (u.Roles.Contains(Respected) ||
+                u.Roles.Contains(Helper) ||
+                u.Roles.Contains(Developer) ||
+                u.Roles.Contains(Lead) ||
+                u.Roles.Contains(Director))
+                return true;
+            return false;
         }
 
-        // Update warn information to user_data.json
-        private void UpdateWarnDB(UserAccount account, string reason, string warner)
+        // Return whether a user is Helper or higher
+        public bool isHelperPlus(SocketCommandContext c, SocketGuildUser u)
         {
-            account.Warns++;
-            account.warnReasons.Add(reason);
-            account.Warners.Add(warner);
-            UserAccounts.SaveAccounts();
-        }
-
-        // Check if user needs to be kicked or banned
-        private async Task CheckWarnCount(UserAccount account, SocketCommandContext context, SocketGuildUser offender)
-        {
-            if (account.Warns == 3)
-            {
-                await KickAndNotify(context, offender, account, warningThread(context));
-                return;
-            }
-
-            if (account.Warns == 5)
-            {
-                await BanAndNotify(context, offender, account, warningThread(context));
-                return;
-            }
-        }
-
-        private Embed warnEmbed(string title, string description, string ThumbnailURL)
-        {
-            var embed = new EmbedBuilder();
-            embed.WithTitle(title);
-            embed.WithDescription(description);
-            embed.WithColor(new Discord.Color(227, 37, 39));
-            embed.WithThumbnailUrl(ThumbnailURL);
-            return embed;
-        }
-
-        public Embed AllWarnsEmbed(SocketGuildUser offender, UserAccount account)
-        {
-            var embed = new EmbedBuilder();
-
-            embed.WithTitle($"{offender}'s Warnings");
-            embed.WithColor(new Discord.Color(227, 37, 39));
-            embed.AddField("Total Warns", account.Warns);
-            embed.ThumbnailUrl = offender.GetAvatarUrl();
-
-            for (int i = 0; i < account.warnReasons.Count; i++)
-            {
-                embed.AddField("Warning " + (i + 1), "Warned by " + account.Warners[i] + " for " + account.warnReasons[i]);
-            }
-
-            return embed;
-        }
-
-        // Used to automatically warn people (@everyone, jukebox outside off topic)
-        public async Task AutoWarn(SocketCommandContext context, SocketGuildUser offender, string reason)
-        {
-            var warnThread = warningThread(context);
-
-            var embed = warnEmbed("Warning", $"{offender.Mention} was warned by Gideon for {reason}.", offender.GetAvatarUrl());
-            await warnThread.SendMessageAsync("", false, embed);
-            await context.Channel.SendMessageAsync("", false, embed);
-
-            await offender.SendMessageAsync("", false, warnEmbed("Warning", $"You were automatically warned for {reason}.\nPlease do not do this again.", offender.GetAvatarUrl()));
-
-            var account = UserAccounts.GetAccount(offender);
-            UpdateWarnDB(account, $"{offender.Mention} was warned by Gideon for {reason}.", "Gideon");
-            await CheckWarnCount(account, context, offender);
-        }
-
-        // Warn people with the !warn command
-        public async Task WarnUser(SocketCommandContext context, SocketGuildUser offender, string reason)
-        {
-            var account = UserAccounts.GetAccount(offender);
-            UpdateWarnDB(account, reason, context.User.ToString());
-
-            var embed = warnEmbed("Warning", $"{offender.Mention} was warned by {context.User.Mention} for {reason}.", offender.GetAvatarUrl());
-
-            await context.Channel.SendMessageAsync("", false, embed);
-
-            ISocketMessageChannel warnThread = warningThread(context);
-            await warnThread.SendMessageAsync("", false, embed);
-
-            await offender.SendMessageAsync("", false, warnEmbed("Warning", $"You were warned by {context.User.Mention} for {reason}.\n\nThis is warning {account.Warns}.\nThree warns is a kick, five is a ban.", context.User.GetAvatarUrl()));
-
-            await CheckWarnCount(account, context, offender);
-        }
-
-        public async Task KickAndNotify(SocketCommandContext context, SocketGuildUser offender, UserAccount account, ISocketMessageChannel warningThread)
-        {
-            var Director = context.Guild.Roles.FirstOrDefault(x => x.Name == "Director");
-            foreach (SocketGuildUser u in context.Guild.Users.ToArray())
-            {
-                if (u.Roles.Contains(Director))
-                {
-                    var embed = AllWarnsEmbed(offender, account);
-
-                    await offender.SendMessageAsync("", false, embed);
-                    await offender.SendMessageAsync("You were kicked for reaching 3 warnings. 2 more warnings (5), and you will be banned.\nPlease obey the rules.");
-                    await offender.KickAsync("You were kicked for reaching 3 warnings. 2 more warnings (5), and you will be banned. Please obey the rules.");
-                    await u.SendMessageAsync("", false, embed);
-                    await u.SendMessageAsync("[KICK] " + offender.ToString() + " has been kicked for reaching 3 warnings.");
-                    await warningThread.SendMessageAsync("[KICK] " + offender.ToString() + " has been kicked for reaching 3 warnings.");
-                    await context.Channel.SendMessageAsync("[KICK] " + offender.ToString() + " has been kicked for reaching 3 warnings.");
-                    return;
-                }
-            }
-        }
-
-        public async Task BanAndNotify(SocketCommandContext context, SocketGuildUser offender, UserAccount account, ISocketMessageChannel warningThread)
-        {
-            var Director = context.Guild.Roles.FirstOrDefault(x => x.Name == "Director");
-            foreach (SocketGuildUser u in context.Guild.Users.ToArray())
-            {
-                if (u.Roles.Contains(Director))
-                {
-                    var embed = AllWarnsEmbed(offender, account);
-
-                    await offender.SendMessageAsync("", false, embed);
-                    await offender.SendMessageAsync("You have been banned from the Crisis on Earth One Discord. You can appeal your ban on the Tecoverse Discord.\nhttps://discord.gg/yD7Rxnu");
-                    await offender.Guild.AddBanAsync(offender, 0);
-                    await u.SendMessageAsync("", false, embed);
-                    await u.SendMessageAsync("[BAN] " + offender.ToString() + " has been banned for reaching 5 warnings.");
-                    await warningThread.SendMessageAsync("", false, embed);
-                    await warningThread.SendMessageAsync("[BAN] " + offender.ToString() + " has been banned for reaching 5 warnings.");
-                    await context.Channel.SendMessageAsync("[BAN] " + offender.ToString() + " has been banned for reaching 5 warnings.");
-                    return;
-                }
-            }
+            var Helper = c.Guild.Roles.FirstOrDefault(x => x.Name == "Helpers");
+            var Developer = c.Guild.Roles.FirstOrDefault(x => x.Name == "Developer");
+            var Lead = c.Guild.Roles.FirstOrDefault(x => x.Name == "Lead");
+            var Director = c.Guild.Roles.FirstOrDefault(x => x.Name == "Director");
+            if (u.Roles.Contains(Helper) ||
+                u.Roles.Contains(Developer) ||
+                u.Roles.Contains(Lead) ||
+                u.Roles.Contains(Director))
+                return true;
+            return false;
         }
     }
 }

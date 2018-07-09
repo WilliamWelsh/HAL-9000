@@ -42,8 +42,9 @@ namespace Gideon
             var newAccount = new UserAccount()
             {
                 UserID = id,
-                isKilledByThanos = false,
-                hasDoneThanosCommand = false,
+                superadmin = false,
+                localTime = 999,
+                nationality = "Not set.",
                 Tecos = 0,
                 hasDoubleTecoBoost = false
             };

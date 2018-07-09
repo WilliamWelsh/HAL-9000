@@ -50,6 +50,11 @@ namespace Gideon.Minigames
 
         public async Task TryToStartGame(int RandomNumber, SocketGuildUser user, SocketCommandContext context, int players)
         {
+            if (context.Channel.Name != "minigames")
+            {
+                await context.Channel.SendMessageAsync($"Please use the #minigames chat for that, {context.User.Mention}.");
+                return;
+            }
             if (isGamingGoing) return;
             isGamingGoing = true;
             Number = RandomNumber;
@@ -64,6 +69,11 @@ namespace Gideon.Minigames
 
         public async Task JoinGame(SocketGuildUser user, SocketCommandContext context)
         {
+            if (context.Channel.Name != "minigames")
+            {
+                await context.Channel.SendMessageAsync($"Please use the #minigames chat for that, {context.User.Mention}.");
+                return;
+            }
             if (!isGamingGoing)
             {
                 await context.Channel.SendMessageAsync("", false, embed("There is no game currently going.\n\nType `!help ng` for Number Guess game help.", "", false));
@@ -90,6 +100,11 @@ namespace Gideon.Minigames
 
         public async Task TryToGuess(SocketGuildUser user, SocketCommandContext context, int input)
         {
+            if (context.Channel.Name != "minigames")
+            {
+                await context.Channel.SendMessageAsync($"Please use the #minigames chat for that, {context.User.Mention}.");
+                return;
+            }
             if (!isGamingGoing) return;
             if (PlayerSlots != Players.Count && PlayerSlots != 0)
                 return;

@@ -6,6 +6,8 @@ using Gideon.Minigames;
 using Discord.WebSocket;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.IO;
 
 namespace Gideon.Handlers
 {
@@ -20,18 +22,12 @@ namespace Gideon.Handlers
                                select (V.IndexOf(obj) != -1) ? X[V.IndexOf(obj)] : obj).Reverse().ToArray());
         }
 
+        _8ball _8ball = Config.MinigameHandler._8ball;
         TecosHandler TH = Config.TH;
         Trivia Trivia = Config.MinigameHandler.Trivia;
         NumberGuess NG = Config.MinigameHandler.NG;
         TicTacToe TTT = Config.MinigameHandler.TTT;
         RussianRoulette RR = Config.MinigameHandler.RR;
-
-        private static readonly Random getrandom = new Random();
-
-        public static int GetRandomNumber(int min, int max)
-        {
-            lock (getrandom) { return getrandom.Next(min, max); }
-        }
 
         private string FindPeopleWithRoles(string role)
         {
@@ -47,17 +43,18 @@ namespace Gideon.Handlers
             return desc;
         }
 
-        Embed Embed(string t, string d, Color c, string f, string thURL)
+        // For debugging
+        [Command("rolecolors")]
+        public async Task DisplayRoleColors()
         {
-            var embed = new EmbedBuilder();
-            embed.WithTitle(t);
-            embed.WithDescription(d);
-            embed.WithColor(c);
-            embed.WithFooter(f);
-            embed.WithThumbnailUrl(thURL);
-            return embed;
+            string s = "";
+            foreach (var x in Context.Guild.Roles)
+            {
+                s += $"{x.Name}, {x.Color}\n";
+            }
+            await Context.Channel.SendMessageAsync(s);
         }
-        
+
         [Command("addallowedchannel")]
         public async Task AddAllowedChannel([Remainder]string channel)
         {
@@ -76,8 +73,9 @@ namespace Gideon.Handlers
             await Context.Channel.SendMessageAsync($"#{channel} has been removed to the whitelist.");
         }
 
+        // Used to turn text upside down
         [Command("australia")]
-        public async Task AussieText([Remainder]string message) => await Context.Channel.SendMessageAsync("", false, Embed("Australian Translator", ToAussie(message), new Color(255, 140, 0), "Requested by " + Context.User, ""));
+        public async Task AussieText([Remainder]string message) => await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Australian Translator", ToAussie(message), new Color(255, 140, 0), "Requested by " + Context.User, ""));
 
         // Display a list of MiniGames
         [Command("games")]
@@ -136,7 +134,7 @@ namespace Gideon.Handlers
 
         // Play NG (2+ players)
         [Command("play ng")]
-        public async Task PlayNG(int input) => await NG.TryToStartGame(GetRandomNumber(1, 100), (SocketGuildUser)Context.User, Context, input);
+        public async Task PlayNG(int input) => await NG.TryToStartGame(Config.Utilities.GetRandomNumber(1, 100), (SocketGuildUser)Context.User, Context, input);
 
         // Join NG
         [Command("join ng")]
@@ -147,78 +145,12 @@ namespace Gideon.Handlers
         public async Task GuessNG(int input) => await NG.TryToGuess((SocketGuildUser)Context.User, Context, input);
         #endregion
 
-        #region Thanos Related Commands
-        [Command("thanos")]
-        public async Task Thanos([Remainder] SocketGuildUser user)
+        // Play 8ball
+        [Command("8ball")]
+        public async Task Play8Ball([Remainder]string question)
         {
-            var account = UserAccounts.GetAccount(user);
-            string u = user.Nickname != null ? user.Nickname : user.Username;
-            if (account.hasDoneThanosCommand)
-            {
-                switch (account.isKilledByThanos)
-                {
-                    case true:
-                        account.isKilledByThanos = true;
-                        await Context.Channel.SendMessageAsync("", false, Embed("Thanos' Mercy", $"{u} was slain by Thanos, for the good of the Universe.", new Color(120, 102, 140), "", "https://cdn.discordapp.com/attachments/339887750683688965/441112531788890114/image.jpg"));
-                        return;
-                    case false:
-                        account.isKilledByThanos = false;
-                        await Context.Channel.SendMessageAsync("", false, Embed("Thanos' Mercy", $"{user} was spared by Thanos.", new Color(120, 102, 140), "", "https://cdn.discordapp.com/attachments/339887750683688965/441112531788890114/image.jpg"));
-                        return;
-                }
-            }
-            else
-            {
-                await Context.Channel.SendMessageAsync("", false, Embed("Thanos' Mercy", $"{u} has not yet done the `!thanos` command.", new Color(120, 102, 140), "", "https://cdn.discordapp.com/attachments/339887750683688965/441112531788890114/image.jpg"));
-            }
+            await _8ball.Play8Ball(Context);
         }
-
-        [Command("thanoslist")]
-        public async Task ThanosList()
-        {
-            string dead = "";
-            foreach(SocketGuildUser user in Context.Guild.Users)
-            {
-                var account = UserAccounts.GetAccount(user);
-                if (account.isKilledByThanos)
-                    dead += user.ToString() + "\n";
-            }
-            await Context.Channel.SendMessageAsync("", false, Embed("People Killed", dead, new Color(120, 102, 140), "", "https://cdn.discordapp.com/attachments/339887750683688965/441112531788890114/image.jpg"));
-        }
-
-        [Command("thanos")]
-        public async Task Thanos()
-        {
-            var account = UserAccounts.GetAccount(Context.User as SocketGuildUser);
-            string user = (Context.User as SocketGuildUser).Nickname != null ? (Context.User as SocketGuildUser).Nickname : Context.User.Username;
-            if (!account.hasDoneThanosCommand)
-            {
-                account.hasDoneThanosCommand = true;
-
-                int i = GetRandomNumber(0, 100);
-                if (i <= 50)
-                {
-                    account.isKilledByThanos = true;
-                }
-                else
-                {
-                    account.isKilledByThanos = false;
-                }
-            }
-            UserAccounts.SaveAccounts();
-            switch (account.isKilledByThanos)
-            {
-                case true:
-                    account.isKilledByThanos = true;
-                    await Context.Channel.SendMessageAsync("", false, Embed("Thanos' Mercy", $"{user} was slain by Thanos, for the good of the Universe.", new Color(120, 102, 140), "", "https://cdn.discordapp.com/attachments/339887750683688965/441112531788890114/image.jpg"));
-                    return;
-                case false:
-                    account.isKilledByThanos = false;
-                    await Context.Channel.SendMessageAsync("", false, Embed("Thanos' Mercy", $"{user} was spared by Thanos.", new Color(120, 102, 140), "", "https://cdn.discordapp.com/attachments/339887750683688965/441112531788890114/image.jpg"));
-                    return;
-            }
-        }
-        #endregion
 
         [Command("dev")]
         public async Task MakeDev([Remainder] SocketGuildUser user)
@@ -238,21 +170,31 @@ namespace Gideon.Handlers
             await user.RemoveRoleAsync(rolea);
         }
 
+        // Make Gideon say something
         [Command("say")]
-        public async Task say([Remainder]string message)
+        public async Task Say([Remainder]string message)
         {
-            if (!(Context.User.ToString() == "admin#0001"))
-                return;
-
+            if (!UserAccounts.GetAccount(Context.User).superadmin) return;
             var messages = await Context.Channel.GetMessagesAsync(1).Flatten();
             await Context.Channel.DeleteMessagesAsync(messages);
             await Context.Channel.SendMessageAsync(message);
         }
 
+        // Make Gideon DM someone something
+        [Command("dm")]
+        public async Task DM(SocketGuildUser target, [Remainder]string message)
+        {
+            if (!UserAccounts.GetAccount(Context.User).superadmin) return;
+            var messages = await Context.Channel.GetMessagesAsync(1).Flatten();
+            await Context.Channel.DeleteMessagesAsync(messages);
+            await target.SendMessageAsync(message);
+        }
+
+        // Spongebob Mock Meme
         [Command("mock")]
         public async Task Mock([Remainder]string message)
         {
-            if (Config.bot.allowedChannels.Contains(Context.Channel.Name))
+            if (Config.botResources.allowedChannels.Contains(Context.Channel.Name))
             {
                 var messages = await Context.Channel.GetMessagesAsync(1).Flatten();
                 await Context.Channel.DeleteMessagesAsync(messages);
@@ -264,17 +206,11 @@ namespace Gideon.Handlers
                 }
                 string new_s = new string(letters);
 
-                var embed = new EmbedBuilder();
-                embed.WithDescription(new_s);
-                embed.WithColor(new Color(255, 255, 0));
-                embed.WithThumbnailUrl("http://i0.kym-cdn.com/photos/images/masonry/001/255/479/85b.png");
-                embed.WithFooter("Mocked by " + Context.User);
-
-                await Context.Channel.SendMessageAsync("", false, embed);
+                await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("", new_s, new Color(255, 255, 0), $"Mocked by {Context.User}", "http://i0.kym-cdn.com/photos/images/masonry/001/255/479/85b.png"));
                 return;
             }
             
-            await Context.Channel.SendMessageAsync("You can only do this command in #off-topic.");
+            await Context.Channel.SendMessageAsync($"You can only do this command in {Context.Guild.GetTextChannel(339887750683688965).Mention}.");
         }
 
         [Command("audition")]
@@ -283,10 +219,10 @@ namespace Gideon.Handlers
         [Command("someone")]
         public async Task GetRandomPerson()
         {
-            var users = Context.Guild.Users;
-            SocketGuildUser[] s = users.ToArray();
-            string p = s[GetRandomNumber(0, s.Length)].ToString();
-            await Context.Channel.SendMessageAsync(p);
+            SocketGuildUser[] s = Context.Guild.Users.ToArray();
+            SocketGuildUser randomUser = s[Config.Utilities.GetRandomNumber(0, s.Length)];
+            string footer = $"{((1.0m / Context.Guild.MemberCount) * 100).ToString("N3")}% chance of selecting this user.";
+            await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Random User", randomUser.Mention, Config.Utilities.DomColorFromURL(randomUser.GetAvatarUrl()), footer, randomUser.GetAvatarUrl()));
         }
 
         [Command("onlinestaff")]
@@ -338,41 +274,47 @@ namespace Gideon.Handlers
 
         #region View People in Rank Commands
         [Command("respected")]
-        public async Task Respected() => await Context.Channel.SendMessageAsync("", false, Embed("Respected", FindPeopleWithRoles("Respected"), new Color(255, 105, 180), "", ""));
+        public async Task Respected() => await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Respected", FindPeopleWithRoles("Respected"), new Color(233, 143, 255), "", ""));
 
         [Command("assisted")]
-        public async Task Interns() => await Context.Channel.SendMessageAsync("", false, Embed("Assisted", FindPeopleWithRoles("Assisted"), new Color(102, 0, 204), "", ""));
+        public async Task Interns() => await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Assisted", FindPeopleWithRoles("Assisted"), new Color(113, 54, 138), "", ""));
 
         [Command("helpers")]
-        public async Task Helpers() => await Context.Channel.SendMessageAsync("", false, Embed("Helpers", FindPeopleWithRoles("Helpers"), new Color(255, 255, 0), "", ""));
+        public async Task Helpers() => await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Helpers", FindPeopleWithRoles("Helpers"), new Color(241, 196, 15), "", ""));
 
         [Command("director")]
-        public async Task Director() => await Context.Channel.SendMessageAsync("", false, Embed("Director", FindPeopleWithRoles("Director"), new Color(0, 153, 0), "", ""));
+        public async Task Director() => await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Director", FindPeopleWithRoles("Director"), new Color(31, 139, 76), "", ""));
 
         [Command("devs")]
-        public async Task ShowDevsShortcut() => await Context.Channel.SendMessageAsync("", false, Embed("Developers", FindPeopleWithRoles("Developer"), new Color(255, 0, 0), "", ""));
+        public async Task ShowDevsShortcut() => await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Developers", FindPeopleWithRoles("Developer"), new Color(231, 76, 60), "", ""));
 
         [Command("developers")]
-        public async Task ShowDevs() => await Context.Channel.SendMessageAsync("", false, Embed("Developers", FindPeopleWithRoles("Developer"), new Color(255, 0, 0), "", ""));
+        public async Task ShowDevs() => await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Developers", FindPeopleWithRoles("Developer"), new Color(231, 76, 6), "", ""));
+
+        [Command("pz")]
+        public async Task ViewPZ() => await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Phantom Zoned People", FindPeopleWithRoles("Phantom Zone"), new Color(84, 110, 122), "", ""));
 
         [Command("phantomzone")]
-        public async Task PhantomZone() => await Context.Channel.SendMessageAsync("", false, Embed("Phantom Zoned People", FindPeopleWithRoles("Phantom Zone"), new Color(84, 110, 122), "", ""));
+        public async Task PhantomZone() => await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Phantom Zoned People", FindPeopleWithRoles("Phantom Zone"), new Color(84, 110, 122), "", ""));
 
         [Command("leads")]
-        public async Task Leads() => await Context.Channel.SendMessageAsync("", false, Embed("Leads", FindPeopleWithRoles("Lead"), new Color(255, 165, 0), "", ""));
+        public async Task Leads() => await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Leads", FindPeopleWithRoles("Lead"), new Color(230, 126, 34), "", ""));
+
+        [Command("motd")]
+        public async Task Motd() => await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Mongoo Of The Day", FindPeopleWithRoles("Mongoo Of The Day"), new Color(105, 255, 234), "", ""));
         #endregion
 
         [Command("joined")]
         public async Task JoinedAt() => await JoinedAt((SocketGuildUser)Context.User);
 
         [Command("joined")]
-        public async Task JoinedAt([Remainder]SocketGuildUser user) => await Context.Channel.SendMessageAsync(((DateTimeOffset)user.JoinedAt).ToString("MMMM dd, yyyy"));
+        public async Task JoinedAt(SocketGuildUser user) => await Context.Channel.SendMessageAsync(Config.StatsHandler.GetJoinedDate(user));
 
         [Command("created")]
         public async Task Created() => await Created((SocketGuildUser)Context.User);
 
         [Command("created")]
-        public async Task Created([Remainder]SocketGuildUser user) => await Context.Channel.SendMessageAsync(user.CreatedAt.ToString("MMMM dd, yyy"));
+        public async Task Created([Remainder]SocketGuildUser user) => await Context.Channel.SendMessageAsync(Config.StatsHandler.GetCreatedDate(user));
 
         [Command("avatar")]
         public async Task Avatar() => await Avatar((SocketGuildUser)Context.User);
@@ -386,16 +328,16 @@ namespace Gideon.Handlers
         [Command("tecos spawn")]
         public async Task SpawnTecos(SocketGuildUser user, [Remainder]int amount)
         {
-            if (Context.User.ToString() != "admin#0001") return;
-            await Context.Channel.SendMessageAsync("", false, Embed("Tecos", Context.User.Mention + " " + TH.SpawnTecos(user, amount), new Color(215, 154, 14), "", ""));
+            if (354458973572956160 != Context.User.Id) return;
+            await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Tecos", Context.User.Mention + " " + TH.SpawnTecos(user, amount), new Color(215, 154, 14), "", ""));
         }
 
         // Remove Tecos for a user
         [Command("tecos remove")]
         public async Task RemoveTecos(SocketGuildUser user, [Remainder]int amount)
         {
-            if (Context.User.ToString() != "admin#0001") return;
-            await Context.Channel.SendMessageAsync("", false, Embed("Tecos", TH.RemoveTecos(user, amount), new Color(215, 154, 14), "", ""));
+            if (354458973572956160 != Context.User.Id) return;
+            await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Tecos", TH.RemoveTecos(user, amount), new Color(215, 154, 14), "", ""));
         }
 
         // See how many Tecos you have
@@ -408,7 +350,7 @@ namespace Gideon.Handlers
 
         // Give Tecos to another user (not spawning them)
         [Command("tecos give")]
-        public async Task GiveTecos(SocketGuildUser user, [Remainder]int amount) => await Context.Channel.SendMessageAsync("", false, Embed("Tecos", TH.GiveTecos((SocketGuildUser)Context.User, user, amount), new Color(215, 154, 14), "", ""));
+        public async Task GiveTecos(SocketGuildUser user, [Remainder]int amount) => await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Tecos", TH.GiveTecos((SocketGuildUser)Context.User, user, amount), new Color(215, 154, 14), "", ""));
 
         // Tecos Store
         [Command("tecos store")]
@@ -485,6 +427,18 @@ namespace Gideon.Handlers
 
         #endregion
 
+        // Set the release date for the next update video for when people ask
+        [Command("updatevideo")]
+        public async Task SetVideoDate([Remainder]string input)
+        {
+            if (!UserAccounts.GetAccount(Context.User).superadmin) return;
+            Config.ModifyNextVideoDate(input);
+            if(input == "n/a")
+                await Context.Channel.SendMessageAsync("There is no set date for the next update video.");
+            else
+                await Context.Channel.SendMessageAsync($"Date updated. To remove, set it to `n/a`. Preview:\nThe next video comes out { Config.botResources.nextVideoDate}.");
+        }
+
         // See stats for yourself
         [Command("stats")]
         public async Task Stats() => await Stats((SocketGuildUser)Context.User);
@@ -495,8 +449,8 @@ namespace Gideon.Handlers
         {
             var embed = new EmbedBuilder();
             embed.WithTitle("Stats for " + user.ToString());
-            embed.AddField("Created", user.CreatedAt.ToString("MMMM dd, yyy"));
-            embed.AddField("Joined", ((DateTimeOffset)user.JoinedAt).ToString("MMMM dd, yyyy"));
+            embed.AddField("Created", Config.StatsHandler.GetCreatedDate(user));
+            embed.AddField("Joined", Config.StatsHandler.GetJoinedDate(user));
 
             string nick = user.Nickname ?? "none";
             embed.AddField("Nickname", nick);
@@ -515,65 +469,136 @@ namespace Gideon.Handlers
             embed.AddField("Roles", roles);
 
             var account = UserAccounts.GetAccount(user);
-            embed.AddField("Tecos", account.Tecos);
+            embed.AddField("Tecos", account.Tecos.ToString("#,##0"));
             embed.AddField("Warnings", account.Warns);
+            embed.AddField("Nationality", account.nationality);
 
-            embed.WithColor(new Utilities().DomColorFromURL(user.GetAvatarUrl()));
+            switch (account.localTime)
+            {
+                case 999:
+                    embed.AddField("Local Time", "Not set.");
+                    break;
+                default:
+                    DateTime t = DateTime.Now.AddHours(account.localTime);
+                    embed.AddField("Local Time", $"{t.ToString("h:mm tt, dddd, MMMM d")}");
+                    break;
+            }
+
+            embed.WithColor(Config.Utilities.DomColorFromURL(user.GetAvatarUrl()));
             embed.WithThumbnailUrl(user.GetAvatarUrl());
 
             await Context.Channel.SendMessageAsync("", false, embed);
         }
 
+        // View custom server emotes
+        [Command("emotes")]
+        public async Task ViewServerEmotes()
+        {
+            string EmoteString = $"{Context.Guild.Emotes.Count} total emotes\n";
+            for (int i = 0; i < Context.Guild.Emotes.Count; i++)
+            {
+                EmoteString += Context.Guild.Emotes.ElementAt(i);
+            }
+            await Context.Channel.SendMessageAsync(EmoteString);
+        }
+
+        // View server stats
+        [Command("serverstats")]
+        public async Task ServerStats()
+        {
+            var embed = new EmbedBuilder();
+            embed.WithTitle(Context.Guild.Name);
+            embed.AddField("Created", Context.Guild.CreatedAt.ToString("dddd, MMMM d, yyyy"));
+            embed.AddField("Owner", Context.Guild.Owner.Mention);
+            embed.AddField("Emotes", Context.Guild.Emotes.Count);
+            embed.AddField("Members", Context.Guild.MemberCount.ToString("#,##0"));
+            embed.WithColor(new Utilities().DomColorFromURL(Context.Guild.IconUrl));
+            embed.WithThumbnailUrl(Context.Guild.IconUrl);
+
+            await Context.Channel.SendMessageAsync("", false, embed);
+        }
+
+        // Set the time for a user
+        [Command("time set")]
+        public async Task UserTimeSet(SocketGuildUser target, int offset)
+        {
+            if (!UserAccounts.GetAccount(Context.User).superadmin) return;
+            UserAccount targetAccount = UserAccounts.GetAccount(target);
+            targetAccount.localTime = offset;
+            UserAccounts.SaveAccounts();
+            await Context.Channel.SendMessageAsync("User updated.");
+        }
+
+        // Set the nationality for a user
+        [Command("nationality set")]
+        public async Task UserNationalitySet(SocketGuildUser target, [Remainder]string name)
+        {
+            if (!UserAccounts.GetAccount(Context.User).superadmin) return;
+            UserAccount targetAccount = UserAccounts.GetAccount(target);
+            targetAccount.nationality = name;
+            UserAccounts.SaveAccounts();
+            await Context.Channel.SendMessageAsync("User updated.");
+        }
+
+        // Delete a certain amount of messages
         [Command("delete")]
         public async Task DeleteMessage([Remainder]string amount)
         {
-            if (Context.User.ToString() == "Tecosaurus#6343" || Context.User.ToString() == "admin#0001")
-            {
-                var messages = await Context.Channel.GetMessagesAsync(Int32.Parse(amount) + 1).Flatten();
-                await Context.Channel.DeleteMessagesAsync(messages);
-            }
+            if (!UserAccounts.GetAccount(Context.User).superadmin) return;
+            var messages = await Context.Channel.GetMessagesAsync(Int32.Parse(amount) + 1).Flatten();
+            await Context.Channel.DeleteMessagesAsync(messages);
         }
+
+        // Nickname a user
+        [Command("nick")]
+        public async Task NicknameUser(SocketGuildUser user, [Remainder]string input)
+        {
+            if (!UserAccounts.GetAccount(Context.User).superadmin) return;
+            await user.ModifyAsync(x => { x.Nickname = input; });
+            await Context.Channel.SendMessageAsync("User updated.");
+        }
+
+        #region Warn Related Commands
 
         [Command("warn")]
         public async Task Warn(SocketGuildUser user, [Remainder]string reason)
         {
-            if (Config.Staff.Contains(Context.User.ToString()))
+            if(Config.Utilities.isRespectedPlus(Context, (SocketGuildUser)Context.User))
             {
-                await new Utilities().WarnUser(Context, user, reason);
+                if (Config.Utilities.isRespectedPlus(Context, user))
+                {
+                    await Config.WarnHandler.WarnFail(Context.Channel);
+                    return;
+                }
+                await Config.WarnHandler.WarnUser(Context, user, reason);
             }
         }
 
         [Command("warns")]
-        public async Task ViewWarns(SocketGuildUser user) => await Context.Channel.SendMessageAsync("", false, new Utilities().AllWarnsEmbed(user, UserAccounts.GetAccount(user)));
+        public async Task ViewWarns() => await ViewWarns((SocketGuildUser)Context.User);
+
+        [Command("warns")]
+        public async Task ViewWarns(SocketGuildUser user) => await Context.Channel.SendMessageAsync("", false, Config.WarnHandler.AllWarnsEmbed(user, UserAccounts.GetAccount(user)));
 
         [Command("warns remove")]
-        public async Task RemoveWarn(SocketGuildUser user, [Remainder]string number)
+        public async Task RemoveWarn(SocketGuildUser user, int number)
         {
-            if (!Config.Staff.Contains(Context.User.ToString())) return;
-
-            var account = UserAccounts.GetAccount(user);
-
-            string result = $"Warning {number} has been removed from {user.Mention} by {Context.User.Mention}.";
-
-            account.Warners.RemoveAt(Int32.Parse(number) - 1);
-            account.warnReasons.RemoveAt(Int32.Parse(number) - 1);
-            account.Warns--;
-            UserAccounts.SaveAccounts();
-
-            var channels = Context.Guild.Channels;
-            SocketGuildChannel c = null;
-            foreach (SocketGuildChannel s in channels)
-            {
-                if (s.Name == "warning-thread") c = s;
-            }
-
-            await (c as ISocketMessageChannel).SendMessageAsync("", false, Embed("Warning Removal", result, new Color(255, 0, 0), "", user.GetAvatarUrl()));
-            await Context.Channel.SendMessageAsync("", false, Embed("Warning Removal", result, new Color(255, 0, 0), "", user.GetAvatarUrl()));
+            if (!Config.Utilities.isHelperPlus(Context, (SocketGuildUser)Context.User)) return;
+            await Config.WarnHandler.RemoveWarn(Context, user, number);
         }
 
-        [Command("gideon")]
-        public async Task GideonGreet() => await Context.Channel.SendMessageAsync($"Greetings. How may I be of service, {Context.User.Mention}?\n!help");
+        [Command("warns clear")]
+        public async Task ClearWarns(SocketGuildUser user)
+        {
+            if (!Config.Utilities.isHelperPlus(Context, (SocketGuildUser)Context.User)) return;
+            await Config.WarnHandler.ClearWarns(Context, user);
+        }
+        #endregion
 
+        [Command("gideon")]
+        public async Task GideonGreet() => await Context.Channel.SendMessageAsync($"Greetings. How may I be of service, {Context.User.Mention}?\n`!help`");
+
+        // View Stats for a movie
         [Command("movie")]
         public async Task SearchMovie([Remainder]string search)
         {
@@ -600,11 +625,12 @@ namespace Gideon.Handlers
             embed.AddField("Box Office", media.BoxOffice);
             embed.AddField("IMDB Score", IMDBScore);
             embed.AddField("Rotten Tomatoes", RTScore);
-            embed.WithColor(new Utilities().DomColorFromURL(media.Poster));
+            embed.WithColor(Config.Utilities.DomColorFromURL(media.Poster));
 
             await Context.Channel.SendMessageAsync("", false, embed);
         }
 
+        // View stats for a TV show
         [Command("tv")]
         public async Task SearchShows([Remainder]string search)
         {
@@ -622,44 +648,46 @@ namespace Gideon.Handlers
             embed.WithDescription(media.Plot);
             embed.AddField("Runtime", media.Runtime);
             embed.AddField("IMDB Score", IMDBScore);
-            embed.WithColor(new Utilities().DomColorFromURL(media.Poster));
+            embed.WithColor(Config.Utilities.DomColorFromURL(media.Poster));
 
             await Context.Channel.SendMessageAsync("", false, embed);
         }
 
+        // Print a link to Gideon's sourcecode
         [Command("source")]
         public async Task GetSourceCode1() => await Context.Channel.SendMessageAsync("https://github.com/WilliamWelsh/GideonBot");
 
         [Command("sourcode")]
         public async Task GetSourceCode2() => await Context.Channel.SendMessageAsync("https://github.com/WilliamWelsh/GideonBot");
 
+        // Display available commands
         [Command("help")]
-        public async Task Help()
+        public async Task Help() => await Context.Channel.SendMessageAsync("View available commands here:\nhttps://github.com/WilliamWelsh/GideonBot/blob/master/README.md#commands");
+
+        // Makes an emoji big, code from my friend Craig // @Craig#6666 -- 208409824818364426
+        [Command("jumbo")]
+        public async Task Jumbo(string emoji)
         {
-            await Context.User.SendMessageAsync(
-                "Hello! I am Gideon.\nI am programmed by Reverse (admin#0001), so if you encounter an issue. Please DM him.\n\n" +
-                "Here are a list of commands:\n" +
-                "`!audition` Get a link to audition for a voice role in the game.\n" +
-                "`!avatar @MentionedUser` Get someone's profile picture.\n" +
-                "`!created @MentionedUser` Get someone's account creation date.\n" +
-                "`!stats @MentionedUser` Get someone's stats.\n" +
-                "`!joined @MentionedUser` Get someone's join date (to the COEO discord).\n" +
-                "`!tecoverse` Get a link to the Tecoverse Discord.\n" +
-                "`!yt` View Teco's YouTube stats.\n" +
-                "`!warns @MentionedUser` View someone's warnings.\n" +
+            string emojiUrl = null;
 
+            if (Emote.TryParse(emoji, out Emote found))
+                emojiUrl = found.Url;
+            else
+            {
+                int codepoint = Char.ConvertToUtf32(emoji, 0);
+                string codepointHex = codepoint.ToString("X").ToLower();
 
-                "`!onlinestaff` View online staff members.\n" +
-                "`!leads` View the leaders.\n" +
-                "`!devs` View the developers.\n" +
-                "`!helpers` View the helpers.\n" +
-                "`!assisted` View the assisted.\n" +
-                "`!respected` View those with the respected role.\n" +
-                "`!phantomzone` View those banished to the Phantom Zone.\n" +
+                emojiUrl = "https://raw.githubusercontent.com/twitter/twemoji/gh-pages/2/72x72/{codepointHex}.png";
+            }
 
+            try
+            {
+                HttpClient client = new HttpClient();
+                var req = await client.GetStreamAsync(emojiUrl);
+                await Context.Channel.SendFileAsync(req, Path.GetFileName(emojiUrl));
+            }
 
-                "\n\n\n`MESSAGE FROM REVERSE: THERE ARE LIKE 20-30 MORE COMMANDS THAT I HAVE NOT LISTED HERE YET`"
-            );
+            catch (HttpRequestException) {} {}
         }
     }
 }
