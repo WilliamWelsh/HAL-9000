@@ -24,7 +24,7 @@ namespace Gideon.Handlers
         public NumberGuess NG = new NumberGuess();
         public RussianRoulette RR = new RussianRoulette();
 
-        public async Task DisplayGames(ISocketMessageChannel channel) => await channel.SendMessageAsync("", false, Config.Utilities.Embed("MiniGames", "Trivia\n`!trivia`\n\nTic-Tac-Toe\n`!ttt`\n\nNumber Guess\n`!play ng`\n\nRussian Roulette\n`!rr`", new Color(0, 173, 0), "", ""));
+        public async Task DisplayGames(ISocketMessageChannel channel) => await channel.SendMessageAsync("", false, Config.Utilities.Embed("MiniGames", "Trivia\n`!trivia`\n\nTic-Tac-Toe\n`!ttt`\n\nNumber Guess\n`!play ng`\n\nRussian Roulette\n`!rr`\n\n8-Ball\n`!8ball`", new Color(31, 139, 76), "", ""));
 
         void CreateInstance(SocketCommandContext context)
         {

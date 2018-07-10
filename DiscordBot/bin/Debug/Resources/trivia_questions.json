@@ -1,0 +1,400 @@
+{
+  "Questions": [
+    {
+      "Question": "What year is it?",
+      "Answer": "2018",
+      "IncorrectAnswers": [
+        "2000",
+        "1992",
+        "5"
+      ]
+    },
+	{
+      "Question": "What is Beebo the God of",
+      "Answer": "God of War",
+      "IncorrectAnswers": [
+        "God of Mischief",
+        "God of Thunder",
+        "God of Chaos"
+      ]
+    },
+	{
+      "Question": "What is name of the CCPD Captain",
+      "Answer": "David Singh",
+      "IncorrectAnswers": [
+        "Joe West",
+        "Julian Albert",
+        "Sam Scudder"
+      ]
+    },
+	{
+      "Question": "Which Earth is Accelerated Man on",
+      "Answer": "Earth-19",
+      "IncorrectAnswers": [
+        "Earth-17",
+        "Earth-39",
+        "Earth-24"
+      ]
+    },
+	{
+      "Question": "When did the first episode of The Flash air",
+      "Answer": "October 7, 2014",
+      "IncorrectAnswers": [
+        "October 9, 2014",
+        "October 7, 2015",
+        "October 4, 2014"
+      ]
+    },
+	{
+      "Question": "In which episode did Barry first time travel",
+      "Answer": "\"Out of Time\"",
+      "IncorrectAnswers": [
+        "\"Fast Enough\"",
+        "\"Flash Back\"",
+        "\"Legends of Today\""
+      ]
+    },
+	{
+      "Question": "Which character does Teddy Sears play in The Flash",
+      "Answer": "Hunter Zolomon",
+      "IncorrectAnswers": [
+        "Jay Garrick",
+        "Black Flash",
+        "Firestorm"
+      ]
+    },
+	{
+      "Question": "Who is the time travelling protagonist from the future in Legends of Tomorrow",
+      "Answer": "Rip Hunter",
+      "IncorrectAnswers": [
+        "Marty McFly",
+        "Phillip J Fry",
+        "Vandal Savage"
+      ]
+    },
+	{
+      "Question": "What is the date of the newspaper inside of the Time Vault",
+      "Answer": "Thursday April 25 2024",
+      "IncorrectAnswers": [
+        "Thursday May 24 2025",
+        "Tuesday April 25 2026",
+        "Tuesday April 23 2024"
+      ]
+    },
+	{
+      "Question": "How many Totems of Zambesi exist",
+      "Answer": "6",
+      "IncorrectAnswers": [
+        "4",
+        "5",
+        "8"
+      ]
+    },
+	{
+      "Question": "Which character in the Arrowverse was first to be 100% CGI",
+      "Answer": "Invunche",
+      "IncorrectAnswers": [
+        "Parasite",
+        "Gorilla Grodd",
+        "King Shark"
+      ]
+    },
+	{
+      "Question": "What is the time travelling organisation Rip Hunter founded in Legends of Tomorrow",
+      "Answer": "Time Bureau",
+      "IncorrectAnswers": [
+        "Time Travellers",
+        "Time Masters",
+        "The Legends"
+      ]
+    },
+	{
+      "Question": "How many times has Mark Hamill appeared on the Flash as The Trickster",
+      "Answer": "3",
+      "IncorrectAnswers": [
+        "4",
+        "1",
+        "2"
+      ]
+    },
+	{
+      "Question": "How many Actors/Actresses who were on The Flash (1990) have appeared on The Flash (2014)",
+      "Answer": "4",
+      "IncorrectAnswers": [
+        "0",
+        "2",
+        "6"
+      ]
+    },
+	{
+      "Question": "Which actor/actress has played the most characters",
+      "Answer": "Tom Cavanagh",
+      "IncorrectAnswers": [
+        "Grant Gustin",
+        "Katie Cassidy",
+        "Teddy Sears"
+      ]
+    },
+	{
+      "Question": "Which character is Jewish",
+      "Answer": "Felicity Smoak",
+      "IncorrectAnswers": [
+        "John Constantine",
+        "Kara Danvers",
+        "Ray Palmer"
+      ]
+    },
+	{
+      "Question": "Which company does Arrow's Visual Effects",
+      "Answer": "Zoic Studios",
+      "IncorrectAnswers": [
+        "Encore VFX",
+        "Luma Pictures",
+        "Industrial Light and Magic"
+      ]
+    },
+	{
+      "Question": "Which episode did we see Barry run the fastest",
+      "Answer": "\"Enter Flashtime\"",
+      "IncorrectAnswers": [
+        "\"Fast Enough\"",
+        "\"Enter Zoom\"",
+        "\"Wrath of Savitar\""
+      ]
+    },
+	{
+      "Question": "Who made a guest appearance at the end of the Flash Season 1 finale",
+      "Answer": "Kendra Saunders",
+      "IncorrectAnswers": [
+        "Zoom",
+        "Jay Garrick",
+        "Captain Cold"
+      ]
+    },
+	{
+      "Question": "How many bus metas are there in The Flash season 4",
+      "Answer": "12",
+      "IncorrectAnswers": [
+        "6",
+        "9",
+        "14"
+      ]
+    },
+	{
+      "Question": "What is the enchancement drug from Arrow season 2 called",
+      "Answer": "Mirakuru",
+      "IncorrectAnswers": [
+        "Vertigo",
+        "Drug X",
+        "Velocity-9"
+      ]
+    },
+	{
+      "Question": "When does Stephen Amell's Arrow contract end",
+      "Answer": "2019",
+      "IncorrectAnswers": [
+        "2021",
+        "2020",
+        "2018"
+      ]
+    },
+	{
+      "Question": "Who has not travelled through time",
+      "Answer": "Oliver",
+      "IncorrectAnswers": [
+        "Felicity",
+        "Constantine",
+        "Cisco"
+      ]
+    },
+	{
+      "Question": "Which Earth is The Ray, as featured in the crossover, from",
+      "Answer": "Earth-1",
+      "IncorrectAnswers": [
+        "Earth-2",
+        "Earth-X",
+        "Earth-10"
+      ]
+    },
+	{
+      "Question": "How many animated shows from CW Seed are set in the Arrowverse",
+      "Answer": "2",
+      "IncorrectAnswers": [
+        "1",
+        "3",
+        "4"
+      ]
+    },
+	{
+      "Question": "What Network was Supergirl on during Season 1",
+      "Answer": "CBS",
+      "IncorrectAnswers": [
+        "The CW",
+        "NBC",
+        "Fox"
+      ]
+    },
+	{
+      "Question": "How many TV shows set in the Arrowverse",
+      "Answer": "5",
+      "IncorrectAnswers": [
+        "3",
+        "4",
+        "6"
+      ]
+    },
+	{
+      "Question": "How many Earths in the multiverse",
+      "Answer": "53",
+      "IncorrectAnswers": [
+        "52",
+        "51",
+        "Infinite"
+      ]
+    },
+	{
+      "Question": "Which of these characters don't have their own game",
+      "Answer": "Green Arrow",
+      "IncorrectAnswers": [
+        "Constantine",
+        "Superman",
+        "The Flash"
+      ]
+    },
+	{
+      "Question": "What is the name of Barry's pet Turtle",
+      "Answer": "McSnurtle",
+      "IncorrectAnswers": [
+        "Turtle",
+        "Bart",
+        "Cosmos"
+      ]
+    },
+	{
+      "Question": "Who played Sara Lance in the pilot episode of Arrow",
+      "Answer": "Jacqueline Macinnes Wood",
+      "IncorrectAnswers": [
+        "Caity Lotz",
+        "Kathleen Gati",
+        "Wendy Mericle"
+      ]
+    },
+	{
+      "Question": "Who is the showrunner for Supergirl",
+      "Answer": "Alison Adler",
+      "IncorrectAnswers": [
+        "Wendy Mericle",
+        "Beth Schwartz",
+        "Andrew Kreisberg"
+      ]
+    },
+	{
+      "Question": "Who directed the Arrow and The Flash pilot",
+      "Answer": "David Nutter",
+      "IncorrectAnswers": [
+        "Greg Berlanti",
+        "JJ Abrams",
+        "Andrew Kreisberg"
+      ]
+    },
+	{
+      "Question": "Who voices Prometheus in Arrow",
+      "Answer": "Michael Dorn",
+      "IncorrectAnswers": [
+        "Josh Segerra",
+        "John Barrowman",
+        "Tony Todd"
+      ]
+    },
+	{
+      "Question": "How many episodes in Legends of Tomorrow Season 2",
+      "Answer": "17",
+      "IncorrectAnswers": [
+        "16",
+        "22",
+        "23"
+      ]
+    },
+	{
+      "Question": "How many episodes of Supergirl, has Superman appeared in",
+      "Answer": "4",
+      "IncorrectAnswers": [
+        "2",
+        "3",
+        "1"
+      ]
+    },
+	{
+      "Question": "How long roughly was M'rnn J'onzz held imprisoned on Mars for",
+      "Answer": "Centuries",
+      "IncorrectAnswers": [
+        "Decades",
+        "Months",
+        "Milleniums"
+      ]
+    },
+	{
+      "Question": "How far into the future was Mon-El sent to",
+      "Answer": "1000 years",
+      "IncorrectAnswers": [
+        "900 years",
+        "600 years",
+        "500 years"
+      ]
+    },
+	{
+      "Question": "How long was the Legion's ship stuck underneath National City for",
+      "Answer": "12000 years",
+      "IncorrectAnswers": [
+        "8000 years",
+        "10000 years",
+        "5000 years"
+      ]
+    },
+	{
+      "Question": "Which of the World Destroyers would go on to become Blight",
+      "Answer": "Pestilence",
+      "IncorrectAnswers": [
+        "Reign",
+        "Purity",
+        "All of the above?"
+      ]
+    },
+	{
+      "Question": "How many children did J'onn J'onnzs have",
+      "Answer": "2",
+      "IncorrectAnswers": [
+        "1",
+        "3",
+        "4"
+      ]
+    },
+	{
+      "Question": "What does D.E.O stand for",
+      "Answer": "Department of Extra-Normal Operations",
+      "IncorrectAnswers": [
+        "Department of Extra Ordinaries",
+        "Department of Extra-Natrual Operations",
+        "Department of Extraordinary Operations"
+      ]
+    },
+	{
+      "Question": "How many currently known members are part of the Legion of Superheroes",
+      "Answer": "7",
+      "IncorrectAnswers": [
+        "2",
+        "3",
+        "6"
+      ]
+    },
+    {
+      "Question": "Who plays Vandal Savage",
+      "Answer": "Casper Crump",
+      "IncorrectAnswers": [
+        "Falk Hentschel",
+        "Glen Winter",
+        "Neal McDonough"
+      ]
+    }
+  ]
+}

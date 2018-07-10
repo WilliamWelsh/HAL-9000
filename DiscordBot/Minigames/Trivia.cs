@@ -10,190 +10,6 @@ namespace Gideon.Minigames
 {
     class Trivia
     {
-        string[] Questions = { "What is Beebo the God of",
-        "What is name of the CCPD Captain",
-        "Which Earth is Accelerated Man on",
-        "When did the first episode of The Flash air",
-        "In which episode did Barry first time travel",
-        "Which character does Teddy Sears play in The Flash",
-        "Who is the time travelling protagonist from the future in Legends of Tomorrow",
-        "What is the date of the newspaper inside of the Time Vault",
-        "How many Totems of Zambesi exist",
-        "Which character in the Arrowverse was first to be 100% CGI",
-        "What is the time travelling organisation Rip Hunter founded in Legends of Tomorrow",
-        "How many times has Mark Hamill appeared on the Flash as The Trickster",
-        "How many Actors/Actresses who were on The Flash (1990) have appeared on The Flash (2014)",
-        "Which actor/actress has played the most characters",
-        "Which character is Jewish",
-        "Which company does Arrow's Visual Effects",
-        "Which episode did we see Barry run the fastest",
-        "Who made a guest appearance at the end of the Flash Season 1 finale",
-        "How many bus metas are there in The Flash season 4",
-        "What is the enchancement drug from Arrow season 2 called",
-        "When does Stephen Amells Arrow contract end",
-        "Who has not travelled through time",
-        "Which Earth is The Ray as featured in the crossover from",
-        "How many animated shows from CW Seed are set in the Arrowverse",
-        "What Network was Supergirl on during Season 1",
-        "How many TV shows set in the Arrowverse",
-        "How many Earths in the multiverse",
-        "Which of these characters don't have their own game",
-        "What is the name of Barry's pet Turtle",
-        "Who played Sara Lance in the pilot episode of Arrow",
-        "Who is the showrunner for Supergirl",
-        "Who directed the Arrow and The Flash pilot",
-        "Who voices Prometheus in Arrow",
-        "How many episodes in Legends of Tomorrow Season 2",
-        "Who plays Vandal Savage"};
-
-        string[] Answers = { "God of War", "David Singh", "Earth-19", "October 7, 2014", "\"Out of Time\"", "Hunter Zolomon",
-        "Rip Hunter", "Thursday April 25 2024", "6", "Invunche", "Time Bureau", "3", "4", "Tom Cavanagh", "Felicity Smoak", "Zoic Studios", "\"Enter Flashtime\"", "Kendra Saunders", "12", "Mirakuru",
-        "2019", "Oliver", "Earth-1", "2", "CBS", "5", "53", "Green Arrow", "McSnurtle", "Jacqueline Macinnes Wood", "Alison Adler", "David Nutter", "Michael Dorn", "17", "Casper Crump"};
-
-        string[] WrongAnswers =
-        {
-            "God of Mischief",
-            "God of Thunder",
-            "God of Chaos",
-
-            "Joe West",
-            "Julian Albert",
-            "Sam Scudder",
-
-            "Earth-17",
-            "Earth-39",
-            "Earth-24",
-
-            "October 9, 2014",
-            "October 7, 2015",
-            "October 4, 2014",
-
-            "\"Fast Enough\"",
-            "\"Flash Back\"",
-            "\"Legends of Today\"",
-
-            "Jay Garrick",
-            "Black Flash",
-            "Firestorm",
-
-            "Marty McFly",
-            "Phillip J Fry",
-            "Vandal Savage",
-
-            "Thursday May 24 2025",
-            "Tuesday April 25 2026",
-            "Tuesday April 23 2024",
-
-            "4",
-            "5",
-            "8",
-
-            "Parasite",
-            "Gorilla Grodd",
-            "King Shark",
-
-            "Time Travellers",
-            "Time Masters",
-            "The Legends",
-
-            "4",
-            "1",
-            "2",
-
-            "0",
-            "2",
-            "6",
-
-            "Grant Gustin",
-            "Katie Cassidy",
-            "Teddy Sears",
-
-            "John Constantine",
-            "Kara Danvers",
-            "Ray Palmer",
-
-            "Encore VFX",
-            "Luma Pictures",
-            "Industrial Light and Magic",
-
-            "\"Fast Enough\"",
-            "\"Enter Zoom\"",
-            "\"Wrath of Savitar\"",
-
-            "Zoom",
-            "Jay Garrick",
-            "Captain Cold",
-
-            "6",
-            "9",
-            "14",
-
-            "Vertigo",
-            "Drug X",
-            "Velocity-9",
-
-            "2021",
-            "2020",
-            "2018",
-
-            "Felicity",
-            "Constantine",
-            "Cisco",
-
-            "Earth-2",
-            "Earth-X",
-            "Earth-10",
-
-            "1",
-            "3",
-            "4",
-
-            "The CW",
-            "NBC",
-            "FOX",
-
-            "3",
-            "4",
-            "6",
-
-            "52",
-            "51",
-            "Infinite",
-
-            "Constantine",
-            "Superman",
-            "The Flash",
-
-            "Turtle",
-            "Bart",
-            "Cosmos",
-
-            "Caity Lotz",
-            "Kathleen Gati",
-            "Wendy Mericle",
-
-            "Wendy Mericle",
-            "Beth Schwartz",
-            "Andrew Kreisberg",
-
-            "Greg Berlanti",
-            "JJ Abrams",
-            "Andrew Kreisberg",
-
-            "Josh Segerra",
-            "John Barrowman",
-            "Tony Todd",
-
-            "16",
-            "22",
-            "23",
-
-            "Falk Hentschel",
-            "Glen Winter",
-            "Neal McDonough"
-
-        };
-
         bool isTriviaBeingPlayed = false;
         SocketGuildUser userPlaying = null;
         string correctAnswer;
@@ -208,23 +24,22 @@ namespace Gideon.Minigames
             var embed = new EmbedBuilder();
             embed.WithTitle("Trivia");
             embed.WithDescription(Description);
-            embed.WithColor(new Color(0, 172, 0));
+            embed.WithColor(new Color(31, 139, 76)); // Old color was 0, 172, 0
             embed.WithFooter(Footer);
             return embed;
         }
 
-        private static readonly Random getrandom = new Random();
-
-        public static int GetRandomNumber(int min, int max)
+        private string GetName(SocketGuildUser user)
         {
-            lock (getrandom) { return getrandom.Next(min, max); }
+            string name = user.Nickname ?? user.Username;
+            return name;
         }
 
         public async Task TryToStartTrivia(SocketGuildUser user, SocketCommandContext context, string input)
         {
             if (context.Channel.Name != "minigames")
             {
-                await context.Channel.SendMessageAsync($"Please use the #minigames chat for that, {context.User.Mention}.");
+                await context.Channel.SendMessageAsync($"Please use the {context.Guild.GetTextChannel(443205778656985089).Mention} chat for that, {context.User.Mention}.");
                 return;
             }
             if (isTriviaBeingPlayed && (DateTime.Now - StartTime).TotalSeconds < 60)
@@ -238,9 +53,7 @@ namespace Gideon.Minigames
                 return;
             }
             if (isTriviaBeingPlayed && (DateTime.Now - StartTime).TotalSeconds > 60)
-            {
                 await CancelGame(userPlaying, context);
-            }
             await StartTrivia(user, context, input.Replace("trivia ", ""));
         }
 
@@ -256,21 +69,21 @@ namespace Gideon.Minigames
             triviaMode = mode;
             isTriviaBeingPlayed = true;
             StartTime = DateTime.Now;
-            int QuestionNum = GetRandomNumber(0, Questions.Length);
+            int QuestionNum = Config.Utilities.GetRandomNumber(0, Config.triviaQuestions.Questions.Count);
 
             string[] Fakes = {"","","",""};
 
-            Fakes[0] = WrongAnswers[QuestionNum * 3];
-            Fakes[1] = WrongAnswers[(QuestionNum * 3) + 1];
-            Fakes[2] = WrongAnswers[(QuestionNum * 3) + 2];
-            Fakes[3] = Answers[QuestionNum];
+            Fakes[0] = Config.triviaQuestions.Questions.ElementAt(QuestionNum).IncorrectAnswers.ElementAt(0);
+            Fakes[1] = Config.triviaQuestions.Questions.ElementAt(QuestionNum).IncorrectAnswers.ElementAt(1);
+            Fakes[2] = Config.triviaQuestions.Questions.ElementAt(QuestionNum).IncorrectAnswers.ElementAt(2);
+            Fakes[3] = Config.triviaQuestions.Questions.ElementAt(QuestionNum).Answer;
 
             Random rdn = new Random();
             string[] RandomFakes = Fakes.OrderBy(x => rdn.Next()).ToArray();
 
             for (int n = 0; n < RandomFakes.Length; n++)
             {
-                if (RandomFakes[n] == Answers[QuestionNum])
+                if (RandomFakes[n] == Config.triviaQuestions.Questions.ElementAt(QuestionNum).Answer)
                 {
                     switch (n)
                     {
@@ -291,13 +104,12 @@ namespace Gideon.Minigames
                 }
             }
 
-            string Description = $"\n{Questions[QuestionNum]}?\n" +
+            string Description = $"\n{Config.triviaQuestions.Questions.ElementAt(QuestionNum).Question}?\n" +
                 $"a) {RandomFakes[0]}\n" +
                 $"b) {RandomFakes[1]}\n" +
                 $"c) {RandomFakes[2]}\n" +
                 $"d) {RandomFakes[3]}";
-            string name = userPlaying.Nickname != null ? userPlaying.Nickname : userPlaying.ToString();
-            string Footer = mode == "solo" ? $"Only {name} can answer." : "First to answer wins!";
+            string Footer = mode == "solo" ? $"Only {GetName(user)} can answer." : "First to answer wins!";
             await context.Channel.SendMessageAsync("", false, Embed(Description, Footer));
         }
 
@@ -308,12 +120,12 @@ namespace Gideon.Minigames
                 string name = user.Nickname != null ? user.Nickname : user.ToString();
                 if (input == correctAnswer)
                 {
-                    await context.Channel.SendMessageAsync("", false, Embed("Correct.", $"{name} has been awarded 1 Teco."));
+                    await context.Channel.SendMessageAsync("", false, Embed("Correct.", $"{GetName(user)} has been awarded 1 Teco."));
                     Config.TH.AdjustTecos(user, 1);
                     ResetTrivia();
                     return;
                 }
-                await context.Channel.SendMessageAsync("", false, Embed($"Wrong, it is {correctAnswer.ToUpper()}.", $"{name} lost 1 Teco."));
+                await context.Channel.SendMessageAsync("", false, Embed($"Wrong, it is {correctAnswer.ToUpper()}.", $"{GetName(user)} lost 1 Teco."));
                 Config.TH.AdjustTecos(user, -1);
                 ResetTrivia();
                 return;
@@ -332,8 +144,7 @@ namespace Gideon.Minigames
                 PlayersAnswered.Add(user);
                 if (input == correctAnswer)
                 {
-                    string name = user.Nickname != null ? user.Nickname : user.ToString();
-                    await context.Channel.SendMessageAsync("", false, Embed($"Correct, {user.Mention} won!", $"{name} has been awarded 1 Teco."));
+                    await context.Channel.SendMessageAsync("", false, Embed($"Correct, {user.Mention} won!", $"{GetName(user)} has been awarded 1 Teco."));
                     Config.TH.AdjustTecos(user, 1);
                     ResetTrivia();
                     return;

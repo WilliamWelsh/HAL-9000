@@ -25,5 +25,7 @@ namespace Gideon.Minigames
             int number = Config.Utilities.GetRandomNumber(0, 10);
             await context.Channel.SendMessageAsync("", false, Embed(answers[number], context.User.Mention));
         }
+
+        public async Task Greet8Ball(SocketCommandContext context) => await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("8-Ball", "Welcome to 8-Ball! Ask me anything.\n\nExample:\n`!8ball am I cool?`", new Color(75, 0, 130), "", ""));
     }
 }

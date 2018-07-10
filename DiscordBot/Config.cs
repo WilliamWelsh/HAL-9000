@@ -11,10 +11,12 @@ namespace Gideon
         private const string configFile = "config.json";
         private const string resourcesFile = "resources.json";
         private const string questionsFile = "questions.json";
+        private const string triviaQuestionsFile = "trivia_questions.json";
 
         public static BotConfig bot;
         public static BotResources botResources;
         public static BotQuestions botQuestions;
+        public static TriviaQuestions triviaQuestions;
 
         public static QuestionHandler QuestionHandler = new QuestionHandler();
         public static ImageFetcher ImageFetcher = new ImageFetcher();
@@ -61,6 +63,17 @@ namespace Gideon
                 string json = File.ReadAllText(configFolder + "/" + questionsFile);
                 botQuestions = JsonConvert.DeserializeObject<BotQuestions>(json);
             }
+
+            if (!File.Exists(configFolder + "/" + triviaQuestionsFile))
+            {
+                string json = JsonConvert.SerializeObject(triviaQuestions, Formatting.Indented);
+                File.WriteAllText(configFolder + "/" + triviaQuestionsFile, json);
+            }
+            else
+            {
+                string json = File.ReadAllText(configFolder + "/" + triviaQuestionsFile);
+                triviaQuestions = JsonConvert.DeserializeObject<TriviaQuestions>(json);
+            }
         }
 
         public static void ModifyChannelWhitelist(string channel, bool isAdding)
@@ -105,5 +118,17 @@ namespace Gideon
         public List<string> IsBatwomanInGame;
         public List<string> WhereIsDownload;
         public List<string> WhenDoesGameComeOut;
+    }
+
+    public struct TriviaQuestion
+    {
+        public string Question;
+        public string Answer;
+        public List<string> IncorrectAnswers;
+    }
+
+    public struct TriviaQuestions
+    {
+        public List<TriviaQuestion> Questions;
     }
 }

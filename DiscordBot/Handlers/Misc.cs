@@ -73,7 +73,49 @@ namespace Gideon.Handlers
 
         // Used to turn text upside down
         [Command("australia")]
-        public async Task AussieText([Remainder]string message) => await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Australian Translator", ToAussie(message), new Color(255, 140, 0), "Requested by " + Context.User, ""));
+        public async Task AussieText([Remainder]string message)
+        {
+            string name = ((SocketGuildUser)Context.User).Nickname ?? Context.User.Username;
+            await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Australian Translator", ToAussie(message), new Color(255, 140, 0), $"Translated for {name}.", ""));
+        }
+
+        // Print names of available Teco Animations
+        [Command("teco anim")]
+        public async Task PrintAnimationNames() => await PostAnimation();
+
+        // Print names of available Teco Animations
+        [Command("teco anims")]
+        public async Task PostAnimation()
+        {
+            if (!UserAccounts.GetAccount(Context.User).superadmin) return;
+            await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Available Teco Anims", "getoutofhere\nholdthathougt\nilikeitbutno\nnofacereveal\nfanfiction\nstfu\nshutupidc\nsuicide\nthefuckisthis", new Color(31, 139, 76), "", ""));
+        }
+
+        // Let Teco post animations he made (often as reactions or replies)
+        [Command("teco anim")]
+        public async Task PostAnimation(string name)
+        {
+            if (!UserAccounts.GetAccount(Context.User).superadmin) return;
+            if (name == "getoutofhere")
+                await Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/354460278479650816/466021333910683648/Get_out_of_Here.mp4");
+            else if (name == "holdthathougt")
+                await Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/354460278479650816/466021399966908447/Hold_that_thought.mp4");
+            else if (name == "ilikeitbutno")
+                await Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/354460278479650816/466021477024792576/I_like_it_but_no.mp4");
+            else if (name == "nofacereveal")
+                await Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/354460278479650816/466021541339987979/I_will_not_show_my_face.mp4");
+            else if (name == "fanfiction")
+                await Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/354460278479650816/466021604573446144/Keep_it_in_your_fan_fiction.mp4");
+            else if (name == "stfu")
+                await Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/354460278479650816/466021647116271616/Shut_the_fuck_up.mp4");
+            else if (name == "shutupidc")
+                await Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/354460278479650816/466021716242726934/Shut_up_I_dont_care.mp4");
+            else if (name == "suicide")
+                await Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/354460278479650816/466021927623065630/Teco_kills_himself.mp4");
+            else if (name == "thefuckisthis")
+                await Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/354460278479650816/466021977845530624/The_fuck_is_this_shit.mp4");
+            else await PostAnimation();
+        }
 
         // Display a list of MiniGames
         [Command("games")]
@@ -143,30 +185,13 @@ namespace Gideon.Handlers
         public async Task GuessNG(int input) => await NG.TryToGuess((SocketGuildUser)Context.User, Context, input);
         #endregion
 
-        // Play 8ball
+        // Display 8-Ball instructions
         [Command("8ball")]
-        public async Task Play8Ball([Remainder]string question)
-        {
-            await _8ball.Play8Ball(Context);
-        }
+        public async Task Play8Ball() => await _8ball.Greet8Ball(Context);
 
-        [Command("dev")]
-        public async Task MakeDev([Remainder] SocketGuildUser user)
-        {
-            if (Context.User.ToString() != "admin#0001")
-                return;
-            var rolea = Context.Guild.Roles.FirstOrDefault(x => x.Name == "Developer");
-            await user.AddRoleAsync(rolea);
-        }
-
-        [Command("undev")]
-        public async Task UnDev([Remainder] SocketGuildUser user)
-        {
-            if (Context.User.ToString() != "admin#0001")
-                return;
-            var rolea = Context.Guild.Roles.FirstOrDefault(x => x.Name == "Developer");
-            await user.RemoveRoleAsync(rolea);
-        }
+        // Play 8-Ball
+        [Command("8ball")]
+        public async Task Play8Ball([Remainder]string question) => await _8ball.Play8Ball(Context);
 
         // Make Gideon say something
         [Command("say")]
@@ -212,16 +237,36 @@ namespace Gideon.Handlers
             await Context.Channel.SendMessageAsync($"You can only do this command in {Context.Guild.GetTextChannel(339887750683688965).Mention}.");
         }
 
+        // Display the voice acting audtion website
         [Command("audition")]
         public async Task Audition() => await Context.Channel.SendMessageAsync("Audition here: http://www.behindthevoiceactors.com/members/Tecosaurus/casting-call/Crisis-on-Earth-One-An-Arrowverse-Fan-Game/");
 
+        // Display a random person on the server
         [Command("someone")]
         public async Task GetRandomPerson()
         {
             SocketGuildUser[] s = Context.Guild.Users.ToArray();
             SocketGuildUser randomUser = s[Config.Utilities.GetRandomNumber(0, s.Length)];
             string footer = $"{((1.0m / Context.Guild.MemberCount) * 100).ToString("N3")}% chance of selecting this user.";
-            await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Random User", randomUser.Mention, Config.Utilities.DomColorFromURL(randomUser.GetAvatarUrl()), footer, randomUser.GetAvatarUrl()));
+            await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Random User", randomUser.ToString(), Config.Utilities.DomColorFromURL(randomUser.GetAvatarUrl()), footer, randomUser.GetAvatarUrl()));
+        }
+        
+        // See how many tries it would take to randomly get a specific user
+        [Command("someone")]
+        public async Task GetRandomPerson(SocketGuildUser user)
+        {
+            SocketGuildUser[] s = Context.Guild.Users.ToArray();
+            uint count = 0;
+            bool hasFound = false;
+            do
+            {
+                count++;
+                SocketGuildUser randomUser = s[Config.Utilities.GetRandomNumber(0, s.Length)];
+                if (randomUser == user) hasFound = true;
+            } while (!hasFound);
+
+            string footer = $"{((1.0m / Context.Guild.MemberCount) * 100).ToString("N3")}% chance of selecting this user.";
+            await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Random User", $"It took {count} tries to find {user.Mention}.", Config.Utilities.DomColorFromURL(user.GetAvatarUrl()), footer, user.GetAvatarUrl()));
         }
 
         [Command("onlinestaff")]

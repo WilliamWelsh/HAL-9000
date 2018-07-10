@@ -100,6 +100,12 @@ namespace Gideon.Handlers
                 return ":flag_fr:";
             else if (country == "Bosnia and Herzegovina")
                 return ":flag_ba:";
+            else if (country == "New Zealand")
+                return ":flag_nz:";
+            else if (country == "Philippines")
+                return ":flag_ph:";
+            else if (country == "Canada")
+                return ":flag_ca:";
             else return "";
         }
 

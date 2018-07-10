@@ -19,18 +19,14 @@ namespace Gideon
             _service = new CommandService();
             await _service.AddModulesAsync(Assembly.GetEntryAssembly());
             _client.MessageReceived += HandleCommandAsync;
+            _client.UserJoined += DMNewUser;
         }
+
+        private async Task DMNewUser(SocketGuildUser user) => await user.SendMessageAsync("Welcome to the Crisis on Earth One: An Arrowverse Fangame Discord!\n\n**THE GAME IS NOT OUT YET.\n\nTHE RELEASE DATE IS 2019.**");
 
         public string PayAttentionToUser = "";
         public bool isPayingAttentionToUser = false;
         public bool PayAttentionToUserDone = false;
-
-        private static readonly Random getrandom = new Random();
-
-        public static int GetRandomNumber(int min, int max)
-        {
-            lock (getrandom) { return getrandom.Next(min, max); }
-        }
 
         private string TellTime(int h, string p)
         {
@@ -306,7 +302,7 @@ namespace Gideon
 
             string[] timePeople = { "Reverse", "Teco", "Cottage", "Zoom", "PZoom", "Noah", "Jon", "Boot", "Slander", "Bob", "ZX", "Gannon", "Matthias", "R", "Retarded R", "Waffle", "Vaddy",
         "poison", "poisonbreak"};
-            int[] timeHourDif = { 0, 14, 14, 14, 14, 0, 6, 13, 14, 6, 14, -3, 12, 12, 12, 14, 0, -3, -3 };
+            int[] timeHourDif = { 0, 14, 14, 14, 14, 0, 6, 13, 14, 6, 16, -3, 12, 12, 12, 14, 0, -3, -3 };
 
             for (int i = 0; i < timePeople.Length; i++)
             {
@@ -324,9 +320,7 @@ namespace Gideon
             for (int i = 0; i < spellingMistakes.Length; i++)
             {
                 if (m.Contains(spellingMistakes[i]))
-                {
                     await msg.Channel.SendMessageAsync(spellingFix[i] + "*");
-                }
             }
 
             if (m == "!dev time")
@@ -391,9 +385,7 @@ namespace Gideon
             await Config.QuestionHandler.InterpretQuestion(context, m);
 
             if (s.Channel.Name.StartsWith("@"))
-            {
                 Console.WriteLine($" ----------\n DIRECT MESSAGE\n From: {s.Channel}\n {s}\n ----------");
-            }
         }
     }
 }
