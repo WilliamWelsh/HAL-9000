@@ -88,7 +88,7 @@ namespace Gideon.Handlers
         public async Task PostAnimation()
         {
             if (!UserAccounts.GetAccount(Context.User).superadmin) return;
-            await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Available Teco Anims", "getoutofhere\nholdthathougt\nilikeitbutno\nnofacereveal\nfanfiction\nstfu\nshutupidc\nsuicide\nthefuckisthis", new Color(31, 139, 76), "", ""));
+            await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Available Teco Anims", "getoutofhere\nholdthathougt\nilikeitbutno\nnofacereveal\nfanfiction\nstfu\nshutupidc\nsuicide\nthefuckisthis\nsarcasm", new Color(31, 139, 76), "", ""));
         }
 
         // Let Teco post animations he made (often as reactions or replies)
@@ -114,6 +114,8 @@ namespace Gideon.Handlers
                 await Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/354460278479650816/466021927623065630/Teco_kills_himself.mp4");
             else if (name == "thefuckisthis")
                 await Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/354460278479650816/466021977845530624/The_fuck_is_this_shit.mp4");
+            else if (name == "sarcasm")
+                await Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/354460278479650816/466157739853479936/Sarcasm.mp4");
             else await PostAnimation();
         }
 
@@ -367,6 +369,10 @@ namespace Gideon.Handlers
         public async Task Avatar([Remainder]SocketGuildUser user) => await Context.Channel.SendMessageAsync(user.GetAvatarUrl());
 
         #region Tecos Related Commands
+
+        // Pickpocket a user
+        [Command("pickpocket")]
+        public async Task PickPocketTecos(SocketGuildUser user) => await Config.TH.PickPocket(Context, user);
 
         // Spawn Tecos for a user
         [Command("tecos spawn")]

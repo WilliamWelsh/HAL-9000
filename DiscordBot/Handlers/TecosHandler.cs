@@ -1,4 +1,7 @@
-﻿using Discord.WebSocket;
+﻿using Discord.Commands;
+using Discord.WebSocket;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Gideon.Handlers
@@ -73,6 +76,55 @@ namespace Gideon.Handlers
         public async Task DisplayTecosStore(SocketGuildUser user, ISocketMessageChannel channel)
         {
             await channel.SendMessageAsync("", false, Config.Utilities.Embed($"Tecos Store", $"Double Teco Boost - ??? Tecos\n`Doubles your Tecos income for 24 hours!`", EmbedColor, $"You have {UserAccounts.GetAccount(user).Tecos} Tecos.", TecosIcon));
+        }
+
+        private struct PickPocketUser { public SocketGuildUser user; public DateTime timeStamp; }
+        private List<PickPocketUser> PickPocketHistory = new List<PickPocketUser>();
+        public async Task PickPocket(SocketCommandContext context, SocketGuildUser target)
+        {
+            SocketGuildUser self = (SocketGuildUser)context.User;
+            if(self == target)
+            {
+                await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed($"PickPocket", $"You cannot pickpocket yourself.", EmbedColor, "", TecosIcon));
+                return;
+            }
+            foreach(PickPocketUser ppu in PickPocketHistory)
+            {
+                if (ppu.user == self)
+                {
+                    if((DateTime.Now - ppu.timeStamp).TotalHours <= 12)
+                    {
+                        string timeLeft = "";
+                        if((12 - ((DateTime.Now - ppu.timeStamp).TotalHours)) < 1)
+                            timeLeft = $"{Math.Round(12 - ((DateTime.Now - ppu.timeStamp).TotalMinutes), 0)} minutes";
+                        else
+                            timeLeft = $"{Math.Round(12 - ((DateTime.Now - ppu.timeStamp).TotalHours), 0)} hours";
+                        await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed($"PickPocket", $"You must wait {timeLeft} before pickpocketing again.", EmbedColor, "", TecosIcon));
+                        return;
+                    }
+                    PickPocketHistory.Remove(ppu);
+                }
+            }
+            switch (Config.Utilities.GetRandomNumber(0,2))
+            {
+                // Success
+                case 0:
+                    int TecosGained = (int)(UserAccounts.GetAccount(target).Tecos * 0.1);
+                    await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed($"PickPocket", $"{self.Mention} successfully pickpocketed {TecosGained} Tecos from {target.Mention}.", EmbedColor, "", TecosIcon));
+                    AdjustTecos(self, TecosGained);
+                    AdjustTecos(target, -TecosGained);
+                    break;
+                // Fail
+                case 1:
+                    int TecosLost = (int)(UserAccounts.GetAccount(self).Tecos * 0.1);
+                    await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed($"PickPocket", $"{self.Mention} attempted to pickpocket {target.Mention} and failed, losing {TecosLost} Tecos.", EmbedColor, "", TecosIcon));
+                    AdjustTecos(self, TecosLost);
+                    break;
+            }
+            PickPocketUser p = new PickPocketUser();
+            p.user = self;
+            p.timeStamp = DateTime.Now;
+            PickPocketHistory.Add(p);
         }
     }
 }

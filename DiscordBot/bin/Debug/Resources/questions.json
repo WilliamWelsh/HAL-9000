@@ -49,7 +49,8 @@
 	"are you going to add black lightning",
 	"is black lightning going to be in the game",
 	"is black lightning gonna be in the game",
-	"will black lightning be in the game"
+	"will black lightning be in the game",
+	"can you add black lightning"
   ],
   "IsBatmanInGame": [
     "is batman in the game",
@@ -57,10 +58,13 @@
 	"can you add batman",
 	"is batman gonna be in the game",
 	"will batman be in the game",
-	"is batman coming to the game"
+	"is batman coming to the game",
   ],
   "IsBatwomanInGame": [
-    "are you going to add batwoman"
+    "are you going to add batwoman",
+	"will batwoman be in the game",
+	"can you add batwoman",
+	"is batwoman gonna be in the game"
   ],
   "WhereIsDownload": [
     "where can i download the game",
