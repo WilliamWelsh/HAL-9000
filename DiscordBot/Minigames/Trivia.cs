@@ -24,7 +24,7 @@ namespace Gideon.Minigames
             var embed = new EmbedBuilder();
             embed.WithTitle("Trivia");
             embed.WithDescription(Description);
-            embed.WithColor(new Color(31, 139, 76)); // Old color was 0, 172, 0
+            embed.WithColor(new Color(31, 139, 76));
             embed.WithFooter(Footer);
             return embed;
         }
@@ -37,9 +37,9 @@ namespace Gideon.Minigames
 
         public async Task TryToStartTrivia(SocketGuildUser user, SocketCommandContext context, string input)
         {
-            if (context.Channel.Name != "minigames")
+            if (context.Channel.Id != 443205778656985089)
             {
-                await context.Channel.SendMessageAsync($"Please use the {context.Guild.GetTextChannel(443205778656985089).Mention} chat for that, {context.User.Mention}.");
+                await Config.Utilities.PrintError(context, $"Please use the {context.Guild.GetTextChannel(443205778656985089).Mention} chat for that, {user.Mention}.");
                 return;
             }
             if (isTriviaBeingPlayed && (DateTime.Now - StartTime).TotalSeconds < 60)
@@ -49,7 +49,7 @@ namespace Gideon.Minigames
             }
             if(input == "trivia")
             {
-                await context.Channel.SendMessageAsync("", false, Embed("Please select a mode.\n\n`!trivia solo` - Play alone\n\n`!trivia all` - First to answer wins.", ""));
+                await context.Channel.SendMessageAsync("", false, Embed("Please select a mode.\n\n`!trivia solo` - Play alone.\n\n`!trivia all` - First to answer wins.", ""));
                 return;
             }
             if (isTriviaBeingPlayed && (DateTime.Now - StartTime).TotalSeconds > 60)

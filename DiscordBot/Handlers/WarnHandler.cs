@@ -43,9 +43,6 @@ namespace Gideon.Handlers
             return embed;
         }
 
-        // Print that the targeted user cannot be warned
-        public async Task WarnFail(ISocketMessageChannel channel) => await channel.SendMessageAsync("", false, warnEmbed("Warn Error", "You cannot warn that user.", ""));
-
         // Check if user needs to be kicked or banned
         private async Task CheckWarnCount(UserAccount account, SocketCommandContext context, SocketGuildUser offender)
         {

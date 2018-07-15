@@ -100,7 +100,7 @@ namespace Gideon
         {
             var msg = s as SocketUserMessage;
             if (msg == null) return;
-            if (msg.Author.ToString() == "Gideon#8386") return;
+            if (msg.Author.Id == 437458514906972180) return;
 
             var context = new SocketCommandContext(_client, msg);
 
@@ -143,7 +143,11 @@ namespace Gideon
 
             if (m == "!reset trivia")
             {
-                if (!Config.Utilities.isRespectedPlus(context, (SocketGuildUser)msg.Author)) return;
+                if (!Config.Utilities.isRespectedPlus(context, (SocketGuildUser)msg.Author))
+                {
+                    await Config.Utilities.PrintError(context, $"You do not have permission to do that command, {msg.Author.Mention}.");
+                    return;
+                }
                 await msg.Channel.SendMessageAsync($"{context.User.Mention} has reset Trivia.");
                 Config.MinigameHandler.Trivia.ResetTrivia();
                 return;
@@ -151,7 +155,11 @@ namespace Gideon
 
             if (m == "!reset rr")
             {
-                if (!Config.Utilities.isRespectedPlus(context, (SocketGuildUser)msg.Author)) return;
+                if (!Config.Utilities.isRespectedPlus(context, (SocketGuildUser)msg.Author))
+                {
+                    await Config.Utilities.PrintError(context, $"You do not have permission to do that command, {msg.Author.Mention}.");
+                    return;
+                }
                 await msg.Channel.SendMessageAsync($"{context.User.Mention} has reset Russian Roulette.");
                 Config.MinigameHandler.RR.Reset();
                 return;
@@ -159,7 +167,11 @@ namespace Gideon
 
             if (m == "!reset ttt")
             {
-                if (!Config.Utilities.isRespectedPlus(context, (SocketGuildUser)msg.Author)) return;
+                if (!Config.Utilities.isRespectedPlus(context, (SocketGuildUser)msg.Author))
+                {
+                    await Config.Utilities.PrintError(context, $"You do not have permission to do that command, {msg.Author.Mention}.");
+                    return;
+                }
                 await msg.Channel.SendMessageAsync($"{msg.Author.Mention} has reset Tic-Tac-Toe.");
                 Config.MinigameHandler.TTT.Reset();
                 return;
@@ -167,7 +179,11 @@ namespace Gideon
 
             if (m == "!reset ng")
             {
-                await msg.Channel.SendMessageAsync($"{msg.Author.Mention} has reset the Number Guess game.");
+                if (!Config.Utilities.isRespectedPlus(context, (SocketGuildUser)msg.Author))
+                {
+                    await Config.Utilities.PrintError(context, $"You do not have permission to do that command, {msg.Author.Mention}.");
+                    return;
+                }
                 Config.MinigameHandler.NG.Reset();
                 return;
             }
@@ -192,7 +208,7 @@ namespace Gideon
             // Answer trivia
             if (m == "a" || m == "b" || m == "c" || m == "d")
             {
-                if(context.Channel.Name == "minigames")
+                if(context.Channel.Id == 443205778656985089)
                     await Config.MinigameHandler.Trivia.AnswerTrivia((SocketGuildUser)msg.Author, context, m);
             }
 
@@ -285,7 +301,7 @@ namespace Gideon
 
                 var messages = await context.Channel.GetMessagesAsync(1).Flatten();
                 await context.Channel.DeleteMessagesAsync(messages);
-                await msg.Channel.SendMessageAsync($"Please post images in #off-topic only, {msg.Author.Mention}");
+                await Config.Utilities.PrintError(context, $"Please post links in {context.Guild.GetTextChannel(339887750683688965).Mention} only, {msg.Author.Mention}");
                 return;
             }
 
@@ -296,7 +312,7 @@ namespace Gideon
 
                 var messages = await context.Channel.GetMessagesAsync(1).Flatten();
                 await context.Channel.DeleteMessagesAsync(messages);
-                await msg.Channel.SendMessageAsync($"Please post links in {context.Guild.GetTextChannel(339887750683688965).Mention} only, {msg.Author.Mention}");
+                await Config.Utilities.PrintError(context, $"Please post links in {context.Guild.GetTextChannel(339887750683688965).Mention} only, {msg.Author.Mention}");
                 return;
             }
 
@@ -314,8 +330,8 @@ namespace Gideon
                 }
             }
 
-            string[] spellingMistakes = { "should of", "would of", "wouldnt of", "wouldn't of", "would not of", "couldnt of", "couldn't of", "could not of", "better of", "shouldnt of", "shouldn't of", "should not of", "alot" };
-            string[] spellingFix = { "should have", "would have", "wouldn't have", "wouldn't have", "would not have", "couldn't have", "couldn't have", "could not have", "better have", "shouldn't have", "shouldn't have", "should not have", "a lot" };
+            string[] spellingMistakes = { "should of", "would of", "wouldnt of", "wouldn't of", "would not of", "couldnt of", "couldn't of", "could not of", "better of", "shouldnt of", "shouldn't of", "should not of", "alot", "cloud of" };
+            string[] spellingFix = { "should have", "would have", "wouldn't have", "wouldn't have", "would not have", "couldn't have", "couldn't have", "could not have", "better have", "shouldn't have", "shouldn't have", "should not have", "a lot", "cloud have" };
 
             for (int i = 0; i < spellingMistakes.Length; i++)
             {

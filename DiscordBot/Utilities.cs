@@ -7,6 +7,7 @@ using System.Drawing;
 using ColorThiefDotNet;
 using Discord.Commands;
 using Discord.WebSocket;
+using System.Threading.Tasks;
 
 namespace Gideon
 {
@@ -30,6 +31,9 @@ namespace Gideon
             embed.WithThumbnailUrl(thURL);
             return embed;
         }
+
+        // Print an error
+        public async Task PrintError(SocketCommandContext context, string description) => await context.Channel.SendMessageAsync("", false, Embed("Error", description, new Discord.Color(227, 37, 39), "", ""));
 
         // Get a dominant color from an image (url)
         public Discord.Color DomColorFromURL(string url)

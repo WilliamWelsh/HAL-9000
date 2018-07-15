@@ -50,9 +50,9 @@ namespace Gideon.Minigames
 
         public async Task TryToStartGame(int RandomNumber, SocketGuildUser user, SocketCommandContext context, int players)
         {
-            if (context.Channel.Name != "minigames")
+            if (context.Channel.Id != 443205778656985089)
             {
-                await context.Channel.SendMessageAsync($"Please use the #minigames chat for that, {context.User.Mention}.");
+                await Config.Utilities.PrintError(context, $"Please use the {context.Guild.GetTextChannel(443205778656985089).Mention} chat for that, {user.Mention}.");
                 return;
             }
             if (isGamingGoing) return;
@@ -69,9 +69,9 @@ namespace Gideon.Minigames
 
         public async Task JoinGame(SocketGuildUser user, SocketCommandContext context)
         {
-            if (context.Channel.Name != "minigames")
+            if (context.Channel.Id != 443205778656985089)
             {
-                await context.Channel.SendMessageAsync($"Please use the #minigames chat for that, {context.User.Mention}.");
+                await Config.Utilities.PrintError(context, $"Please use the {context.Guild.GetTextChannel(443205778656985089).Mention} chat for that, {user.Mention}.");
                 return;
             }
             if (!isGamingGoing)
@@ -93,16 +93,13 @@ namespace Gideon.Minigames
                 await context.Channel.SendMessageAsync("", false, embed($"{PlayerSlots - (Players.Count)} more player(s) needed!", "", true));
         }
 
-        public async Task StartGame(SocketCommandContext context)
-        {
-            await context.Channel.SendMessageAsync("", false, embed("I am thinking of a number between 1 and 100. You get one try.", "!g number to guess.", false));
-        }
+        public async Task StartGame(SocketCommandContext context) => await context.Channel.SendMessageAsync("", false, embed("I am thinking of a number between 1 and 100. You get one try.", "!g number to guess.", false));
 
         public async Task TryToGuess(SocketGuildUser user, SocketCommandContext context, int input)
         {
-            if (context.Channel.Name != "minigames")
+            if (context.Channel.Id != 443205778656985089)
             {
-                await context.Channel.SendMessageAsync($"Please use the #minigames chat for that, {context.User.Mention}.");
+                await Config.Utilities.PrintError(context, $"Please use the {context.Guild.GetTextChannel(443205778656985089).Mention} chat for that, {user.Mention}.");
                 return;
             }
             if (!isGamingGoing) return;

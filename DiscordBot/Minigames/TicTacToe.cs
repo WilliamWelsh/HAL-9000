@@ -30,9 +30,9 @@ namespace Gideon.Minigames
 
         public async Task TryToStartGame(SocketCommandContext context, string input)
         {
-            if (context.Channel.Name != "minigames")
+            if (context.Channel.Id != 443205778656985089)
             {
-                await context.Channel.SendMessageAsync($"Please use the #minigames chat for that, {context.User.Mention}.");
+                await Config.Utilities.PrintError(context, $"Please use the {context.Guild.GetTextChannel(443205778656985089).Mention} chat for that, {context.User.Mention}.");
                 return;
             }
             if (isGameGoing)
@@ -69,9 +69,9 @@ namespace Gideon.Minigames
 
         public async Task TryToJoinGame(SocketCommandContext context)
         {
-            if (context.Channel.Name != "minigames")
+            if (context.Channel.Id != 443205778656985089)
             {
-                await context.Channel.SendMessageAsync($"Please use the #minigames chat for that, {context.User.Mention}.");
+                await Config.Utilities.PrintError(context, $"Please use the {context.Guild.GetTextChannel(443205778656985089).Mention} chat for that, {context.User.Mention}.");
                 return;
             }
             if (!isGameGoing)
@@ -97,9 +97,9 @@ namespace Gideon.Minigames
 
         public async Task PutLetter(SocketCommandContext context, string input)
         {
-            if (context.Channel.Name != "minigames")
+            if (context.Channel.Id != 443205778656985089)
             {
-                await context.Channel.SendMessageAsync($"Please use the #minigames chat for that, {context.User.Mention}.");
+                await Config.Utilities.PrintError(context, $"Please use the {context.Guild.GetTextChannel(443205778656985089).Mention} chat for that, {context.User.Mention}.");
                 return;
             }
             if (!isGameGoing)

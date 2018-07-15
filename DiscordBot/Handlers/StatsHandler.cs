@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Discord;
+using System;
+using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
-using Discord.Commands;
-using Discord;
 
 namespace Gideon.Handlers
 {
@@ -154,9 +150,6 @@ namespace Gideon.Handlers
                     embed.AddField("Local Time", $"{t.ToString("h:mm tt, dddd, MMMM d")}");
                     break;
             }
-
-            //if (user.Game.ToString() != null)
-                //embed.AddField("Currently Playing", user.Game.ToString());
 
             embed.WithColor(Config.Utilities.DomColorFromURL(user.GetAvatarUrl()));
             embed.WithThumbnailUrl(user.GetAvatarUrl());
