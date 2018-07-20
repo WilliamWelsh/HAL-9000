@@ -7,6 +7,7 @@ using Discord.Commands;
 using Gideon.Minigames;
 using Discord.WebSocket;
 using System.Threading.Tasks;
+using Discord.Rest;
 
 namespace Gideon.Handlers
 {
@@ -189,6 +190,10 @@ namespace Gideon.Handlers
         // Play 8-Ball
         [Command("8ball")]
         public async Task Play8Ball([Remainder]string question) => await _8ball.Play8Ball(Context);
+
+        // Start Rock, Paper, Scissors
+        [Command("rps")]
+        public async Task StartRPS() => Config.MinigameHandler.RPS.StartRPS(Context);
 
         // Make Gideon say something
         [Command("say")]

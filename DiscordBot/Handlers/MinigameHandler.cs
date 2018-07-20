@@ -1,8 +1,6 @@
-﻿using Gideon.Handlers;
-using Gideon.Minigames;
-using System;
-using Discord;
+﻿using Discord;
 using Discord.Commands;
+using Gideon.Minigames;
 using Discord.WebSocket;
 using System.Threading.Tasks;
 
@@ -17,6 +15,7 @@ namespace Gideon.Handlers
         public TicTacToe TTT = new TicTacToe();
         public NumberGuess NG = new NumberGuess();
         public RussianRoulette RR = new RussianRoulette();
+        public RockPaperScissors RPS = new RockPaperScissors();
 
         public async Task DisplayGames(SocketCommandContext context)
         {

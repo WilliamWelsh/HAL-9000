@@ -2,6 +2,8 @@
 using Discord;
 using Discord.WebSocket;
 using System.Threading.Tasks;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Gideon
 {
@@ -22,7 +24,90 @@ namespace Gideon
             await _client.StartAsync();
             _handler = new CommandHandler();
             await _handler.InitializeAsync(_client);
+            ConsoleInput();
             await Task.Delay(-1);
+        }
+
+        private async Task ConsoleInput()
+        {
+            var input = string.Empty;
+            while (input.Trim().ToLower() != "block")
+            {
+                input = Console.ReadLine();
+                if (input.Trim().ToLower() == "message")
+                    ConsoleSendMessage();
+            }
+        }
+
+        private async void ConsoleSendMessage()
+        {
+            Console.WriteLine("Select the guild:");
+            var guild = GetSelectedGuild(_client.Guilds);
+            var textChannel = GetSelectedTextChannel(guild.TextChannels);
+            var msg = string.Empty;
+            while (msg.Trim() == string.Empty)
+            {
+                Console.WriteLine("Your message:");
+                msg = Console.ReadLine();
+            }
+
+            await textChannel.SendMessageAsync(msg);
+        }
+
+        private SocketTextChannel GetSelectedTextChannel(IEnumerable<SocketTextChannel> channels)
+        {
+            var textChannels = channels.ToList();
+            var maxIndex = textChannels.Count - 1;
+            for (var i = 0; i <= maxIndex; i++)
+            {
+                Console.WriteLine($"{i} - {textChannels[i].Name}");
+            }
+
+            var selectedIndex = -1;
+            while (selectedIndex < 0 || selectedIndex > maxIndex)
+            {
+                var success = int.TryParse(Console.ReadLine().Trim(), out selectedIndex);
+                if (!success)
+                {
+                    Console.WriteLine("That was an invalid index, try again.");
+                    selectedIndex = -1;
+                }
+            }
+
+            return textChannels[selectedIndex];
+        }
+
+        private SocketGuild GetSelectedGuild(IEnumerable<SocketGuild> guilds)
+        {
+            var socketGuilds = guilds.ToList();
+            var maxIndex = socketGuilds.Count - 1;
+            for (var i = 0; i <= maxIndex; i++)
+            {
+                Console.WriteLine($"{i} - {socketGuilds[i].Name}");
+            }
+
+            var selectedIndex = -1;
+            while (selectedIndex < 0 || selectedIndex > maxIndex)
+            {
+                var success = int.TryParse(Console.ReadLine().Trim(), out selectedIndex);
+                if (!success)
+                {
+                    Console.WriteLine("That was an invalid index, try again.");
+                    selectedIndex = -1;
+                }
+            }
+
+            return socketGuilds[selectedIndex];
+        }
+
+        private async Task ConsoleSendMessage(string input)
+        {
+            var guilds = _client.Guilds.ToList();
+            SocketGuild tecosServer = null;
+            foreach (SocketGuild g in guilds)
+                if (g.Id == 333843634606702602)
+                    tecosServer = g;
+            await tecosServer.GetTextChannel(339887750683688965).SendMessageAsync("");
         }
 
         private async Task Log(LogMessage msg) => Console.WriteLine(msg.Message);

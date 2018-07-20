@@ -159,6 +159,7 @@
     <Compile Include="Handlers\MediaFetchHandler.cs" />
     <Compile Include="Minigames\8ball.cs" />
     <Compile Include="Minigames\NumberGuess.cs" />
+    <Compile Include="Minigames\RockPaperScissors.cs" />
     <Compile Include="Minigames\RussianRoulette.cs" />
     <Compile Include="Minigames\TicTacToe.cs" />
     <Compile Include="Minigames\Trivia.cs" />

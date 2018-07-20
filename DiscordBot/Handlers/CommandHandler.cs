@@ -20,6 +20,15 @@ namespace Gideon
             await _service.AddModulesAsync(Assembly.GetEntryAssembly());
             _client.MessageReceived += HandleCommandAsync;
             _client.UserJoined += DMNewUser;
+            _client.ReactionAdded += ReactionAdded;
+        }
+
+        private async Task ReactionAdded(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel channel, SocketReaction reaction)
+        {
+            if(Config.MinigameHandler.RPS.MessageID == reaction.MessageId)
+            {
+                await Config.MinigameHandler.RPS.ViewPlay(reaction.Emote.ToString(), channel, reaction.User);
+            }
         }
 
         private async Task DMNewUser(SocketGuildUser user) => await user.SendMessageAsync("Welcome to the Crisis on Earth One: An Arrowverse Fangame Discord!\n\n**THE GAME IS NOT OUT YET.\n\nTHE RELEASE DATE IS 2019.**");
