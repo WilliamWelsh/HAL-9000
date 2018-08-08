@@ -7,7 +7,6 @@ using Discord.Commands;
 using Gideon.Minigames;
 using Discord.WebSocket;
 using System.Threading.Tasks;
-using Discord.Rest;
 
 namespace Gideon.Handlers
 {
@@ -34,10 +33,8 @@ namespace Gideon.Handlers
             var rolea = Context.Guild.Roles.FirstOrDefault(x => x.Name == role);
             string desc = "";
             foreach (SocketGuildUser user in Context.Guild.Users.ToArray())
-            {
                 if (user.Roles.Contains(rolea))
                     desc += user.Mention + "\n";
-            }
             return desc;
         }
 

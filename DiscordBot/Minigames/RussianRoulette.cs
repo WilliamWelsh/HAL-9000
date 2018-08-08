@@ -43,9 +43,7 @@ namespace Gideon.Minigames
             {
                 string PlayerDesc = "";
                 for (int i = 0; i < Players.Count; i++)
-                {
                     PlayerDesc += $"Player {i + 1}: {Players.ElementAt(i).Mention}\n";
-                }
                 embed.AddField("Players", PlayerDesc);
             }
             embed.WithFooter(Footer);

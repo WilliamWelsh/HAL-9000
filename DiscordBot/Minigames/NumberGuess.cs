@@ -82,10 +82,8 @@ namespace Gideon.Minigames
             if (PlayerSlots == Players.Count)
                 return;
             foreach(Player p in Players)
-            {
                 if (p.user == user)
                     return;
-            }
             AddPlayer(user);
             if (PlayerSlots == Players.Count)
                 await StartGame(context);
