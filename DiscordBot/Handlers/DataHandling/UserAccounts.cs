@@ -30,7 +30,7 @@ namespace Gideon
         private static UserAccount GetOrCreateUserAccount(ulong id)
         {
             var result = from a in accounts
-                         where a.UserID == id
+                         where a.userID == id
                          select a;
             var account = result.FirstOrDefault();
             if(account == null)account = CreateUserAccount(id);
@@ -41,12 +41,13 @@ namespace Gideon
         {
             var newAccount = new UserAccount()
             {
-                UserID = id,
+                userID = id,
                 superadmin = false,
                 localTime = 999,
-                Country = "Not set.",
-                Tecos = 0,
-                hasDoubleTecoBoost = false
+                country = "Not set.",
+                coins = 0,
+                xp = 0,
+                level = 0
             };
             accounts.Add(newAccount);
             SaveAccounts();

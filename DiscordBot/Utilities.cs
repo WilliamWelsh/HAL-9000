@@ -60,36 +60,19 @@ namespace Gideon
             return new Discord.Color(r, g, b);
         }
 
-        // Return whether a user is Respected or higher
-        public bool isRespectedPlus(SocketCommandContext c, SocketGuildUser u)
-        {
-            var Respected = c.Guild.Roles.FirstOrDefault(x => x.Name == "Respected");
-            var Helper = c.Guild.Roles.FirstOrDefault(x => x.Name == "Helpers");
-            var Developer = c.Guild.Roles.FirstOrDefault(x => x.Name == "Developer");
-            var Lead = c.Guild.Roles.FirstOrDefault(x => x.Name == "Lead");
-            var Director = c.Guild.Roles.FirstOrDefault(x => x.Name == "Director");
-            if (u.Roles.Contains(Respected) ||
-                u.Roles.Contains(Helper) ||
-                u.Roles.Contains(Developer) ||
-                u.Roles.Contains(Lead) ||
-                u.Roles.Contains(Director))
-                return true;
-            return false;
-        }
+		// Convert a hexidecimal to an RGB value (input does not include the '#')
+		public Discord.Color HexToRGB(string hex)
+		{
+			// First two values of the hex
+			int r = int.Parse(hex.Substring(0, hex.Length - 4), System.Globalization.NumberStyles.AllowHexSpecifier);
 
-        // Return whether a user is Helper or higher
-        public bool isHelperPlus(SocketCommandContext c, SocketGuildUser u)
-        {
-            var Helper = c.Guild.Roles.FirstOrDefault(x => x.Name == "Helpers");
-            var Developer = c.Guild.Roles.FirstOrDefault(x => x.Name == "Developer");
-            var Lead = c.Guild.Roles.FirstOrDefault(x => x.Name == "Lead");
-            var Director = c.Guild.Roles.FirstOrDefault(x => x.Name == "Director");
-            if (u.Roles.Contains(Helper) ||
-                u.Roles.Contains(Developer) ||
-                u.Roles.Contains(Lead) ||
-                u.Roles.Contains(Director))
-                return true;
-            return false;
-        }
-    }
+			// Get the middle two values of the hex
+			int g = int.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.AllowHexSpecifier);
+
+			// Final two values
+			int b = int.Parse(hex.Substring(4), System.Globalization.NumberStyles.AllowHexSpecifier);
+
+			return new Discord.Color(r, g, b);
+		}
+	}
 }

@@ -11,7 +11,7 @@ namespace Gideon.Minigames
 {
     class NumberGuess
     {
-        TecosHandler TH = new TecosHandler();
+        CoinsHandler TH = new CoinsHandler();
 
         int Number;
         struct Player { public SocketGuildUser user; public bool hasAnswered; public int guess; };
@@ -50,9 +50,9 @@ namespace Gideon.Minigames
 
         public async Task TryToStartGame(int RandomNumber, SocketGuildUser user, SocketCommandContext context, int players)
         {
-            if (context.Channel.Id != 443205778656985089)
+            if (context.Channel.Id != 518846214603669537)
             {
-                await Config.Utilities.PrintError(context, $"Please use the {context.Guild.GetTextChannel(443205778656985089).Mention} chat for that, {user.Mention}.");
+                await Config.Utilities.PrintError(context, $"Please use the {context.Guild.GetTextChannel(518846214603669537).Mention} chat for that, {user.Mention}.");
                 return;
             }
             if (isGamingGoing) return;
@@ -69,9 +69,9 @@ namespace Gideon.Minigames
 
         public async Task JoinGame(SocketGuildUser user, SocketCommandContext context)
         {
-            if (context.Channel.Id != 443205778656985089)
+            if (context.Channel.Id != 518846214603669537)
             {
-                await Config.Utilities.PrintError(context, $"Please use the {context.Guild.GetTextChannel(443205778656985089).Mention} chat for that, {user.Mention}.");
+                await Config.Utilities.PrintError(context, $"Please use the {context.Guild.GetTextChannel(518846214603669537).Mention} chat for that, {user.Mention}.");
                 return;
             }
             if (!isGamingGoing)
@@ -95,9 +95,9 @@ namespace Gideon.Minigames
 
         public async Task TryToGuess(SocketGuildUser user, SocketCommandContext context, int input)
         {
-            if (context.Channel.Id != 443205778656985089)
+            if (context.Channel.Id != 518846214603669537)
             {
-                await Config.Utilities.PrintError(context, $"Please use the {context.Guild.GetTextChannel(443205778656985089).Mention} chat for that, {user.Mention}.");
+                await Config.Utilities.PrintError(context, $"Please use the {context.Guild.GetTextChannel(518846214603669537).Mention} chat for that, {user.Mention}.");
                 return;
             }
             if (!isGamingGoing) return;
@@ -138,14 +138,14 @@ namespace Gideon.Minigames
             {
                 if(Players.ElementAt(0).guess == Number)
                 {
-                    embed.WithDescription($"Great job, {Players.ElementAt(0).user.Mention}! You got it exactly right and won 101 Tecos!");
-                    TH.AdjustTecos(Players.ElementAt(0).user, 101);
+                    embed.WithDescription($"Great job, {Players.ElementAt(0).user.Mention}! You got it exactly right and won 101 Coins!");
+                    TH.AdjustCoins(Players.ElementAt(0).user, 101);
                 }
                 else
                 {
                     embed.WithDescription($"Sorry, {Players.ElementAt(0).user.Mention}. You did not get it right.");
-                    embed.WithFooter("Lost 1 Teco.");
-                    TH.AdjustTecos(Players.ElementAt(0).user, -1);
+                    embed.WithFooter("Lost 1 Coin.");
+                    TH.AdjustCoins(Players.ElementAt(0).user, -1);
                 }
                 await context.Channel.SendMessageAsync("", false, embed);
                 Reset();
@@ -161,11 +161,11 @@ namespace Gideon.Minigames
                 if (Players.ElementAt(i).guess == Number)
                 {
                     didSomeoneGetIt = true;
-                    Description += $"{Players.ElementAt(i).user.Mention} got it exactly right and won {100 + (2* PlayerSlots)} Tecos!";
-                    Description += "\n\nEveryone else lost 10 Tecos!";
+                    Description += $"{Players.ElementAt(i).user.Mention} got it exactly right and won {100 + (2* PlayerSlots)} Coins!";
+                    Description += "\n\nEveryone else lost 10 coins!";
                     lost10 = true;
                     embed.WithFooter("100 + 2 * Players played.");
-                    TH.AdjustTecos(Players.ElementAt(i).user, 100 + (2 * PlayerSlots));
+                    TH.AdjustCoins(Players.ElementAt(i).user, 100 + (2 * PlayerSlots));
                     winner = Players.ElementAt(i).user;
                     break;
                 }
@@ -180,7 +180,7 @@ namespace Gideon.Minigames
                     if (Players.ElementAt(i).guess == Closest)
                     {
                         Description += $"{Players.ElementAt(i).user.Mention} got the closest with {Players.ElementAt(i).guess}!";
-                        Description += "\n\nEveryone else lost 1 Teco.";
+                        Description += "\n\nEveryone else lost 1 coin.";
                         winner = Players.ElementAt(i).user;
                         break;
                     }
@@ -193,9 +193,9 @@ namespace Gideon.Minigames
                 if(!(winner == Players.ElementAt(i).user))
                 {
                     if (lost10)
-                        TH.AdjustTecos(Players.ElementAt(i).user, -10);
+                        TH.AdjustCoins(Players.ElementAt(i).user, -10);
                     else
-                        TH.AdjustTecos(Players.ElementAt(i).user, -1);
+                        TH.AdjustCoins(Players.ElementAt(i).user, -1);
                 }
             }
             await context.Channel.SendMessageAsync("", false, embed);

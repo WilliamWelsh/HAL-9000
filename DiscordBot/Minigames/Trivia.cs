@@ -37,9 +37,9 @@ namespace Gideon.Minigames
 
         public async Task TryToStartTrivia(SocketGuildUser user, SocketCommandContext context, string input)
         {
-            if (context.Channel.Id != 443205778656985089)
+            if (context.Channel.Id != 518846214603669537)
             {
-                await Config.Utilities.PrintError(context, $"Please use the {context.Guild.GetTextChannel(443205778656985089).Mention} chat for that, {user.Mention}.");
+                await Config.Utilities.PrintError(context, $"Please use the {context.Guild.GetTextChannel(518846214603669537).Mention} chat for that, {user.Mention}.");
                 return;
             }
             if (isTriviaBeingPlayed && (DateTime.Now - StartTime).TotalSeconds < 60)
@@ -59,8 +59,8 @@ namespace Gideon.Minigames
 
         private async Task CancelGame(SocketGuildUser user, SocketCommandContext context)
         {
-            Config.TH.AdjustTecos(user, -1);
-            await context.Channel.SendMessageAsync("", false, Embed($"{user.Mention} took too long to answer and lost 1 teco.", ""));
+            Config.CoinHandler.AdjustCoins(user, -1);
+            await context.Channel.SendMessageAsync("", false, Embed($"{user.Mention} took too long to answer and lost 1 Coin.", ""));
         }
 
         private async Task StartTrivia(SocketGuildUser user, SocketCommandContext context, string mode)
@@ -120,13 +120,13 @@ namespace Gideon.Minigames
                 string name = user.Nickname != null ? user.Nickname : user.ToString();
                 if (input == correctAnswer)
                 {
-                    await context.Channel.SendMessageAsync("", false, Embed("Correct.", $"{GetName(user)} has been awarded 1 Teco."));
-                    Config.TH.AdjustTecos(user, 1);
+                    await context.Channel.SendMessageAsync("", false, Embed("Correct.", $"{GetName(user)} has been awarded 1 Coin."));
+                    Config.CoinHandler.AdjustCoins(user, 1);
                     ResetTrivia();
                     return;
                 }
-                await context.Channel.SendMessageAsync("", false, Embed($"Wrong, it is {correctAnswer.ToUpper()}.", $"{GetName(user)} lost 1 Teco."));
-                Config.TH.AdjustTecos(user, -1);
+                await context.Channel.SendMessageAsync("", false, Embed($"Wrong, it is {correctAnswer.ToUpper()}.", $"{GetName(user)} lost 1 Coin."));
+                Config.CoinHandler.AdjustCoins(user, -1);
                 ResetTrivia();
                 return;
             }
@@ -144,8 +144,8 @@ namespace Gideon.Minigames
                 PlayersAnswered.Add(user);
                 if (input == correctAnswer)
                 {
-                    await context.Channel.SendMessageAsync("", false, Embed($"Correct, {user.Mention} won!", $"{GetName(user)} has been awarded 1 Teco."));
-                    Config.TH.AdjustTecos(user, 1);
+                    await context.Channel.SendMessageAsync("", false, Embed($"Correct, {user.Mention} won!", $"{GetName(user)} has been awarded 1 Coin."));
+                    Config.CoinHandler.AdjustCoins(user, 1);
                     ResetTrivia();
                     return;
                 }

@@ -1,208 +1,151 @@
-﻿using System;
-using Discord;
-using System.Linq;
+﻿using Discord;
+using Discord.Rest;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 
 namespace Gideon.Minigames
 {
-    class TicTacToe
-    {
-        public string[] SlotValues = { " ", " ", " ", " ", " ", " ", " ", " ", " " };
+	class TicTacToe
+	{
+		private string[] boardSlots = { ":white_large_square:", ":white_large_square:", ":white_large_square:",
+		":white_large_square:", ":white_large_square:", ":white_large_square:",
+		":white_large_square:", ":white_large_square:", ":white_large_square:" };
 
-        bool isGameGoing = false;
-        int currentTurn = 0;
-        SocketGuildUser host = null;
-        struct Player { public SocketGuildUser user; public string letter; };
-        List<Player> Players = new List<Player>();
+		private string writeBoard => $"{boardSlots[0]}{boardSlots[1]}{boardSlots[2]}\n{boardSlots[3]}{boardSlots[4]}{boardSlots[5]}\n{boardSlots[6]}{boardSlots[7]}{boardSlots[8]}";
 
-        Embed Embed(string Description, string Footer)
-        {
-            var embed = new EmbedBuilder();
-            embed.WithTitle("Tic-Tac-Toe");
-            embed.WithDescription(Description);
-            embed.WithColor(new Color(50, 50, 50));
-            embed.WithFooter(Footer);
-            return embed;
-        }
+		RestUserMessage m;
 
-        public async Task TryToStartGame(SocketCommandContext context, string input)
-        {
-            if (context.Channel.Id != 443205778656985089)
-            {
-                await Config.Utilities.PrintError(context, $"Please use the {context.Guild.GetTextChannel(443205778656985089).Mention} chat for that, {context.User.Mention}.");
-                return;
-            }
-            if (isGameGoing)
-            {
-                await context.Channel.SendMessageAsync("", false, Embed("Sorry, but a game has already started.\nYou can request a Respected+ to `!reset ttt` if there is an issue.", ""));
-                return;
-            }
-            if (input == "!ttt")
-            {
-                await context.Channel.SendMessageAsync("", false, Embed("Please select a letter to start a game.\n\n`!ttt X`\n`!ttt O`", ""));
-                return;
-            }
+		SocketGuildUser Player1, Player2, currentTurnUser;
+		bool isGameGoing = false;
+		bool hasGameStarted = false;
+		bool canPlaySlot = true;
 
-            string letter = input.Replace("!ttt ", "");
-            if(letter != "x" && letter != "o")
-            {
-                await context.Channel.SendMessageAsync("", false, Embed("You may only use X and O.\n\n`!ttt X`\n`!ttt O`", ""));
-                return;
-            }
+		public async Task IncrementTurn()
+		{
+			if (!isGameGoing) return;
+			currentTurnUser = currentTurnUser == Player1 ? Player2 : Player1;
+			await m.ModifyAsync(m => { m.Content = $"It is {currentTurnUser.Mention}'s turn.\n\n{writeBoard}"; });
+		}
 
-            host = (SocketGuildUser)context.User;
-            AddPlayer(host, letter.ToUpper());
-            isGameGoing = true;
-            await context.Channel.SendMessageAsync("", false, Embed($"{host.Mention} has started a game!\n\nType `!join ttt` to join!", "Waiting for someone to join..."));
-        }
+		public async Task StartGame(SocketCommandContext context)
+		{
+			if (!isGameGoing)
+			{
+				Player1 = (SocketGuildUser)context.User;
+				isGameGoing = true;
+			}
+			else return;
+			await context.Channel.SendMessageAsync($"{Player1.Mention} has started a game of Tic-Tac-Toe! Type `!ttt join` to play.");
+		}
 
-        private void AddPlayer(SocketGuildUser user, string letter)
-        {
-            Player newPlayer = new Player();
-            newPlayer.user = user;
-            newPlayer.letter = letter;
-            Players.Add(newPlayer);
-        }
+		public async Task JoinGame(SocketCommandContext context)
+		{
+			if (isGameGoing && !hasGameStarted && Player1 != (SocketGuildUser)context.User)
+				Player2 = context.User as SocketGuildUser;
+			else return;
 
-        public async Task TryToJoinGame(SocketCommandContext context)
-        {
-            if (context.Channel.Id != 443205778656985089)
-            {
-                await Config.Utilities.PrintError(context, $"Please use the {context.Guild.GetTextChannel(443205778656985089).Mention} chat for that, {context.User.Mention}.");
-                return;
-            }
-            if (!isGameGoing)
-            {
-                await context.Channel.SendMessageAsync("", false, Embed("There is no game going.\n\nType `!ttt` to start one.", ""));
-                return;
-            }
-            if (Players.Count == 2) return;
+			m = await context.Channel.SendMessageAsync("Please wait for the game to load...");
+			await m.RemoveAllReactionsAsync();
+			await m.AddReactionAsync(new Emoji("↖"));
+			await m.AddReactionAsync(new Emoji("⬆"));
+			await m.AddReactionAsync(new Emoji("↗"));
+			await m.AddReactionAsync(new Emoji("⬅"));
+			await m.AddReactionAsync(new Emoji("⏺"));
+			await m.AddReactionAsync(new Emoji("➡"));
+			await m.AddReactionAsync(new Emoji("↙"));
+			await m.AddReactionAsync(new Emoji("⬇"));
+			await m.AddReactionAsync(new Emoji("↘"));
+			await m.ModifyAsync(m => { m.Content = $"It is {Player1.Mention}'s turn.\n\n{writeBoard}"; });
+			currentTurnUser = Player1;
+		}
 
-            SocketGuildUser newPlayer = (SocketGuildUser)context.User;
-            string letter = Players.ElementAt(0).letter == "X" ? "O" : "X";
-            AddPlayer(newPlayer, letter);
+		private string EmojiToPlace(int slot)
+		{
+			if (boardSlots[slot] == ":white_large_square:" && boardSlots[slot] != ":x:" && boardSlots[slot] != ":o:")
+			{
+				canPlaySlot = true;
+				return currentTurnUser == Player1 ? ":x:" : ":o:";
+			}
+			canPlaySlot = false;
+			return ":white_large_square:";
+		}
 
-            await context.Channel.SendMessageAsync("", false, Embed($"{newPlayer.Mention} has joined as \"{letter}\"!\n\nWaiting for {Players.ElementAt(0).user.Mention} to play...\n\n`!put #` - Put your letter at whichever slot number # you choose.\n\n{WriteBoard()}", ""));
-        }
+		public async Task Play(SocketReaction reaction, ISocketMessageChannel channel, Optional<IUser> user)
+		{
+			if (user.ToString() == "Gideon#8386") return;
+			if (currentTurnUser.ToString() != user.ToString())
+			{
+				await m.RemoveReactionAsync(reaction.Emote, reaction.User.Value);
+				return;
+			}
 
-        public string WriteBoard() =>
-            // Has to be indented this way to comply with Discord's code tags/Markdown
-            $@"```
-|{SlotValues[0]}|{SlotValues[1]}|{SlotValues[2]}|
-|{SlotValues[3]}|{SlotValues[4]}|{SlotValues[5]}|
-|{SlotValues[6]}|{SlotValues[7]}|{SlotValues[8]}|```";
+			string emote = reaction.Emote.ToString();
+			if (emote == "↖")
+				boardSlots[0] = EmojiToPlace(0);
+			else if (emote == "⬆")
+				boardSlots[1] = EmojiToPlace(1);
+			else if (emote == "↗")
+				boardSlots[2] = EmojiToPlace(2);
+			else if (emote == "⬅")
+				boardSlots[3] = EmojiToPlace(3);
+			else if (emote == "⏺")
+				boardSlots[4] = EmojiToPlace(4);
+			else if (emote == "➡")
+				boardSlots[5] = EmojiToPlace(5);
+			else if (emote == "↙")
+				boardSlots[6] = EmojiToPlace(6);
+			else if (emote == "⬇")
+				boardSlots[7] = EmojiToPlace(7);
+			else if (emote == "↘")
+				boardSlots[8] = EmojiToPlace(8);
 
-        public async Task PutLetter(SocketCommandContext context, string input)
-        {
-            if (context.Channel.Id != 443205778656985089)
-            {
-                await Config.Utilities.PrintError(context, $"Please use the {context.Guild.GetTextChannel(443205778656985089).Mention} chat for that, {context.User.Mention}.");
-                return;
-            }
-            if (!isGameGoing)
-            {
-                await context.Channel.SendMessageAsync("", false, Embed("There is no game going.\n\nType `!ttt` to start one.", ""));
-                return;
-            }
+			if (canPlaySlot)
+			{
+				await CheckForWin(channel, ":x:");
+				await CheckForWin(channel, ":o:");
+				await CheckForDraw();
+				await IncrementTurn();
+			}
 
-            SocketGuildUser player = (SocketGuildUser)context.User;
-            if((player != Players.ElementAt(0).user && player != Players.ElementAt(1).user) || player != Players.ElementAt(currentTurn).user) return;
+			await m.RemoveReactionAsync(reaction.Emote, reaction.User.Value);
+		}
 
-            int Slot;
-            Int32.TryParse(input.Replace("!put ", ""), out Slot);
+		private async Task CheckForWin(ISocketMessageChannel channel, string letter)
+		{
+			// Columns
+			if (boardSlots[0] == letter && boardSlots[3] == letter && boardSlots[6] == letter ||
+				boardSlots[1] == letter && boardSlots[4] == letter && boardSlots[7] == letter ||
+				boardSlots[2] == letter && boardSlots[5] == letter && boardSlots[8] == letter ||
 
-            if(Slot < 1)
-            {
-                await context.Channel.SendMessageAsync("", false, Embed($"1 is the first slot, {player.Mention}.", ""));
-                return;
-            }
-            else if (Slot > 9)
-            {
-                await context.Channel.SendMessageAsync("", false, Embed($"9 is the last slot, {player.Mention}.", ""));
-                return;
-            }
+				// Rows
+				boardSlots[0] == letter && boardSlots[1] == letter && boardSlots[2] == letter ||
+				boardSlots[3] == letter && boardSlots[4] == letter && boardSlots[5] == letter ||
+				boardSlots[6] == letter && boardSlots[7] == letter && boardSlots[8] == letter ||
 
-            Slot--;
-            if (SlotValues[Slot] != " ")
-            {
-                await context.Channel.SendMessageAsync("", false, Embed("That slot has already been filled.", ""));
-                return;
-            }
+				// Diagonal
+				boardSlots[0] == letter && boardSlots[4] == letter && boardSlots[8] == letter ||
+				boardSlots[6] == letter && boardSlots[4] == letter && boardSlots[2] == letter)
+			{
+				await DeclareWinner(channel, letter);
+			}
+		}
 
-            SlotValues[Slot] = Players.ElementAt(currentTurn).letter;
-            await CheckForWin(context, "X");
-            await CheckForWin(context, "O");
-            await CheckForDraw(context);
-            currentTurn = currentTurn == 0 ? 1 : 0;
+		private async Task DeclareWinner(ISocketMessageChannel channel, string letter)
+		{
+			SocketGuildUser winner = letter == ":x:" ? Player1 : Player2;
+			await m.ModifyAsync(m => { m.Content = $"{winner.Mention} has won!\n\n{writeBoard}"; });
+			await Reset();
+		}
 
-            await context.Channel.SendMessageAsync("", false, Embed($"{WriteBoard()}\n{Players.ElementAt(currentTurn).user.Mention}'s turn.", ""));
-        }
+		private async Task CheckForDraw()
+		{
+			foreach (var s in boardSlots)
+				if (s == ":white_large_square:") return;
+			await m.ModifyAsync(m => { m.Content = $"It's a draw!\n\n{writeBoard}"; });
+			await Reset();
+		}
 
-        private async Task CheckForWin(SocketCommandContext context, string letter)
-        {
-            // Columns
-            if(SlotValues[0] == letter && SlotValues[3] == letter && SlotValues[6] == letter ||
-                SlotValues[1] == letter && SlotValues[4] == letter && SlotValues[7] == letter ||
-                SlotValues[2] == letter && SlotValues[5] == letter && SlotValues[8] == letter ||
-
-            // Rows
-                SlotValues[0] == letter && SlotValues[1] == letter && SlotValues[2] == letter ||
-                SlotValues[3] == letter && SlotValues[4] == letter && SlotValues[5] == letter ||
-                SlotValues[6] == letter && SlotValues[7] == letter && SlotValues[8] == letter ||
-
-            // Diagonal
-                SlotValues[0] == letter && SlotValues[4] == letter && SlotValues[8] == letter ||
-                SlotValues[6] == letter && SlotValues[4] == letter && SlotValues[2] == letter)
-            {
-                await DeclareWinner(context, letter);
-            }
-        }
-
-        private async Task CheckForDraw(SocketCommandContext context)
-        {
-            foreach(string s in SlotValues)
-            {
-                if (s == " ") return;
-            }
-            await context.Channel.SendMessageAsync("", false, Embed($"{WriteBoard()}\nIt's a draw!", "Nobody loses any Tecos."));
-            Reset();
-            return;
-        }
-
-        private async Task DeclareWinner(SocketCommandContext context, string winningLetter)
-        {
-            SocketGuildUser winner, loser;
-            if(Players.ElementAt(0).letter == winningLetter)
-            {
-                winner = Players.ElementAt(0).user;
-                loser = Players.ElementAt(1).user;
-            }
-            else
-            {
-                winner = Players.ElementAt(1).user;
-                loser = Players.ElementAt(0).user;
-            }
-
-            await context.Channel.SendMessageAsync("", false, Embed($"{WriteBoard()}\n{winner.Mention} has won 5 Tecos!\n\n{loser.Mention} has lost 5 Tecos.", ""));
-            Config.TH.AdjustTecos(winner, 5);
-            Config.TH.AdjustTecos(loser, -5);
-            Reset();
-            return;
-        }
-        
-        public void Reset()
-        {
-            currentTurn = 0;
-            Players.Clear();
-            isGameGoing = false;
-            host = null;
-            for(int i = 0; i < SlotValues.Length; i++)
-            {
-                SlotValues[i] = " ";
-            }
-        }
-    }
+		private async Task Reset() => Config.ResetTTT();
+	}
 }

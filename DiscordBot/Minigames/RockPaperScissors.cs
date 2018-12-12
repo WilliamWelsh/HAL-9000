@@ -30,9 +30,9 @@ namespace Gideon.Minigames
 
         public async Task StartRPS(SocketCommandContext context)
         {
-            if (context.Channel.Id != 443205778656985089)
+            if (context.Channel.Id != 518846214603669537)
             {
-                await Config.Utilities.PrintError(context, $"Please use the {context.Guild.GetTextChannel(443205778656985089).Mention} chat for that, {context.User.Mention}.");
+                await Config.Utilities.PrintError(context, $"Please use the {context.Guild.GetTextChannel(518846214603669537).Mention} chat for that, {context.User.Mention}.");
                 return;
             }
             string name = ((SocketGuildUser)context.User).Nickname ?? context.User.Username;
@@ -62,10 +62,10 @@ namespace Gideon.Minigames
             string result = GetWinner(playOne, playTwo);
             await channel.SendMessageAsync("", false, Embed($"{Player.Mention} chose {playOne}!\n\nI chose {playTwo}.\n\n{result}", ""));
 
-            if(result.Contains("lose 3 Tecos"))
-                Config.TH.AdjustTecos(Player, -3);
-            else if (result.Contains("got 3 Tecos"))
-                Config.TH.AdjustTecos(Player, 3);
+            if(result.Contains("lose 3 Coins"))
+                Config.CoinHandler.AdjustCoins(Player, -3);
+            else if (result.Contains("got 3 Coins"))
+                Config.CoinHandler.AdjustCoins(Player, 3);
 
             Player = null;
             isPlaying = false;
@@ -77,8 +77,8 @@ namespace Gideon.Minigames
             if ((p1[0] == 'S' && p2[0] == 'P') ||
                 (p1[0] == 'P' && p2[0] == 'R') ||
                 (p1[0] == 'R' && p2[0] == 'S'))
-                return $"{Player.Mention} won and got 3 Tecos!";
-            return "I won! You lose 3 Tecos.";
+                return $"{Player.Mention} won and got 3 Coins!";
+            return "I won! You lose 3 Coins.";
         }
 
     }

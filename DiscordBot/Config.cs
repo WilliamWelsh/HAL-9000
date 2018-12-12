@@ -1,8 +1,8 @@
 ﻿using System.IO;
 using Gideon.Handlers;
 using Newtonsoft.Json;
+using Gideon.Minigames;
 using System.Collections.Generic;
-using System;
 
 namespace Gideon
 {
@@ -16,19 +16,22 @@ namespace Gideon
 
         public static BotConfig bot;
         public static BotResources botResources;
-        public static BotQuestions botQuestions;
         public static TriviaQuestions triviaQuestions;
 
-        public static QuestionHandler QuestionHandler = new QuestionHandler();
+		public static TicTacToe TTT = new TicTacToe();
         public static ImageFetcher ImageFetcher = new ImageFetcher();
         public static Utilities Utilities = new Utilities();
-        public static WarnHandler WarnHandler = new WarnHandler();
         public static StatsHandler StatsHandler = new StatsHandler();
-        public static TecosHandler TH = new TecosHandler();
+        public static CoinsHandler CoinHandler = new CoinsHandler();
         public static MinigameHandler MinigameHandler = new MinigameHandler();
+        public static RankHandler RankHandler = new RankHandler();
 
-        static Config()
+		public static void ResetTTT() => TTT = new TicTacToe();
+
+		static Config()
         {
+            RankHandler.Start();
+
             if (!Directory.Exists(configFolder))
                 Directory.CreateDirectory(configFolder);
 
@@ -54,17 +57,6 @@ namespace Gideon
                 botResources = JsonConvert.DeserializeObject<BotResources>(json);
             }
 
-            if (!File.Exists(configFolder + "/" + questionsFile))
-            {
-                string json = JsonConvert.SerializeObject(botQuestions, Formatting.Indented);
-                File.WriteAllText(configFolder + "/" + questionsFile, json);
-            }
-            else
-            {
-                string json = File.ReadAllText(configFolder + "/" + questionsFile);
-                botQuestions = JsonConvert.DeserializeObject<BotQuestions>(json);
-            }
-
             if (!File.Exists(configFolder + "/" + triviaQuestionsFile))
             {
                 string json = JsonConvert.SerializeObject(triviaQuestions, Formatting.Indented);
@@ -75,23 +67,6 @@ namespace Gideon
                 string json = File.ReadAllText(configFolder + "/" + triviaQuestionsFile);
                 triviaQuestions = JsonConvert.DeserializeObject<TriviaQuestions>(json);
             }
-        }
-
-        public static void ModifyChannelWhitelist(string channel, bool isAdding)
-        {
-            if(isAdding)
-                botResources.allowedChannels.Add(channel);
-            else
-                botResources.allowedChannels.Remove(channel);
-            string json = JsonConvert.SerializeObject(botResources, Formatting.Indented);
-            File.WriteAllText(configFolder + "/" + resourcesFile, json);
-        }
-
-        public static void ModifyNextVideoDate(string input)
-        {
-            botResources.nextVideoDate = input;
-            string json = JsonConvert.SerializeObject(botResources, Formatting.Indented);
-            File.WriteAllText(configFolder + "/" + resourcesFile, json);
         }
     }
 
@@ -104,21 +79,8 @@ namespace Gideon
 
     public struct BotResources
     {
-        public string nextVideoDate;
         public List<string> bannedWords;
         public List<string> allowedChannels;
-    }
-
-    public struct BotQuestions
-    {
-        public List<string> WhenIsNextVideo;
-        public List<string> HowMuchDoesGameCost;
-        public List<string> WhichPlatform;
-        public List<string> IsBlackLightningInGame;
-        public List<string> IsBatmanInGame;
-        public List<string> IsBatwomanInGame;
-        public List<string> WhereIsDownload;
-        public List<string> WhenDoesGameComeOut;
     }
 
     public struct TriviaQuestion
