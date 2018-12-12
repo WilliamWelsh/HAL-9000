@@ -11,7 +11,7 @@ namespace Gideon.Handlers
     class CoinsHandler
     {
         private static Color embedColor = new Color(215, 154, 14);
-        private static string icon = "https://i.imgur.com/w09rWQg.png";
+        private const string icon = "https://i.imgur.com/w09rWQg.png";
 
         private async Task PrintEmbed(SocketCommandContext context, string description) => await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Coins", description, embedColor, "", icon));
         private async Task PrintEmbedNoFooter(SocketCommandContext context, string description) => await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Coins", description, embedColor, "", ""));
@@ -38,19 +38,14 @@ namespace Gideon.Handlers
 
         public async Task SpawnCoins(SocketCommandContext context, SocketGuildUser user, int amount)
         {
-            var account = UserAccounts.GetAccount(user);
-            account.coins += amount;
+            UserAccounts.GetAccount(user).coins += amount;
             UserAccounts.SaveAccounts();
-            await PrintEmbedNoFooter(context, $"spawned {user.Mention} {amount} Coins.");
+            await PrintEmbedNoFooter(context, $"Spawned {user.Mention} {amount} Coins.");
         }
 
         public async Task RemoveCoins(SocketCommandContext context, SocketGuildUser user, int amount)
         {
-            var account = UserAccounts.GetAccount(user);
-            account.coins -= amount;
-            if (account.coins < 0)
-                account.coins = 0;
-            UserAccounts.SaveAccounts();
+            AdjustCoins(user, -amount);
             await PrintEmbedNoFooter(context, $"{user.Mention} lost {amount} Coins.");
         }
 
@@ -127,9 +122,7 @@ namespace Gideon.Handlers
         {
             List<int> list = new List<int>();
             for (int i = 0; i < context.Guild.Users.Count; i++)
-            {
                 list.Add(UserAccounts.GetAccount(context.Guild.Users.ElementAt(i)).coins);
-            }
 
             int[] MostCoinsArray = new int[5];
             int indexMin = 0;
@@ -187,10 +180,6 @@ namespace Gideon.Handlers
             await context.Channel.SendMessageAsync("", false, embed);
         }
 
-
-
-
-
         private bool isLotteryGoing = false;
         private List<SocketGuildUser> PeopleEnteredInLottery;
         private int LotteryFee = 0;
@@ -210,7 +199,7 @@ namespace Gideon.Handlers
             }
             if(isLotteryGoing)
             {
-                await Config.Utilities.PrintError(context, $"A Coins Lottery is already active, {context.User.Mention}.");
+                await Config.Utilities.PrintError(context, $"A lottery is already active, {context.User.Mention}.");
                 return;
             }
 
@@ -218,14 +207,14 @@ namespace Gideon.Handlers
             LotteryFee = cost;
             LotteryPrize = amount;
             PeopleEnteredInLottery = new List<SocketGuildUser>();
-            await PrintEmbed(context, $"{context.User.Mention} has started a Coins lottery for {amount} Coins!\n\nType `!Coins lottery join` to enter!\n\nIt cost `{cost}` Coins!");
+            await PrintEmbed(context, $"{context.User.Mention} has started a lottery for {amount} coins!\n\nType `!coins lottery join` to enter!\n\nIt cost `{cost}` Coins!");
         }
 
         public async Task JoinCoinsLottery(SocketCommandContext context)
         {
             if (!isLotteryGoing)
             {
-                await Config.Utilities.PrintError(context, $"There is no active Coins Lottery, {context.User.Mention}.");
+                await Config.Utilities.PrintError(context, $"There is no active lottery, {context.User.Mention}.");
                 return;
             }
             if (UserAccounts.GetAccount(context.User).coins < LotteryFee)

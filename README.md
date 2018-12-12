@@ -1,5 +1,6 @@
 # Gideon Bot
-A multi-purpose Discord bot written in C# for my Discord server. The bot is themed and tailored for this specific server. This bot has several uses such as games, moderation tools, useful tools and resources, and pointless statistical data.
+A multi-purpose Discord bot written in C# for my Discord server. The bot is themed and tailored for this specific server. This bot has several uses such as games, moderation tools, useful tools and resources, and pointless statistical data.  
+[<img src="https://discordapp.com/api/guilds/294699220743618561/widget.png?style=shield">](https://discord.gg/qsc8YMS) <img src="https://img.shields.io/badge/discord-csharp-blue.svg">
 
 ## Commands
 ##### Resources

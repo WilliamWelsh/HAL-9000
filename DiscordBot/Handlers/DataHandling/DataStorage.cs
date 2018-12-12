@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Gideon
 {
-    public static class DataStoreage
+    public static class DateStorage
     {
         public static void SaveUserAccounts(IEnumerable<UserAccount> accounts, string filePath)
         {

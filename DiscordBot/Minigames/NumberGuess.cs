@@ -38,9 +38,11 @@ namespace Gideon.Minigames
 
         private void AddPlayer(SocketGuildUser user)
         {
-            Player newPlayer = new Player();
-            newPlayer.hasAnswered = false;
-            newPlayer.user = user;
+            Player newPlayer = new Player
+            {
+                hasAnswered = false,
+                user = user
+            };
             Players.Add(newPlayer);
         }
 

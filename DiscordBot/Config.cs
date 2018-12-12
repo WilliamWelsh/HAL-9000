@@ -27,7 +27,7 @@ namespace Gideon
 
 		public static void ResetTTT() => MinigameHandler.TTT = new TicTacToe();
 
-		static Config()
+        static Config()
         {
             RankHandler.Start();
 

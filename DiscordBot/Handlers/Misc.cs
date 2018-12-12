@@ -2,6 +2,7 @@
 using Discord;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Net.Http;
 using Discord.Commands;
 using Gideon.Minigames;
@@ -9,7 +10,6 @@ using Discord.WebSocket;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Gideon.Handlers
 {
@@ -29,7 +29,6 @@ namespace Gideon.Handlers
 		RussianRoulette RR = Config.MinigameHandler.RR;
         TicTacToe TTT = Config.MinigameHandler.TTT;
 
-		// For debugging
 		[Command("rolecolors")]
 		public async Task DisplayRoleColors()
 		{
@@ -412,7 +411,7 @@ namespace Gideon.Handlers
 		[Command("source")]
 		public async Task GetSourceCode1() => await Context.Channel.SendMessageAsync("https://github.com/WilliamWelsh/GideonBot");
 
-		[Command("sourecode")]
+		[Command("sourcecode")]
 		public async Task GetSourceCode2() => await Context.Channel.SendMessageAsync("https://github.com/WilliamWelsh/GideonBot");
 
 		// Display available commands
@@ -537,11 +536,7 @@ namespace Gideon.Handlers
         [Command("lb joined")]
         public async Task JoinedLB()
         {
-            List<DateTime> dates = new List<DateTime>();
-            foreach (var user in Context.Guild.Users)
-                dates.Add(((DateTimeOffset)user.JoinedAt).DateTime);
-            dates = dates.OrderByDescending(x => x.Date).ToList();
-            dates.Reverse();
+            List<DateTime> dates = MakeListAndOrderIt("joined");
             string result = "";
             for (int i = 0; i < 50; i++)
                 foreach (var user in Context.Guild.Users)
@@ -550,14 +545,40 @@ namespace Gideon.Handlers
             await Context.Channel.SendMessageAsync(result);
         }
 
-        [Command("lb created")]
-        public async Task CreatedLB()
+        private List<DateTime> MakeListAndOrderIt(string whatToAdd)
         {
             List<DateTime> dates = new List<DateTime>();
             foreach (var user in Context.Guild.Users)
-                dates.Add(user.CreatedAt.DateTime);
+            {
+                if (whatToAdd == "joined")
+                    dates.Add(((DateTimeOffset)user.JoinedAt).DateTime);
+                else
+                    dates.Add(user.CreatedAt.DateTime);
+            }
             dates = dates.OrderByDescending(x => x.Date).ToList();
             dates.Reverse();
+            return dates;
+        }
+
+        private async Task DisplayPlayerIndexInList(List<DateTime> list, SocketGuildUser target, DateTime time, string text)
+        {
+            for (int i = 0; i < list.Count; i++)
+                foreach (var user in Context.Guild.Users)
+                    if (list.ElementAt(i) == time)
+                    {
+                        string description = $"{target.Mention} is #{i + 1} {text} on `{list.ElementAt(i).ToString("MMMM dd, yyy")}`";
+                        await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Leaderboard", description, Config.Utilities.DomColorFromURL(target.GetAvatarUrl()), "", target.GetAvatarUrl()));
+                        return;
+                    }
+        }
+
+        [Command("lb joined")]
+        public async Task JoinedLB(SocketGuildUser target) => await DisplayPlayerIndexInList(MakeListAndOrderIt("joined"), target, ((DateTimeOffset)target.JoinedAt).DateTime, " who joined ");
+
+        [Command("lb created")]
+        public async Task CreatedLB()
+        {
+            List<DateTime> dates = MakeListAndOrderIt("created");
             string result = "";
             for (int i = 0; i < 50; i++)
                 foreach (var user in Context.Guild.Users)
@@ -565,6 +586,9 @@ namespace Gideon.Handlers
                         result += $"{i + 1}. {user.Username}, `{dates.ElementAt(i).ToString("MMMM dd, yyy")}`\n";
             await Context.Channel.SendMessageAsync(result);
         }
+
+        [Command("lb created")]
+        public async Task CreatedLB(SocketGuildUser target) => await DisplayPlayerIndexInList(MakeListAndOrderIt("created"), target, target.CreatedAt.DateTime, " with the oldest account ");
 
         // Convert ASCII to Binary
         [Command("binary")]
@@ -581,7 +605,6 @@ namespace Gideon.Handlers
         public async Task BinaryToASCII([Remainder]string input)
         {
             var list = new List<byte>();
-
             for (int i = 0; i < input.Length; i += 8)
             {
                 string t = input.Substring(i, 8);
@@ -596,11 +619,15 @@ namespace Gideon.Handlers
         public async Task ShowMendesArmy()
         {
             string users = "";
+            int amount = 0;
             var role = Context.Guild.Roles.FirstOrDefault(x => x.Name == "Shawn Mendes Fan");
             foreach (var user in Context.Guild.Users)
                 if (user.Roles.Contains(role))
+                {
                     users += user.Mention + "\n";
-            await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Mendes Army", users, new Color(208, 185, 179), "", ""));
+                    amount++;
+                }
+            await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed($"Mendes Army ({amount})", users, new Color(208, 185, 179), "", "https://cdn.discordapp.com/avatars/519261973737635842/55e95c3bd26751828c96802292897a41.png?size=128"));
         }
 
         // Display All Bans
@@ -617,5 +644,9 @@ namespace Gideon.Handlers
         // Easter Egg command for Josef -- 361678050255044619
         [Command("gae")]
         public async Task Gae() => await Context.Channel.SendMessageAsync("https://i.imgur.com/iLpCs7K.png");
+
+        // View Leaderboards
+        [Command("lb")]
+        public async Task Leaderboards() => await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Leaderboards", "`!lb coins` People with the most coins.\n`!lb joined` First people that joined the server.\n`!lb created` People with the oldest accounts.", new Color(0, 173, 0), "", ""));
     }
 }

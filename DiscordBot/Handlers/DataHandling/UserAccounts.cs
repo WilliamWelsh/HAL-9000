@@ -12,10 +12,8 @@ namespace Gideon
 
         static UserAccounts()
         {
-            if(DataStoreage.SaveExists(accountsFile))
-            {
-                accounts = DataStoreage.LoadUserAccounts(accountsFile).ToList();
-            }
+            if(DateStorage.SaveExists(accountsFile))
+                accounts = DateStorage.LoadUserAccounts(accountsFile).ToList();
             else
             {
                 accounts = new List<UserAccount>();
@@ -23,7 +21,7 @@ namespace Gideon
             }
         }
 
-        public static void SaveAccounts() => DataStoreage.SaveUserAccounts(accounts, accountsFile);
+        public static void SaveAccounts() => DateStorage.SaveUserAccounts(accounts, accountsFile);
 
         public static UserAccount GetAccount(SocketUser user) => GetOrCreateUserAccount(user.Id);
 

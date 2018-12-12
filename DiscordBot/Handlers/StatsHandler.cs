@@ -1,5 +1,5 @@
-﻿using Discord;
-using System;
+﻿using System;
+using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
@@ -45,7 +45,7 @@ namespace Gideon.Handlers
             embed.AddField("Owner", context.Guild.Owner.Mention);
             embed.AddField("Emotes", context.Guild.Emotes.Count);
             embed.AddField("Members", context.Guild.MemberCount.ToString("#,##0"));
-            embed.WithColor(new Utilities().DomColorFromURL(context.Guild.IconUrl));
+            embed.WithColor(Config.Utilities.DomColorFromURL(context.Guild.IconUrl));
             embed.WithThumbnailUrl(context.Guild.IconUrl);
 
             await context.Channel.SendMessageAsync("", false, embed);

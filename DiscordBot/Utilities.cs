@@ -11,7 +11,7 @@ namespace Gideon
 {
     class Utilities
     {
-        // Get a true random number
+        // Get a random number
         private static readonly Random getrandom = new Random();
         public int GetRandomNumber(int min, int max)
         {

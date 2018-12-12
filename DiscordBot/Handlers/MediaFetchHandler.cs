@@ -6,40 +6,15 @@ namespace Gideon
 {
     class MediaFetchHandler
     {
-        public Movie FetchMovie(string Search)
-        {
-            Movie media;
-            using (WebClient wc = new WebClient())
-            {
-                var json = wc.DownloadString($"http://www.omdbapi.com/?t={Search}&apikey={Config.bot.MovieTVAPIKey}");
-                media = JsonConvert.DeserializeObject<Movie>(json);
-            }
-            return media;
-        }
+        private WebClient webClient = new WebClient();
 
-        public TVShow FetchShow(string Search)
-        {
-            TVShow media;
-            using (WebClient wc = new WebClient())
-            {
-                var json = wc.DownloadString($"http://www.omdbapi.com/?t={Search}&apikey={Config.bot.MovieTVAPIKey}");
-                media = JsonConvert.DeserializeObject<TVShow>(json);
-            }
-            return media;
-        }
+        public Movie FetchMovie(string Search) => JsonConvert.DeserializeObject<Movie>(webClient.DownloadString($"http://www.omdbapi.com/?t={Search}&apikey={Config.bot.MovieTVAPIKey}"));
 
-        public YTChannel FetchYTChannel(string ID)
-        {
-            YTChannel media;
-            using (WebClient wc = new WebClient())
-            {
-                var json = wc.DownloadString($"https://www.googleapis.com/youtube/v3/channels?part=statistics&id={ID}&key={Config.bot.YouTubeAPIKey}");
-                media = JsonConvert.DeserializeObject<YTChannel>(json);
-            }
-            return media;
-        }
+        public TVShow FetchShow(string Search) => JsonConvert.DeserializeObject<TVShow>(webClient.DownloadString($"http://www.omdbapi.com/?t={Search}&apikey={Config.bot.MovieTVAPIKey}"));
 
-        public struct Rates
+        public YTChannel FetchYTChannel(string ID) => JsonConvert.DeserializeObject<YTChannel>(webClient.DownloadString($"https://www.googleapis.com/youtube/v3/channels?part=statistics&id={ID}&key={Config.bot.YouTubeAPIKey}"));
+
+        public struct Rating
         {
             public string Source { get; set; }
             public string Value { get; set; }
@@ -53,7 +28,7 @@ namespace Gideon
             public string Director { get; set; }
             public string BoxOffice { get; set; }
             public string Poster { get; set; }
-            public Rates[] Ratings { get; set; }
+            public Rating[] Ratings { get; set; }
             public string imdbRating { get; set; }
             public string Plot { get; set; }
         }
