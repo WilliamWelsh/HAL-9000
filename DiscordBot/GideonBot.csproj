@@ -174,7 +174,7 @@
   <ItemGroup>
     <Compile Include="Handlers\EventHandler.cs" />
     <Compile Include="Config.cs" />
-    <Compile Include="Handlers\DataHandling\DataStoreage.cs" />
+    <Compile Include="Handlers\DataHandling\DataStorage.cs" />
     <Compile Include="Handlers\MinigameHandler.cs" />
     <Compile Include="Handlers\RankHandler.cs" />
     <Compile Include="Handlers\StatsHandler.cs" />
