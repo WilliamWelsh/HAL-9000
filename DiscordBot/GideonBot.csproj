@@ -172,7 +172,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Handlers\CommandHandler.cs" />
+    <Compile Include="Handlers\EventHandler.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Handlers\DataHandling\DataStoreage.cs" />
     <Compile Include="Handlers\MinigameHandler.cs" />

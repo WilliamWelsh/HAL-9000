@@ -52,6 +52,12 @@ namespace Gideon.Handlers
             }
         }
 
+        private async Task AddRole(SocketCommandContext context, string oldRole, string newRole)
+        {
+            await (context.User as IGuildUser).AddRoleAsync(context.Guild.Roles.FirstOrDefault(x => x.Name == newRole));
+            await (context.User as IGuildUser).RemoveRoleAsync(context.Guild.Roles.FirstOrDefault(x => x.Name == oldRole));
+        }
+
         private async Task Rankup(SocketCommandContext context, uint level)
         {
             string desc = $"{context.User.Mention} has leveled up to {level}.";
@@ -63,17 +69,17 @@ namespace Gideon.Handlers
             else if (level == 6)
             {
                 desc += $" {context.User.Mention} is now a Speedster.";
-                await (context.User as IGuildUser).AddRoleAsync(context.Guild.Roles.FirstOrDefault(x => x.Name == "Speedster"));
+                await AddRole(context, "Noob", "Speedster");
             }
             else if (level == 11)
             {
                 desc += $" {context.User.Mention} is now a Kaiju Slayer.";
-                await (context.User as IGuildUser).AddRoleAsync(context.Guild.Roles.FirstOrDefault(x => x.Name == "Kaiju Slayer"));
+                await AddRole(context, "Speedster", "Kaiju Slayer");
             }
             else if (level == 16)
             {
                 desc += $" {context.User.Mention} is now a Avenger.";
-                await (context.User as IGuildUser).AddRoleAsync(context.Guild.Roles.FirstOrDefault(x => x.Name == "Avenger"));
+                await AddRole(context, "Kaiju Slayer", "Avenger");
             }
             await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Level Up", desc, Config.Utilities.DomColorFromURL(context.User.GetAvatarUrl()), "", context.User.GetAvatarUrl()));
         }

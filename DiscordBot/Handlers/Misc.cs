@@ -9,6 +9,7 @@ using Discord.WebSocket;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Gideon.Handlers
 {
@@ -23,8 +24,6 @@ namespace Gideon.Handlers
 							   select (V.IndexOf(obj) != -1) ? X[V.IndexOf(obj)] : obj).Reverse().ToArray());
 		}
 
-		_8ball _8ball = Config.MinigameHandler._8ball;
-		CoinsHandler CoinHandler = Config.CoinHandler;
 		Trivia Trivia = Config.MinigameHandler.Trivia;
 		NumberGuess NG = Config.MinigameHandler.NG;
 		RussianRoulette RR = Config.MinigameHandler.RR;
@@ -43,16 +42,12 @@ namespace Gideon.Handlers
 		[Command("dicksize")]
 		public async Task DickSize() => await Context.Channel.SendMessageAsync($"8{new string('=', new Random().Next(1, 13))}D");
 
-		// Used to turn text upside down
-		[Command("australia")]
-		public async Task AussieText([Remainder]string message)
-		{
-			string name = ((SocketGuildUser)Context.User).Nickname ?? Context.User.Username;
-			await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Australian Translator", ToAussie(message), new Color(255, 140, 0), $"Translated for {name}.", ""));
-		}
+        // Used to turn text upside down
+        [Command("australia")]
+        public async Task AussieText([Remainder]string message) => await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Australian Translator", ToAussie(message), new Color(255, 140, 0), "", ""));
 
-		// Display a list of MiniGames
-		[Command("games")]
+        // Display a list of MiniGames
+        [Command("games")]
 		public async Task DisplayGames() => await Config.MinigameHandler.DisplayGames(Context);
 
 		#region Tic-Tac-Toe Commands
@@ -113,11 +108,11 @@ namespace Gideon.Handlers
 
 		// Display 8-Ball instructions
 		[Command("8ball")]
-		public async Task Play8Ball() => await _8ball.Greet8Ball(Context);
+		public async Task Play8Ball() => await Config.MinigameHandler._8ball.Greet8Ball(Context);
 
 		// Play 8-Ball
 		[Command("8ball")]
-		public async Task Play8Ball([Remainder]string question) => await _8ball.Play8Ball(Context);
+		public async Task Play8Ball([Remainder]string question) => await Config.MinigameHandler._8ball.Play8Ball(Context);
 
 		// Start Rock, Paper, Scissors
 		[Command("rps")]
@@ -251,11 +246,11 @@ namespace Gideon.Handlers
 
 		// See how many Coins you have
 		[Command("coins")]
-		public async Task SeeCoins() => await CoinHandler.DisplayCoins(Context, (SocketGuildUser)Context.User, Context.Channel);
+		public async Task SeeCoins() => await Config.CoinHandler.DisplayCoins(Context, (SocketGuildUser)Context.User, Context.Channel);
 
 		// (Overloaded) See how many Coins another user has
 		[Command("coins")]
-		public async Task SeeCoins([Remainder]SocketGuildUser user) => await CoinHandler.DisplayCoins(Context, user, Context.Channel);
+		public async Task SeeCoins([Remainder]SocketGuildUser user) => await Config.CoinHandler.DisplayCoins(Context, user, Context.Channel);
 
 		// Give Coins to another user (not spawning them)
 		[Command("coins give")]
@@ -263,7 +258,7 @@ namespace Gideon.Handlers
 
 		// Coins Store
 		[Command("coins store")]
-		public async Task CoinsStore() => await CoinHandler.DisplayCoinsStore(Context, (SocketGuildUser)Context.User, Context.Channel);
+		public async Task CoinsStore() => await Config.CoinHandler.DisplayCoinsStore(Context, (SocketGuildUser)Context.User, Context.Channel);
 
 		// Leaderboard Shortcut
 		[Command("lb coins")]
@@ -424,8 +419,8 @@ namespace Gideon.Handlers
 		[Command("help")]
 		public async Task Help() => await Context.Channel.SendMessageAsync("Coming soon.");
 
-		// Makes an emoji big, code from my friend Craig // @Craig#6666 -- 208409824818364426 (discord ID)
-		[Command("jumbo")]
+        // Makes an emoji big, code from my friend Elias // @Elias#6666 -- 208409824818364426 (discord ID)
+        [Command("jumbo")]
 		public async Task Jumbo(string emoji)
 		{
 			string emojiUrl = null;
@@ -570,5 +565,57 @@ namespace Gideon.Handlers
                         result += $"{i + 1}. {user.Username}, `{dates.ElementAt(i).ToString("MMMM dd, yyy")}`\n";
             await Context.Channel.SendMessageAsync(result);
         }
+
+        // Convert ASCII to Binary
+        [Command("binary")]
+        public async Task ASCIIToBinary([Remainder]string ascii)
+        {
+            string binary = "";
+            foreach (char c in ascii)
+                binary += Convert.ToString(c, 2).PadLeft(8, '0');
+            await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("ASCII to Binary Converter", binary, new Color(34, 139, 34), "", ""));
+        }
+
+        // Convert Binary to ASCII
+        [Command("ascii")]
+        public async Task BinaryToASCII([Remainder]string input)
+        {
+            var list = new List<byte>();
+
+            for (int i = 0; i < input.Length; i += 8)
+            {
+                string t = input.Substring(i, 8);
+                list.Add(Convert.ToByte(t, 2));
+            }
+
+            await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Binary to ASCII Converter", Encoding.ASCII.GetString(list.ToArray()), new Color(34, 139, 34), "", ""));
+        }
+
+        // Show everyone on the server who is a fan of Shawn Mendes
+        [Command("mendesarmy")]
+        public async Task ShowMendesArmy()
+        {
+            string users = "";
+            var role = Context.Guild.Roles.FirstOrDefault(x => x.Name == "Shawn Mendes Fan");
+            foreach (var user in Context.Guild.Users)
+                if (user.Roles.Contains(role))
+                    users += user.Mention + "\n";
+            await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Mendes Army", users, new Color(208, 185, 179), "", ""));
+        }
+
+        // Display All Bans
+        [Command("bans")]
+        public async Task ShowBans()
+        {
+            string bans = "";
+            var banArray = Context.Guild.GetBansAsync().Result.ToArray();
+            foreach (var ban in banArray)
+                bans += $"{ban.User} for \"{ban.Reason}\"\n";
+            await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed($"Server Bans ({banArray.Length})", bans, new Color(227, 37, 39), "", ""));
+        }
+
+        // Easter Egg command for Josef -- 361678050255044619
+        [Command("gae")]
+        public async Task Gae() => await Context.Channel.SendMessageAsync("https://i.imgur.com/iLpCs7K.png");
     }
 }

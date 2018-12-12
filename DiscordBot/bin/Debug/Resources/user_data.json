@@ -5,8 +5,8 @@
     "superadmin": true,
     "localTime": 0,
     "country": "United States",
-    "xp": 932,
-    "level": 4
+    "xp": 1811,
+    "level": 6
   },
   {
     "userID": 214535311458435072,
@@ -23,7 +23,7 @@
     "superadmin": false,
     "localTime": 0,
     "country": "United States",
-    "xp": 0,
+    "xp": 56,
     "level": 0
   },
   {
@@ -77,7 +77,7 @@
     "superadmin": false,
     "localTime": 13,
     "country": "Philippines",
-    "xp": 53,
+    "xp": 76,
     "level": 0
   },
   {
@@ -140,7 +140,7 @@
     "superadmin": false,
     "localTime": -3,
     "country": "Not set.",
-    "xp": 0,
+    "xp": 63,
     "level": 0
   },
   {
@@ -554,7 +554,7 @@
     "superadmin": false,
     "localTime": 999,
     "country": "Not set.",
-    "xp": 0,
+    "xp": 16,
     "level": 0
   },
   {
@@ -727,5 +727,14 @@
     "country": "Not set.",
     "xp": 0,
     "level": 0
+  },
+  {
+    "userID": 208409824818364426,
+    "coins": 0,
+    "superadmin": false,
+    "localTime": 999,
+    "country": "Not set.",
+    "xp": 168,
+    "level": 1
   }
 ]

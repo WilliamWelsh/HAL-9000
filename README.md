@@ -33,13 +33,17 @@ A multi-purpose Discord bot written in C# for my Discord server. The bot is them
 `!source` or `!sourcecode` View Gideon's source code.  
 #### Misc and Notes
 `!time (user)` (limited) View the local time for a user.  
-`!time (user)` (limited) View someone's country.  
+`!country (user)` (limited) View someone's country.  
 `!alani` Posts a random picture of Alani.  
 `lennyface` Posts a lennyface.  
 `!hex (red) (green) (blue)` Convert an RGB value a hexadecimal.  
 `!rgb (hexadecimal)` Convert a hexadecimal to an RGB value.  
+`!binary (text)` Convert text to binary.  
+`!ascii (binary)` Convert binary to text.  
 `!jumbo (emoji)` Make an emoji really big.  
 `!emotes` View the server emotes.  
 `!serverstats` View the server stats.  
+`!bans` View server bans.  
+`!mendesarmy` View everyone on the server that is a fan of Shawn Mendes.  
 
 and many more commands that I don't feel like writing here
