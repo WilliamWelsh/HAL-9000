@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Gideon
+﻿namespace Gideon
 {
     public class UserAccount
     {

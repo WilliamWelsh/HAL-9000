@@ -1,6 +1,6 @@
 ﻿using System.IO;
-using Gideon.Handlers;
 using Newtonsoft.Json;
+using Gideon.Handlers;
 using Gideon.Minigames;
 using System.Collections.Generic;
 
@@ -18,7 +18,6 @@ namespace Gideon
         public static BotResources botResources;
         public static TriviaQuestions triviaQuestions;
 
-		public static TicTacToe TTT = new TicTacToe();
         public static ImageFetcher ImageFetcher = new ImageFetcher();
         public static Utilities Utilities = new Utilities();
         public static StatsHandler StatsHandler = new StatsHandler();
@@ -26,7 +25,7 @@ namespace Gideon
         public static MinigameHandler MinigameHandler = new MinigameHandler();
         public static RankHandler RankHandler = new RankHandler();
 
-		public static void ResetTTT() => TTT = new TicTacToe();
+		public static void ResetTTT() => MinigameHandler.TTT = new TicTacToe();
 
 		static Config()
         {

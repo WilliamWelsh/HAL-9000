@@ -1,17 +1,8 @@
-﻿using System;
-
-namespace Gideon
+﻿namespace Gideon
 {
     class ImageFetcher
     {
-        private static readonly Random getrandom = new Random();
-
-        private static int GetRandomNumber(int min, int max)
-        {
-            lock (getrandom) { return getrandom.Next(min, max); }
-        }
-
-        public string GetRandomPic() => Alani[GetRandomNumber(0, Alani.Length)];
+        public string GetRandomPic() => Alani[Config.Utilities.GetRandomNumber(0, Alani.Length)];
 
         public string[] Alani = {
                 "https://i.imgur.com/pRsqdMv.jpg",

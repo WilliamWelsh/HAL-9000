@@ -28,6 +28,7 @@ namespace Gideon.Handlers
 		Trivia Trivia = Config.MinigameHandler.Trivia;
 		NumberGuess NG = Config.MinigameHandler.NG;
 		RussianRoulette RR = Config.MinigameHandler.RR;
+        TicTacToe TTT = Config.MinigameHandler.TTT;
 
 		// For debugging
 		[Command("rolecolors")]
@@ -57,11 +58,11 @@ namespace Gideon.Handlers
 		#region Tic-Tac-Toe Commands
 		// Tic-Tac-Toe Menu/Start Game
 		[Command("ttt")]
-		public async Task TTTMenu() => await Config.TTT.StartGame(Context);
+		public async Task TTTMenu() => await TTT.StartGame(Context);
 
 		// Join Tic-Tac-Toe
 		[Command("ttt join")]
-		public async Task JoinTTT() => await Config.TTT.JoinGame(Context);
+		public async Task JoinTTT() => await TTT.JoinGame(Context);
 		#endregion
 
 		#region Russian Roulette Commands
@@ -77,10 +78,6 @@ namespace Gideon.Handlers
 		[Command("join rr")]
 		public async Task RRJoin() => await RR.TryToJoin(Context);
 
-		// Bet Coins on an RR Game
-		[Command("rr bet")]
-		public async Task RussianRouletteBet(SocketGuildUser UserBeingBetOn, [Remainder]int amount) => await RR.TryToPlaceBet(UserBeingBetOn, Context, amount);
-
 		// Pull the trigger in RR
 		[Command("pt")]
 		public async Task RRPullTrigger() => await RR.PullTrigger(Context);
@@ -89,11 +86,11 @@ namespace Gideon.Handlers
 		#region Trivia Commands
 		// Trivia Menu
 		[Command("trivia")]
-		public async Task TroToStartTrivia() => await Trivia.TryToStartTrivia((SocketGuildUser)Context.User, Context, "trivia");
+		public async Task TryToStartTrivia() => await Trivia.TryToStartTrivia((SocketGuildUser)Context.User, Context, "trivia");
 
 		// Start Trivia
 		[Command("trivia")]
-		public async Task TroToStartTrivia(string input) => await Trivia.TryToStartTrivia((SocketGuildUser)Context.User, Context, input);
+		public async Task TryToStartTrivia(string input) => await Trivia.TryToStartTrivia((SocketGuildUser)Context.User, Context, input);
 		#endregion
 
 		#region Number Guess Game Commands
@@ -437,7 +434,7 @@ namespace Gideon.Handlers
 				emojiUrl = found.Url;
 			else
 			{
-				int codepoint = Char.ConvertToUtf32(emoji, 0);
+				int codepoint = char.ConvertToUtf32(emoji, 0);
 				string codepointHex = codepoint.ToString("X").ToLower();
 				emojiUrl = "https://raw.githubusercontent.com/twitter/twemoji/gh-pages/2/72x72/{codepointHex}.png";
 			}
@@ -511,8 +508,7 @@ namespace Gideon.Handlers
         public async Task AddXP(SocketUser user, int xp)
         {
             if (!(UserAccounts.GetAccount(Context.User).superadmin)) return;
-            UserAccounts.GetAccount(user).xp += xp;
-            UserAccounts.SaveAccounts();
+            Config.RankHandler.GiveUserXP(user, xp);
             await Context.Channel.SendMessageAsync("Updated user.");
         }
 
@@ -543,7 +539,7 @@ namespace Gideon.Handlers
         [Command("playing")]
         public async Task ViewRanks(SocketUser user) => await Context.Channel.SendMessageAsync($"{(user.Game.ToString() == "" ? "Not currently playing anything." : user.Game.ToString())}");
 
-        [Command("joined leaderboard")]
+        [Command("lb joined")]
         public async Task JoinedLB()
         {
             List<DateTime> dates = new List<DateTime>();
@@ -559,7 +555,7 @@ namespace Gideon.Handlers
             await Context.Channel.SendMessageAsync(result);
         }
 
-        [Command("created leaderboard")]
+        [Command("lb created")]
         public async Task CreatedLB()
         {
             List<DateTime> dates = new List<DateTime>();

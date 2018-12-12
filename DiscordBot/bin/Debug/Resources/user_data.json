@@ -1,11 +1,11 @@
 [
   {
     "userID": 354458973572956160,
-    "coins": 14,
+    "coins": 27,
     "superadmin": true,
     "localTime": 0,
     "country": "United States",
-    "xp": 794,
+    "xp": 932,
     "level": 4
   },
   {
@@ -518,7 +518,7 @@
     "superadmin": false,
     "localTime": 999,
     "country": "Not set.",
-    "xp": 0,
+    "xp": 48,
     "level": 0
   },
   {

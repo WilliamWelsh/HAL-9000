@@ -10,16 +10,13 @@ namespace Gideon.Minigames
 {
     class Trivia
     {
-        bool isTriviaBeingPlayed = false;
-        SocketGuildUser userPlaying = null;
-        string correctAnswer;
-        string triviaMode;
+        private bool isTriviaBeingPlayed = false;
+        private SocketGuildUser userPlaying = null;
+        private string correctAnswer, triviaMode;
+        private DateTime StartTime;
+        private List<SocketGuildUser> PlayersAnswered = new List<SocketGuildUser>();
 
-        DateTime StartTime;
-
-        List<SocketGuildUser> PlayersAnswered = new List<SocketGuildUser>();
-
-        Embed Embed(string Description, string Footer)
+        private Embed Embed(string Description, string Footer)
         {
             var embed = new EmbedBuilder();
             embed.WithTitle("Trivia");
@@ -29,11 +26,7 @@ namespace Gideon.Minigames
             return embed;
         }
 
-        private string GetName(SocketGuildUser user)
-        {
-            string name = user.Nickname ?? user.Username;
-            return name;
-        }
+        private string GetName(SocketGuildUser user) => user.Nickname ?? user.Username;
 
         public async Task TryToStartTrivia(SocketGuildUser user, SocketCommandContext context, string input)
         {
@@ -60,7 +53,7 @@ namespace Gideon.Minigames
         private async Task CancelGame(SocketGuildUser user, SocketCommandContext context)
         {
             Config.CoinHandler.AdjustCoins(user, -1);
-            await context.Channel.SendMessageAsync("", false, Embed($"{user.Mention} took too long to answer and lost 1 Coin.", ""));
+            await context.Channel.SendMessageAsync("", false, Embed($"{user.Mention} took too long to answer and lost 1 coin.", ""));
         }
 
         private async Task StartTrivia(SocketGuildUser user, SocketCommandContext context, string mode)

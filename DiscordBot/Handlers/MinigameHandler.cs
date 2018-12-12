@@ -12,7 +12,7 @@ namespace Gideon.Handlers
 
         public _8ball _8ball = new _8ball();
         public Trivia Trivia = new Trivia();
-        //public TicTacToe TTT = new TicTacToe();
+        public TicTacToe TTT = new TicTacToe();
         public NumberGuess NG = new NumberGuess();
         public RussianRoulette RR = new RussianRoulette();
         public RockPaperScissors RPS = new RockPaperScissors();

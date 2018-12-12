@@ -14,12 +14,11 @@ namespace Gideon.Minigames
 
 		private string writeBoard => $"{boardSlots[0]}{boardSlots[1]}{boardSlots[2]}\n{boardSlots[3]}{boardSlots[4]}{boardSlots[5]}\n{boardSlots[6]}{boardSlots[7]}{boardSlots[8]}";
 
-		RestUserMessage m;
+		private RestUserMessage m;
 
-		SocketGuildUser Player1, Player2, currentTurnUser;
-		bool isGameGoing = false;
-		bool hasGameStarted = false;
-		bool canPlaySlot = true;
+        private SocketGuildUser Player1, Player2, currentTurnUser;
+
+        private bool isGameGoing = false, hasGameStarted = false, canPlaySlot = true;
 
 		public async Task IncrementTurn()
 		{
@@ -126,16 +125,15 @@ namespace Gideon.Minigames
 				// Diagonal
 				boardSlots[0] == letter && boardSlots[4] == letter && boardSlots[8] == letter ||
 				boardSlots[6] == letter && boardSlots[4] == letter && boardSlots[2] == letter)
-			{
+
 				await DeclareWinner(channel, letter);
-			}
 		}
 
 		private async Task DeclareWinner(ISocketMessageChannel channel, string letter)
 		{
 			SocketGuildUser winner = letter == ":x:" ? Player1 : Player2;
 			await m.ModifyAsync(m => { m.Content = $"{winner.Mention} has won!\n\n{writeBoard}"; });
-			await Reset();
+			Reset();
 		}
 
 		private async Task CheckForDraw()
@@ -143,9 +141,9 @@ namespace Gideon.Minigames
 			foreach (var s in boardSlots)
 				if (s == ":white_large_square:") return;
 			await m.ModifyAsync(m => { m.Content = $"It's a draw!\n\n{writeBoard}"; });
-			await Reset();
+			Reset();
 		}
 
-		private async Task Reset() => Config.ResetTTT();
+		private void Reset() => Config.ResetTTT();
 	}
 }

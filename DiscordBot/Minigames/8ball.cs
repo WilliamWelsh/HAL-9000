@@ -20,11 +20,7 @@ namespace Gideon.Minigames
             "https://i.imgur.com/PXeTy9m.png", "https://i.imgur.com/cVxDhiT.png", "https://i.imgur.com/KgGNoft.png", "https://i.imgur.com/XiXcw6H.png",
             "https://i.imgur.com/Zg7aaIO.png", "https://i.imgur.com/7xk7zEj.png", "https://i.imgur.com/R3FgCed.png" };
 
-        public async Task Play8Ball(SocketCommandContext context)
-        {
-            int number = Config.Utilities.GetRandomNumber(0, 10);
-            await context.Channel.SendMessageAsync("", false, Embed(answers[number], context.User.Mention));
-        }
+        public async Task Play8Ball(SocketCommandContext context) => await context.Channel.SendMessageAsync("", false, Embed(answers[Config.Utilities.GetRandomNumber(0, answers.Length)], context.User.Mention));
 
         public async Task Greet8Ball(SocketCommandContext context) => await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("8-Ball", "Welcome to 8-Ball! Ask me anything.\n\nExample:\n`!8ball am I cool?`", new Color(75, 0, 130), "", ""));
     }

@@ -2,11 +2,9 @@
 using Discord;
 using System.IO;
 using System.Net;
-using System.Linq;
 using System.Drawing;
 using ColorThiefDotNet;
 using Discord.Commands;
-using Discord.WebSocket;
 using System.Threading.Tasks;
 
 namespace Gideon

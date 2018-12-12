@@ -12,12 +12,12 @@ namespace Gideon.Minigames
     class RockPaperScissors
     {
         public ulong MessageID;
-        bool isPlaying;
+        private bool isPlaying;
         private SocketGuildUser Player;
         private List<string> Plays = new List<string>(new string[] { "Rock", "Paper", "Scissors" });
-        static Random rnd = new Random();
+        private static Random rnd = new Random();
 
-        private Embed Embed (string description, string footer)
+        private Embed embed (string description, string footer)
         {
             var Embed = new EmbedBuilder();
             Embed.WithTitle("Rock-Paper-Scissors");
@@ -36,7 +36,7 @@ namespace Gideon.Minigames
                 return;
             }
             string name = ((SocketGuildUser)context.User).Nickname ?? context.User.Username;
-            RestUserMessage m = await context.Channel.SendMessageAsync("", false, Embed("Pick your play and see if you can beat me!", $"{name} is playing."));
+            RestUserMessage m = await context.Channel.SendMessageAsync("", false, embed("Pick your play and see if you can beat me!", $"{name} is playing."));
             await m.AddReactionAsync(new Emoji("📰"));
             await m.AddReactionAsync(new Emoji("✂"));
             await m.AddReactionAsync(new Emoji("🌑"));
@@ -59,8 +59,8 @@ namespace Gideon.Minigames
 
             string playTwo = Plays.ElementAt(rnd.Next(Plays.Count));
 
-            string result = GetWinner(playOne, playTwo);
-            await channel.SendMessageAsync("", false, Embed($"{Player.Mention} chose {playOne}!\n\nI chose {playTwo}.\n\n{result}", ""));
+            string result = GetWinner(playOne[0], playTwo[0]);
+            await channel.SendMessageAsync("", false, embed($"{Player.Mention} chose {playOne}!\n\nI chose {playTwo}.\n\n{result}", ""));
 
             if(result.Contains("lose 3 Coins"))
                 Config.CoinHandler.AdjustCoins(Player, -3);
@@ -71,14 +71,14 @@ namespace Gideon.Minigames
             isPlaying = false;
         }
 
-        private string GetWinner(string p1, string p2)
+        private string GetWinner(char p1, char p2)
         {
             if (p1 == p2) return "It's a draw!";
-            if ((p1[0] == 'S' && p2[0] == 'P') ||
-                (p1[0] == 'P' && p2[0] == 'R') ||
-                (p1[0] == 'R' && p2[0] == 'S'))
-                return $"{Player.Mention} won and got 3 Coins!";
-            return "I won! You lose 3 Coins.";
+            if ((p1 == 'S' && p2 == 'P') ||
+                (p1 == 'P' && p2 == 'R') ||
+                (p1 == 'R' && p2 == 'S'))
+                return $"{Player.Mention} won and got 3 coins!";
+            return "I won! You lose 3 coins.";
         }
 
     }

@@ -41,48 +41,48 @@ namespace Gideon
 
         public struct Rates
         {
-            public string Source;
-            public string Value;
+            public string Source { get; set; }
+            public string Value { get; set; }
         }
 
         public struct Movie
         {
-            public string Title;
-            public string Year;
-            public string Runtime;
-            public string Director;
-            public string BoxOffice;
-            public string Poster;
-            public Rates[] Ratings;
-            public string imdbRating;
-            public string Plot;
+            public string Title { get; set; }
+            public string Year { get; set; }
+            public string Runtime { get; set; }
+            public string Director { get; set; }
+            public string BoxOffice { get; set; }
+            public string Poster { get; set; }
+            public Rates[] Ratings { get; set; }
+            public string imdbRating { get; set; }
+            public string Plot { get; set; }
         }
 
         public struct TVShow
         {
-            public string Title;
-            public string Year;
-            public string Runtime;
-            public string Poster;
-            public string imdbRating;
-            public string Plot;
+            public string Title { get; set; }
+            public string Year { get; set; }
+            public string Runtime { get; set; }
+            public string Poster { get; set; }
+            public string imdbRating { get; set; }
+            public string Plot { get; set; }
         }
 
         public struct item
         {
-            public stats statistics;
+            public stats statistics { get; set; }
         }
 
         public struct stats
         {
-            public string viewCount;
-            public string subscriberCount;
-            public string videoCount;
+            public string viewCount { get; set; }
+            public string subscriberCount { get; set; }
+            public string videoCount { get; set; }
         }
 
         public struct YTChannel
         {
-            public item[] items;
+            public item[] items { get; set; }
         }
     }
 }

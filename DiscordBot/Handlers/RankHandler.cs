@@ -1,26 +1,16 @@
 ﻿using Discord;
-using System;
-using Discord.Commands;
+using System.Linq;
 using System.Timers;
+using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Gideon.Handlers
 {
     class RankHandler
     {
-        private static readonly Random getrandom = new Random();
-        public static int GetRandomNumber(int min, int max)
-        {
-            lock (getrandom)
-            {
-                return getrandom.Next(min, max);
-            }
-        }
-
-        List<ulong> UsersGivenXPInLastMinute;
+        private List<ulong> UsersGivenXPInLastMinute;
 
         public void Start()
         {
@@ -34,18 +24,22 @@ namespace Gideon.Handlers
             timer.Elapsed += Reset;
         }
 
+        // Empty the list of users that got xp in the last minute
         private void Reset(object sender, ElapsedEventArgs e) => UsersGivenXPInLastMinute = new List<ulong>();
 
+        // Give a user XP when they talk (15-25 xp once a minute) and then check if they can level up
         public async Task TryToGiveUserXP(SocketCommandContext context, SocketUser user)
         {
             if (UsersGivenXPInLastMinute.Contains(user.Id)) return;
-
-            UserAccounts.GetAccount(user).xp += GetRandomNumber(15, 25);
-            UserAccounts.SaveAccounts();
-
+            GiveUserXP(user, Config.Utilities.GetRandomNumber(15, 25));
             UsersGivenXPInLastMinute.Add(user.Id);
-
             await CheckXP(context, user);
+        }
+
+        public void GiveUserXP(SocketUser user, int xp)
+        {
+            UserAccounts.GetAccount(user).xp += xp;
+            UserAccounts.SaveAccounts();
         }
 
         private async Task CompareAndSet(SocketCommandContext context, UserAccount account, uint level, uint targetXP)
@@ -97,9 +91,7 @@ namespace Gideon.Handlers
         {
             UserAccount account = UserAccounts.GetAccount(user);
             string name = (user as SocketGuildUser).Nickname != null ? (user as SocketGuildUser).Nickname : user.Username;
-
             string desc = $"Level: {account.level}\nTotal XP: {account.xp}\nXP until next level: {account.xp}/{xpLevel[account.level + 1]}";
-
             await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed($"{name}'s Level", desc, Config.Utilities.DomColorFromURL(user.GetAvatarUrl()), "", user.GetAvatarUrl()));
         }
     }

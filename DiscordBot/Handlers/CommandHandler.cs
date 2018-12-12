@@ -1,11 +1,9 @@
 ﻿using System;
 using Discord;
 using Discord.Commands;
-using Discord.WebSocket;
 using System.Reflection;
+using Discord.WebSocket;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace Gideon
 {
@@ -121,10 +119,8 @@ namespace Gideon
 
             // Answer trivia
             if (m == "a" || m == "b" || m == "c" || m == "d")
-            {
                 if(context.Channel.Id == 518846214603669537)
                     await Config.MinigameHandler.Trivia.AnswerTrivia((SocketGuildUser)msg.Author, context, m);
-            }
 
             if (m.Contains("lennyface"))
                 await context.Channel.SendMessageAsync("( ͡° ͜ʖ ͡°)");
@@ -133,10 +129,8 @@ namespace Gideon
             string[] spellingFix = { "should have", "would have", "wouldn't have", "wouldn't have", "would not have", "couldn't have", "couldn't have", "could not have", "better have", "shouldn't have", "shouldn't have", "should not have", "a lot", "could have" };
 
             for (int i = 0; i < spellingMistakes.Length; i++)
-            {
                 if (m.Contains(spellingMistakes[i]))
                     await msg.Channel.SendMessageAsync(spellingFix[i] + "*");
-            }
             
             string tempString = m.Replace("`", "").Replace(" ", "");
             foreach (string x in Config.botResources.bannedWords)
