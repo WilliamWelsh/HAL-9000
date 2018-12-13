@@ -1,19 +1,20 @@
-﻿using System;
-using Discord;
+﻿using Discord;
+using Discord.Commands;
+using Discord.WebSocket;
+using Gideon.Minigames;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Net;
 using System.Net.Http;
-using Discord.Commands;
-using Gideon.Minigames;
-using Discord.WebSocket;
-using System.Threading.Tasks;
+using System.Text;
 using System.Text.RegularExpressions;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Gideon.Handlers
 {
-	[RequireContext(ContextType.Guild)]
+    [RequireContext(ContextType.Guild)]
 	public class Misc : ModuleBase<SocketCommandContext>
 	{
 		private string ToAussie(string s)
@@ -651,24 +652,39 @@ namespace Gideon.Handlers
         [Command("lb")]
         public async Task Leaderboards() => await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Leaderboards", "`!lb coins` People with the most coins.\n`!lb joined` First people that joined the server.\n`!lb created` People with the oldest accounts.", new Color(0, 173, 0), "", ""));
 
-        private string FindPeopleWithRoles(string role)
+        private string FindPeopleWithRoles(string targetRole)
         {
-            var rolea = Context.Guild.Roles.FirstOrDefault(x => x.Name == role);
+            SocketRole role = Context.Guild.Roles.FirstOrDefault(x => x.Name == targetRole);
             string desc = "";
             foreach (SocketGuildUser user in Context.Guild.Users.ToArray())
-            {
-                if (user.Roles.Contains(rolea))
-                {
-                    desc += user.Mention + ", Level " + UserAccounts.GetAccount(user).level + "\n";
-                }
-            }
+                if (user.Roles.Contains(role))
+                    desc += $"{user.Mention}, Level {UserAccounts.GetAccount(user).level}\n";
             return desc;
         }
 
         [Command("roles")]
-        public async Task FindPeopleInRoles([Remainder]string role)
+        public async Task FindPeopleInRoles([Remainder]string role) => await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("", FindPeopleWithRoles(role), new Color(0, 0, 0), "", ""));
+
+        [Command("version")]
+        public async Task GetCurrentVersion()
         {
-            await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("", FindPeopleWithRoles(role), new Color(0,0,0), "", ""));
+            WebClient webClient = new WebClient();
+            string html = webClient.DownloadString("https://github.com/WilliamWelsh/GideonBot");
+            html = html.Substring(html.IndexOf("commit-tease-sha"));
+            html = html.Substring(html.IndexOf("href=\"") + 6);
+
+            string link = "https://github.com" + html.Substring(0, html.IndexOf("\""));
+            html = webClient.DownloadString(link);
+
+            string title = html, description = html;
+
+            title = title.Substring(title.IndexOf("commit-title\">") + 14);
+            title = title.Substring(0, title.IndexOf("</p>")).Replace(" ", "");
+
+            description = description.Substring(description.IndexOf("<pre>") + 5);
+            description = description.Substring(0, description.IndexOf("</pre>"));
+
+            await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Current Version", $"Version Name: {title}\nUpdate Description:\n{description}\n\nTo view the changed files and code, visit {link}", new Color(127, 166, 208), "", "https://cdn.discordapp.com/avatars/437458514906972180/2d44b9b229fe91b5bff8d13799a1bcf9.png?size=128"));
         }
     }
 }
