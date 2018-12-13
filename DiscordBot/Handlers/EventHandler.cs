@@ -1,5 +1,4 @@
 ﻿using System;
-using Discord;
 using System.Linq;
 using Discord.Commands;
 using System.Reflection;
@@ -46,7 +45,7 @@ namespace Gideon
 
         private async Task HandleCommandAsync(SocketMessage s)
         {
-            var msg = s as SocketUserMessage;
+            SocketUserMessage msg = s as SocketUserMessage;
             if (msg == null || msg.Author.IsBot) return;
 
             var context = new SocketCommandContext(_client, msg);
@@ -55,73 +54,16 @@ namespace Gideon
 
             int argPos = 0;
             if (msg.HasStringPrefix("!", ref argPos))
-            {
-                var result = await _service.ExecuteAsync(context, argPos);
-                if (result.IsSuccess)
-                {
-                    //
-                }
-            }
+                await _service.ExecuteAsync(context, argPos);
 
             string m = msg.Content.ToLower();
-
-            if (m == "!reset trivia")
-            {
-                if (!UserAccounts.GetAccount((SocketGuildUser)msg.Author).superadmin)
-				{
-                    await Config.Utilities.PrintError(context, $"You do not have permission to do that command, {msg.Author.Mention}.");
-                    return;
-                }
-                await msg.Channel.SendMessageAsync($"{context.User.Mention} has reset Trivia.");
-                Config.MinigameHandler.Trivia.ResetTrivia();
-                return;
-            }
-
-            if (m == "!reset rr")
-            {
-                if (!UserAccounts.GetAccount((SocketGuildUser)msg.Author).superadmin)
-				{
-                    await Config.Utilities.PrintError(context, $"You do not have permission to do that command, {msg.Author.Mention}.");
-                    return;
-                }
-                await msg.Channel.SendMessageAsync($"{context.User.Mention} has reset Russian Roulette.");
-                Config.MinigameHandler.RR.Reset();
-                return;
-            }
-
-            if (m == "!reset ttt")
-            {
-                if (!UserAccounts.GetAccount((SocketGuildUser)msg.Author).superadmin)
-                {
-                    await Config.Utilities.PrintError(context, $"You do not have permission to do that command, {msg.Author.Mention}.");
-                    return;
-                }
-                await msg.Channel.SendMessageAsync($"{msg.Author.Mention} has reset Tic-Tac-Toe.");
-				Config.ResetTTT();
-                return;
-            }
-
-            if (m == "!reset ng")
-            {
-                if (!UserAccounts.GetAccount((SocketGuildUser)msg.Author).superadmin)
-				{
-                    await Config.Utilities.PrintError(context, $"You do not have permission to do that command, {msg.Author.Mention}.");
-                    return;
-                }
-                Config.MinigameHandler.NG.Reset();
-                return;
-            }
-
-
-
-
-
 
             // Answer trivia
             if (m == "a" || m == "b" || m == "c" || m == "d")
                 if(context.Channel.Id == 518846214603669537)
                     await Config.MinigameHandler.Trivia.AnswerTrivia((SocketGuildUser)msg.Author, context, m);
 
+            // Print a lennyface
             if (m.Contains("lennyface"))
                 await context.Channel.SendMessageAsync("( ͡° ͜ʖ ͡°)");
 
@@ -131,17 +73,6 @@ namespace Gideon
             for (int i = 0; i < spellingMistakes.Length; i++)
                 if (m.Contains(spellingMistakes[i]))
                     await msg.Channel.SendMessageAsync(spellingFix[i] + "*");
-            
-            string tempString = m.Replace("`", "").Replace(" ", "");
-            foreach (string x in Config.botResources.bannedWords)
-            {
-                if(tempString.Contains(x))
-                {
-                    var messages = await context.Channel.GetMessagesAsync(1).Flatten();
-                    await context.Channel.DeleteMessagesAsync(messages);
-                    return;
-                }
-            }
 
             if (s.Channel.Name.StartsWith("@"))
                 Console.WriteLine($" ----------\n DIRECT MESSAGE\n From: {s.Channel}\n {s}\n ----------");

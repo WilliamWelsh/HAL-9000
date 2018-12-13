@@ -1,35 +1,21 @@
-﻿using Discord;
+﻿using System;
+using Discord;
+using System.IO;
+using System.Net;
+using System.Text;
+using System.Linq;
+using System.Net.Http;
 using Discord.Commands;
 using Discord.WebSocket;
-using Gideon.Minigames;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace Gideon.Handlers
 {
     [RequireContext(ContextType.Guild)]
 	public class Misc : ModuleBase<SocketCommandContext>
 	{
-		private string ToAussie(string s)
-		{
-			char[] X = @"¿/˙'\‾¡zʎxʍʌnʇsɹbdouɯlʞɾıɥƃɟǝpɔqɐ".ToCharArray();
-			string V = @"?\.,/_!zyxwvutsrqponmlkjihgfedcba";
-			return new string((from char obj in s.ToCharArray()
-							   select (V.IndexOf(obj) != -1) ? X[V.IndexOf(obj)] : obj).Reverse().ToArray());
-		}
-
-		Trivia Trivia = Config.MinigameHandler.Trivia;
-		NumberGuess NG = Config.MinigameHandler.NG;
-		RussianRoulette RR = Config.MinigameHandler.RR;
-        TicTacToe TTT = Config.MinigameHandler.TTT;
-
 		[Command("rolecolors")]
 		public async Task DisplayRoleColors()
 		{
@@ -44,48 +30,62 @@ namespace Gideon.Handlers
 
         // Used to turn text upside down
         [Command("australia")]
-        public async Task AussieText([Remainder]string message) => await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Australian Translator", ToAussie(message), new Color(255, 140, 0), "", ""));
+        public async Task AussieText([Remainder]string message)
+        {
+            char[] X = @"¿/˙'\‾¡zʎxʍʌnʇsɹbdouɯlʞɾıɥƃɟǝpɔqɐ".ToCharArray();
+            string V = @"?\.,/_!zyxwvutsrqponmlkjihgfedcba";
+            string upsideDownText = new string((from char obj in message.ToCharArray()
+                               select (V.IndexOf(obj) != -1) ? X[V.IndexOf(obj)] : obj).Reverse().ToArray());
+            await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Australian Translator", upsideDownText, new Color(255, 140, 0), "", ""));
+        }
 
         // Display a list of MiniGames
         [Command("games")]
 		public async Task DisplayGames() => await Config.MinigameHandler.DisplayGames(Context);
 
-		#region Tic-Tac-Toe Commands
-		// Tic-Tac-Toe Menu/Start Game
-		[Command("ttt")]
-		public async Task TTTMenu() => await TTT.StartGame(Context);
+        // Reset a game
+        [Command("reset")]
+        public async Task ResetAGame() => await Config.MinigameHandler.ResetGame(Context, "");
+
+        [Command("reset")]
+        public async Task ResetAGame([Remainder]string game) => await Config.MinigameHandler.ResetGame(Context, game);
+
+        #region Tic-Tac-Toe Commands
+        // Tic-Tac-Toe Menu/Start Game
+        [Command("ttt")]
+		public async Task TTTMenu() => await Config.MinigameHandler.TTT.StartGame(Context);
 
 		// Join Tic-Tac-Toe
 		[Command("ttt join")]
-		public async Task JoinTTT() => await TTT.JoinGame(Context);
+		public async Task JoinTTT() => await Config.MinigameHandler.TTT.JoinGame(Context);
 		#endregion
 
 		#region Russian Roulette Commands
 		// RR Menu
 		[Command("rr")]
-		public async Task RRMenu() => await RR.TryToStartGame(Context, "");
+		public async Task RRMenu() => await Config.MinigameHandler.RR.TryToStartGame(Context, "");
 
 		// Try to start a game of RR
 		[Command("rr")]
-		public async Task RRTryToStart(string input) => await RR.TryToStartGame(Context, input);
+		public async Task RRTryToStart(string input) => await Config.MinigameHandler.RR.TryToStartGame(Context, input);
 
 		// Join RR
 		[Command("join rr")]
-		public async Task RRJoin() => await RR.TryToJoin(Context);
+		public async Task RRJoin() => await Config.MinigameHandler.RR.TryToJoin(Context);
 
 		// Pull the trigger in RR
 		[Command("pt")]
-		public async Task RRPullTrigger() => await RR.PullTrigger(Context);
+		public async Task RRPullTrigger() => await Config.MinigameHandler.RR.PullTrigger(Context);
 		#endregion
 
 		#region Trivia Commands
 		// Trivia Menu
 		[Command("trivia")]
-		public async Task TryToStartTrivia() => await Trivia.TryToStartTrivia((SocketGuildUser)Context.User, Context, "trivia");
+		public async Task TryToStartTrivia() => await Config.MinigameHandler.Trivia.TryToStartTrivia((SocketGuildUser)Context.User, Context, "trivia");
 
 		// Start Trivia
 		[Command("trivia")]
-		public async Task TryToStartTrivia(string input) => await Trivia.TryToStartTrivia((SocketGuildUser)Context.User, Context, input);
+		public async Task TryToStartTrivia(string input) => await Config.MinigameHandler.Trivia.TryToStartTrivia((SocketGuildUser)Context.User, Context, input);
 		#endregion
 
 		#region Number Guess Game Commands
@@ -95,15 +95,15 @@ namespace Gideon.Handlers
 
 		// Play NG (2+ players)
 		[Command("play ng")]
-		public async Task PlayNG(int input) => await NG.TryToStartGame(Config.Utilities.GetRandomNumber(1, 100), (SocketGuildUser)Context.User, Context, input);
+		public async Task PlayNG(int input) => await Config.MinigameHandler.NG.TryToStartGame(Config.Utilities.GetRandomNumber(1, 100), (SocketGuildUser)Context.User, Context, input);
 
 		// Join NG
 		[Command("join ng")]
-		public async Task JoinNG() => await NG.JoinGame((SocketGuildUser)Context.User, Context);
+		public async Task JoinNG() => await Config.MinigameHandler.NG.JoinGame((SocketGuildUser)Context.User, Context);
 
 		// Guess the number in NG
 		[Command("g")]
-		public async Task GuessNG(int input) => await NG.TryToGuess((SocketGuildUser)Context.User, Context, input);
+		public async Task GuessNG(int input) => await Config.MinigameHandler.NG.TryToGuess((SocketGuildUser)Context.User, Context, input);
 		#endregion
 
 		// Display 8-Ball instructions
@@ -339,7 +339,7 @@ namespace Gideon.Handlers
 		public async Task DeleteMessage([Remainder]string amount)
 		{
 			if (!UserAccounts.GetAccount(Context.User).superadmin) return;
-			var messages = await Context.Channel.GetMessagesAsync(Int32.Parse(amount) + 1).Flatten();
+			var messages = await Context.Channel.GetMessagesAsync(int.Parse(amount) + 1).Flatten();
 			await Context.Channel.DeleteMessagesAsync(messages);
 		}
 
@@ -417,7 +417,7 @@ namespace Gideon.Handlers
 
 		// Display available commands
 		[Command("help")]
-		public async Task Help() => await Context.Channel.SendMessageAsync("Coming soon.");
+		public async Task Help() => await Context.Channel.SendMessageAsync($"View available commands here:\nhttps://github.com/WilliamWelsh/GideonBot/blob/master/README.md");
 
         // Makes an emoji big, code from my friend Elias // @Elias#6666 -- 208409824818364426 (discord ID)
         [Command("jumbo")]
@@ -491,18 +491,33 @@ namespace Gideon.Handlers
         [Command("alani")]
         public async Task RandomAlaniPic()
         {
-            string pic = Config.ImageFetcher.GetRandomPic();
-            var embedW = new EmbedBuilder();
-            embedW.WithTitle("Alani :heart_eyes:");
-            embedW.WithColor(Config.Utilities.DomColorFromURL(pic));
-            embedW.WithImageUrl(pic);
-            await Context.Channel.SendMessageAsync("", false, embedW);
+            string pic = Config.bot.alaniPics[Config.Utilities.GetRandomNumber(0, Config.bot.alaniPics.Count)];
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.WithColor(Config.Utilities.DomColorFromURL(pic));
+            embed.WithImageUrl(pic);
+            await Context.Channel.SendMessageAsync("", false, embed);
         }
 
+        // Send a random picture of R
+        [Command("r")]
+        public async Task DisplayRandomR()
+        {
+            string pic = Config.bot.Rs[Config.Utilities.GetRandomNumber(0, Config.bot.Rs.Count)];
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.WithColor(Config.Utilities.DomColorFromURL(pic));
+            embed.WithImageUrl(pic);
+            await Context.Channel.SendMessageAsync("", false, embed);
+        }
+
+        // Give xp to a user
         [Command("xp add")]
         public async Task AddXP(SocketUser user, int xp)
         {
-            if (!(UserAccounts.GetAccount(Context.User).superadmin)) return;
+            if (!(UserAccounts.GetAccount(Context.User).superadmin))
+            {
+                await Config.Utilities.PrintError(Context, $"You do not have permission to do that command, {Context.User.Mention}.");
+                return;
+            }
             Config.RankHandler.GiveUserXP(user, xp);
             await Config.RankHandler.CheckXP(Context, user);
             await Context.Channel.SendMessageAsync("Updated user.");
@@ -526,11 +541,12 @@ namespace Gideon.Handlers
         [Command("ranks")]
         public async Task ViewRanks()
         {
-            await Context.Channel.SendMessageAsync("Level 0-5 Noob\n" +
+            string ranks = "Level 0-5 Noob\n" +
                 "Level 6-10 Symbiote\n" +
                 "Level 11-15 Speedster\n" +
                 "Level 16-20 Kaiju Slayer\n" +
-                "Level 21-25 Avenger");
+                "Level 21-25 Avenger";
+            await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Ranks", ranks, new Color(127, 166, 208), "You get 15-25 xp for sending a message, but only once a minute.", ""));
         }
 
         [Command("playing")]
@@ -600,6 +616,11 @@ namespace Gideon.Handlers
             string binary = "";
             foreach (char c in ascii)
                 binary += Convert.ToString(c, 2).PadLeft(8, '0');
+            if (binary.Length > 2000)
+            {
+                await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("ASCII to Binary Converter", "The resulting binary is too long (over 2000 characters).\nDue to Discord's character count limitation, I am unable to send the message.", new Color(34, 139, 34), "", ""));
+                return;
+            }
             await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("ASCII to Binary Converter", binary, new Color(34, 139, 34), "", ""));
         }
 
@@ -607,6 +628,11 @@ namespace Gideon.Handlers
         [Command("ascii")]
         public async Task BinaryToASCII([Remainder]string input)
         {
+            if (input.Length % 8 != 0)
+            {
+                await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Binary to ASCII Converter", "Sorry, that cannot be converted to text.\nThe length of the binary must be a multiple of 8.", new Color(34, 139, 34), "", ""));
+                return;
+            }
             var list = new List<byte>();
             for (int i = 0; i < input.Length; i += 8)
             {
@@ -628,9 +654,9 @@ namespace Gideon.Handlers
                 if (user.Roles.Contains(role))
                 {
                     users += user.Mention + "\n";
-                    amount++;
+                    //amount++;
                 }
-            await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed($"Mendes Army ({amount})", users, new Color(208, 185, 179), "", "https://cdn.discordapp.com/avatars/519261973737635842/55e95c3bd26751828c96802292897a41.png?size=128"));
+            await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed($"Mendes Army ({users.Split('\n').Length-1})", users, new Color(208, 185, 179), "Shawn Mendes Fans", "https://cdn.discordapp.com/avatars/519261973737635842/55e95c3bd26751828c96802292897a41.png?size=128"));
         }
 
         // Display All Bans
@@ -638,7 +664,7 @@ namespace Gideon.Handlers
         public async Task ShowBans()
         {
             string bans = "";
-            var banArray = Context.Guild.GetBansAsync().Result.ToArray();
+            Discord.Rest.RestBan[] banArray = Context.Guild.GetBansAsync().Result.ToArray();
             foreach (var ban in banArray)
                 bans += $"{ban.User} for \"{ban.Reason}\"\n";
             await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed($"Server Bans ({banArray.Length})", bans, new Color(227, 37, 39), "", ""));
@@ -676,7 +702,7 @@ namespace Gideon.Handlers
             string link = "https://github.com" + html.Substring(0, html.IndexOf("\""));
             html = webClient.DownloadString(link);
 
-            string title = html, description = html;
+            string title = html, description = html, time = html;
 
             title = title.Substring(title.IndexOf("commit-title\">") + 14);
             title = title.Substring(0, title.IndexOf("</p>")).Replace(" ", "");
@@ -684,7 +710,11 @@ namespace Gideon.Handlers
             description = description.Substring(description.IndexOf("<pre>") + 5);
             description = description.Substring(0, description.IndexOf("</pre>"));
 
-            await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Current Version", $"Version Name: {title}\nUpdate Description:\n{description}\n\nTo view the changed files and code, visit {link}", new Color(127, 166, 208), "", "https://cdn.discordapp.com/avatars/437458514906972180/2d44b9b229fe91b5bff8d13799a1bcf9.png?size=128"));
+            time = time.Substring(time.IndexOf("datetime"));
+            time = time.Substring(time.IndexOf(">") + 1);
+            time = time.Substring(0, time.IndexOf("</"));
+
+            await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Current Version", $"Version Name: {title}\nUpdate Description:\n{description}\n\nTo view the changed files and code, visit {link}", new Color(127, 166, 208), $"Last updated {time}", "https://cdn.discordapp.com/avatars/437458514906972180/2d44b9b229fe91b5bff8d13799a1bcf9.png?size=128"));
         }
     }
 }

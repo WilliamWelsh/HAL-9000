@@ -27,26 +27,26 @@ namespace Gideon.Handlers
             }
             else if (amount > SenderAccount.coins)
             {
-                await PrintEmbed(context, $"You do not have that many Coins to send, {sender.Mention}.");
+                await PrintEmbed(context, $"You do not have that many coins to send, {sender.Mention}.");
                 return;
             }
             SenderAccount.coins -= amount;
             RecieverAccount.coins += amount;
             UserAccounts.SaveAccounts();
-            await PrintEmbedNoFooter(context, $"{sender.Mention} gave {reciever.Mention} {amount} Coins.");
+            await PrintEmbedNoFooter(context, $"{sender.Mention} gave {reciever.Mention} {amount} coins.");
         }
 
         public async Task SpawnCoins(SocketCommandContext context, SocketGuildUser user, int amount)
         {
             UserAccounts.GetAccount(user).coins += amount;
             UserAccounts.SaveAccounts();
-            await PrintEmbedNoFooter(context, $"Spawned {user.Mention} {amount} Coins.");
+            await PrintEmbedNoFooter(context, $"Spawned {user.Mention} {amount} coins.");
         }
 
         public async Task RemoveCoins(SocketCommandContext context, SocketGuildUser user, int amount)
         {
             AdjustCoins(user, -amount);
-            await PrintEmbedNoFooter(context, $"{user.Mention} lost {amount} Coins.");
+            await PrintEmbedNoFooter(context, $"{user.Mention} lost {amount} coins.");
         }
 
         public void AdjustCoins(SocketGuildUser user, int amount)
@@ -101,14 +101,14 @@ namespace Gideon.Handlers
                 // Success
                 case 0:
                     int CoinsGained = (int)(UserAccounts.GetAccount(target).coins * 0.1);
-                    await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed($"PickPocket", $"{self.Mention} successfully pickpocketed {CoinsGained} Coins from {target.Mention}.", embedColor, "", icon));
+                    await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed($"PickPocket", $"{self.Mention} successfully pickpocketed {CoinsGained} coins from {target.Mention}.", embedColor, "", icon));
                     AdjustCoins(self, CoinsGained);
                     AdjustCoins(target, -CoinsGained);
                     break;
                 // Fail
                 case 1:
                     int CoinsLost = (int)(UserAccounts.GetAccount(self).coins * 0.1);
-                    await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed($"PickPocket", $"{self.Mention} attempted to pickpocket {target.Mention} and failed, losing {CoinsLost} Coins.", embedColor, "", icon));
+                    await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed($"PickPocket", $"{self.Mention} attempted to pickpocket {target.Mention} and failed, losing {CoinsLost} coins.", embedColor, "", icon));
                     AdjustCoins(self, -CoinsLost);
                     break;
             }
@@ -242,14 +242,14 @@ namespace Gideon.Handlers
             }
             if (!isLotteryGoing)
             {
-                await Config.Utilities.PrintError(context, $"There is no active Coins Lottery, {context.User.Mention}.");
+                await Config.Utilities.PrintError(context, $"There is no active Lottery, {context.User.Mention}.");
                 return;
             }
 
             SocketGuildUser winner;
             winner = PeopleEnteredInLottery.ElementAt(Config.Utilities.GetRandomNumber(1, PeopleEnteredInLottery.Count));
             AdjustCoins(winner, LotteryPrize);
-            await PrintEmbed(context, $"{winner.Mention} has won {LotteryPrize} Coins!\n\nThanks for playing!");
+            await PrintEmbed(context, $"{winner.Mention} has won {LotteryPrize} coins!\n\nThanks for playing!");
             await ResetCoinsLottery(context, false);
         }
 
@@ -262,7 +262,7 @@ namespace Gideon.Handlers
                     await Config.Utilities.PrintError(context, $"You do not have permission for that command, {context.User.Mention}.");
                     return;
                 }
-                await PrintEmbed(context, $"{context.User.Mention} has reset the Coins Lottery.");
+                await PrintEmbed(context, $"{context.User.Mention} has reset the Lottery.");
             }
             isLotteryGoing = false;
             LotteryFee = 0;

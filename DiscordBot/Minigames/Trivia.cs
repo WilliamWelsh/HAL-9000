@@ -18,7 +18,7 @@ namespace Gideon.Minigames
 
         private Embed Embed(string Description, string Footer)
         {
-            var embed = new EmbedBuilder();
+            EmbedBuilder embed = new EmbedBuilder();
             embed.WithTitle("Trivia");
             embed.WithDescription(Description);
             embed.WithColor(new Color(31, 139, 76));
@@ -37,7 +37,7 @@ namespace Gideon.Minigames
             }
             if (isTriviaBeingPlayed && (DateTime.Now - StartTime).TotalSeconds < 60)
             {
-                await context.Channel.SendMessageAsync("", false, Embed($"Sorry, {userPlaying.Mention} is currently playing.\nYou can request a Respected+ to `!reset trivia` if there is an issue.", ""));
+                await context.Channel.SendMessageAsync("", false, Embed($"Sorry, {userPlaying.Mention} is currently playing.\nYou can ask an admin to `!reset trivia` if there is an issue.", ""));
                 return;
             }
             if(input == "trivia")
@@ -113,12 +113,12 @@ namespace Gideon.Minigames
                 string name = user.Nickname != null ? user.Nickname : user.ToString();
                 if (input == correctAnswer)
                 {
-                    await context.Channel.SendMessageAsync("", false, Embed("Correct.", $"{GetName(user)} has been awarded 1 Coin."));
+                    await context.Channel.SendMessageAsync("", false, Embed("Correct.", $"{GetName(user)} has been awarded 1 coin."));
                     Config.CoinHandler.AdjustCoins(user, 1);
                     ResetTrivia();
                     return;
                 }
-                await context.Channel.SendMessageAsync("", false, Embed($"Wrong, it is {correctAnswer.ToUpper()}.", $"{GetName(user)} lost 1 Coin."));
+                await context.Channel.SendMessageAsync("", false, Embed($"Wrong, it is {correctAnswer.ToUpper()}.", $"{GetName(user)} lost 1 coin."));
                 Config.CoinHandler.AdjustCoins(user, -1);
                 ResetTrivia();
                 return;
@@ -126,18 +126,16 @@ namespace Gideon.Minigames
             if (triviaMode == "all" && isTriviaBeingPlayed)
             {
                 for (int i = 0; i < PlayersAnswered.Count; i++)
-                {
                     if (PlayersAnswered.ElementAt(i) == user)
                     {
                         await context.Channel.SendMessageAsync("", false, Embed($"You already answered, {user.Mention}.", ""));
                         return;
                     }
-                }
 
                 PlayersAnswered.Add(user);
                 if (input == correctAnswer)
                 {
-                    await context.Channel.SendMessageAsync("", false, Embed($"Correct, {user.Mention} won!", $"{GetName(user)} has been awarded 1 Coin."));
+                    await context.Channel.SendMessageAsync("", false, Embed($"Correct, {user.Mention} won!", $"{GetName(user)} has been awarded 1 coin."));
                     Config.CoinHandler.AdjustCoins(user, 1);
                     ResetTrivia();
                     return;

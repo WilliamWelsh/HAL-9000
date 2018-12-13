@@ -319,4 +319,3 @@ C:\Users\willi\Documents\repos\GideonBot\DiscordBot\obj\Debug\GideonBot.csproj.C
 C:\Users\willi\Documents\repos\GideonBot\DiscordBot\obj\Debug\GideonBot.csproj.CopyComplete
 C:\Users\willi\Documents\repos\GideonBot\DiscordBot\obj\Debug\Gideon.exe
 C:\Users\willi\Documents\repos\GideonBot\DiscordBot\obj\Debug\Gideon.pdb
-C:\Users\willi\Documents\repos\GideonBot\DiscordBot\obj\Debug\GideonBot.csprojAssemblyReference.cache

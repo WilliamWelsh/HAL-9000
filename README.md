@@ -9,7 +9,7 @@ A multi-purpose Discord bot written in C# for my Discord server. The bot is them
 `!created @mentionedUser` See when someone created their account.  
 #### Profile Related
 `!stats` View your stats.  
-`!xp' or `!level` View your level and xp.  
+`!xp` or `!level` View your level and xp.  
 `!coins` View how many coins you have.  
 `!avatar` Get a link to your avatar.  
 `!joined` View when you joined the server.  

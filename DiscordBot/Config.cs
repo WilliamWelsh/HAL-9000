@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using Newtonsoft.Json;
 using Gideon.Handlers;
-using Gideon.Minigames;
 using System.Collections.Generic;
 
 namespace Gideon
@@ -15,17 +14,13 @@ namespace Gideon
         private const string triviaQuestionsFile = "trivia_questions.json";
 
         public static BotConfig bot;
-        public static BotResources botResources;
         public static TriviaQuestions triviaQuestions;
 
-        public static ImageFetcher ImageFetcher = new ImageFetcher();
         public static Utilities Utilities = new Utilities();
         public static StatsHandler StatsHandler = new StatsHandler();
         public static CoinsHandler CoinHandler = new CoinsHandler();
         public static MinigameHandler MinigameHandler = new MinigameHandler();
         public static RankHandler RankHandler = new RankHandler();
-
-		public static void ResetTTT() => MinigameHandler.TTT = new TicTacToe();
 
         static Config()
         {
@@ -43,17 +38,6 @@ namespace Gideon
             {
                 string json = File.ReadAllText(configFolder + "/" + configFile);
                 bot = JsonConvert.DeserializeObject<BotConfig>(json);
-            }
-
-            if (!File.Exists(configFolder + "/" + resourcesFile))
-            {
-                string json = JsonConvert.SerializeObject(botResources, Formatting.Indented);
-                File.WriteAllText(configFolder + "/" + resourcesFile, json);
-            }
-            else
-            {
-                string json = File.ReadAllText(configFolder + "/" + resourcesFile);
-                botResources = JsonConvert.DeserializeObject<BotResources>(json);
             }
 
             if (!File.Exists(configFolder + "/" + triviaQuestionsFile))
@@ -74,12 +58,8 @@ namespace Gideon
         public string DisordBotToken;
         public string MovieTVAPIKey;
         public string YouTubeAPIKey;
-    }
-
-    public struct BotResources
-    {
-        public List<string> bannedWords;
-        public List<string> allowedChannels;
+        public List<string> Rs;
+        public List<string> alaniPics;
     }
 
     public struct TriviaQuestion

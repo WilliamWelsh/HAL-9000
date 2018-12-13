@@ -178,7 +178,6 @@
     <Compile Include="Handlers\MinigameHandler.cs" />
     <Compile Include="Handlers\RankHandler.cs" />
     <Compile Include="Handlers\StatsHandler.cs" />
-    <Compile Include="ImageFetcher.cs" />
     <Compile Include="Handlers\MediaFetchHandler.cs" />
     <Compile Include="Minigames\8ball.cs" />
     <Compile Include="Minigames\NumberGuess.cs" />

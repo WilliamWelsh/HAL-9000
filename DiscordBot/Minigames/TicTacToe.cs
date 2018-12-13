@@ -144,6 +144,6 @@ namespace Gideon.Minigames
 			Reset();
 		}
 
-		private void Reset() => Config.ResetTTT();
+        private void Reset() => Config.MinigameHandler.ResetTTT();
 	}
 }
