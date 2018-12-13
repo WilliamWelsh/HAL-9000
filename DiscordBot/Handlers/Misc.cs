@@ -503,6 +503,7 @@ namespace Gideon.Handlers
         {
             if (!(UserAccounts.GetAccount(Context.User).superadmin)) return;
             Config.RankHandler.GiveUserXP(user, xp);
+            await Config.RankHandler.CheckXP(Context, user);
             await Context.Channel.SendMessageAsync("Updated user.");
         }
 
@@ -525,9 +526,10 @@ namespace Gideon.Handlers
         public async Task ViewRanks()
         {
             await Context.Channel.SendMessageAsync("Level 0-5 Noob\n" +
-                "Level 6-10 Speedster\n" +
-                "Level 11-15 Kaiju Slayer\n" +
-                "Level 16-20 Avenger");
+                "Level 6-10 Symbiote\n" +
+                "Level 11-15 Speedster\n" +
+                "Level 16-20 Kaiju Slayer\n" +
+                "Level 21-25 Avenger");
         }
 
         [Command("playing")]
@@ -648,5 +650,25 @@ namespace Gideon.Handlers
         // View Leaderboards
         [Command("lb")]
         public async Task Leaderboards() => await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Leaderboards", "`!lb coins` People with the most coins.\n`!lb joined` First people that joined the server.\n`!lb created` People with the oldest accounts.", new Color(0, 173, 0), "", ""));
+
+        private string FindPeopleWithRoles(string role)
+        {
+            var rolea = Context.Guild.Roles.FirstOrDefault(x => x.Name == role);
+            string desc = "";
+            foreach (SocketGuildUser user in Context.Guild.Users.ToArray())
+            {
+                if (user.Roles.Contains(rolea))
+                {
+                    desc += user.Mention + ", Level " + UserAccounts.GetAccount(user).level + "\n";
+                }
+            }
+            return desc;
+        }
+
+        [Command("roles")]
+        public async Task FindPeopleInRoles([Remainder]string role)
+        {
+            await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("", FindPeopleWithRoles(role), new Color(0,0,0), "", ""));
+        }
     }
 }

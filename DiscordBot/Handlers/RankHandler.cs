@@ -42,55 +42,63 @@ namespace Gideon.Handlers
             UserAccounts.SaveAccounts();
         }
 
-        private async Task CompareAndSet(SocketCommandContext context, UserAccount account, uint level, uint targetXP)
+        private async Task CompareAndSet(SocketCommandContext context, SocketUser user, UserAccount account, uint level, uint targetXP)
         {
             if (account.xp >= targetXP && account.level < level)
             {
                 account.level = level;
                 UserAccounts.SaveAccounts();
-                await Rankup(context, level);
+                await Rankup(context, user, level);
             }
         }
 
-        private async Task AddRole(SocketCommandContext context, string oldRole, string newRole)
+        private async Task AddRole(SocketCommandContext context, SocketUser user, string oldRole, string newRole)
         {
-            await (context.User as IGuildUser).AddRoleAsync(context.Guild.Roles.FirstOrDefault(x => x.Name == newRole));
-            await (context.User as IGuildUser).RemoveRoleAsync(context.Guild.Roles.FirstOrDefault(x => x.Name == oldRole));
+            await (user as IGuildUser).AddRoleAsync(context.Guild.Roles.FirstOrDefault(x => x.Name == newRole));
+            await (user as IGuildUser).RemoveRoleAsync(context.Guild.Roles.FirstOrDefault(x => x.Name == oldRole));
         }
 
-        private async Task Rankup(SocketCommandContext context, uint level)
+        private async Task Rankup(SocketCommandContext context, SocketUser user, uint level)
         {
-            string desc = $"{context.User.Mention} has leveled up to {level}.";
+            string desc = $"{user.Mention} has leveled up to {level}.";
             if (level == 1)
             {
-                desc += $" {context.User.Mention} is now a Noob.";
-                await (context.User as IGuildUser).AddRoleAsync(context.Guild.Roles.FirstOrDefault(x => x.Name == "Noob"));
+                desc += $" {user.Mention} is now a Noob.";
+                await (user as IGuildUser).AddRoleAsync(context.Guild.Roles.FirstOrDefault(x => x.Name == "Noob"));
             }
             else if (level == 6)
             {
-                desc += $" {context.User.Mention} is now a Speedster.";
-                await AddRole(context, "Noob", "Speedster");
+                desc += $" {user.Mention} is now a Symbiote.";
+                await AddRole(context, user, "Noob", "Symbiote");
             }
             else if (level == 11)
             {
-                desc += $" {context.User.Mention} is now a Kaiju Slayer.";
-                await AddRole(context, "Speedster", "Kaiju Slayer");
+                desc += $" {user.Mention} is now a Speedster.";
+                await AddRole(context, user, "Symbiote", "Speedster");
             }
             else if (level == 16)
             {
-                desc += $" {context.User.Mention} is now a Avenger.";
-                await AddRole(context, "Kaiju Slayer", "Avenger");
+                desc += $" {user.Mention} is now a Kaiju Slayer.";
+                await AddRole(context, user, "Speedster", "Kaiju Slayer");
             }
-            await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Level Up", desc, Config.Utilities.DomColorFromURL(context.User.GetAvatarUrl()), "", context.User.GetAvatarUrl()));
+            else if (level == 21)
+            {
+                desc += $" {user.Mention} is now an Avenger.";
+                await AddRole(context, user, "Kaiju Slayer", "Avenger");
+            }
+            await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Level Up", desc, Config.Utilities.DomColorFromURL(user.GetAvatarUrl()), "", user.GetAvatarUrl()));
         }
 
-        uint[] xpLevel = { 0, 100, 255, 475, 770, 1150, 1625, 2205, 2900, 3720, 4675, 5775, 7030, 8450, 10045, 11825, 13800, 15900, 18375, 20995, 23850 };
+        // I stole the MEE6 bot's XP amounts for their level system because it's pretty good
+        // https://mee6.github.io/Mee6-documentation/levelxp/
+        uint[] xpLevel = { 0, 100, 255, 475, 770, 1150, 1625, 2205, 2900, 3720, 4675, 5775, 7030, 8450, 10045, 11825, 13800, 15900, 18375, 20995, 23850,
+        26950, 30305, 33925, 37820, 42000, 46475, 51255, 56350, 61770, 67525};
 
-        private async Task CheckXP(SocketCommandContext context, SocketUser user)
+        public async Task CheckXP(SocketCommandContext context, SocketUser user)
         {
             UserAccount account = UserAccounts.GetAccount(user);
             for (uint i = 0; i < xpLevel.Length; i++)
-                await CompareAndSet(context, account, i, xpLevel[i]);
+                await CompareAndSet(context, user, account, i, xpLevel[i]);
         }
 
         public async Task DisplayLevelAndXP(SocketCommandContext context, SocketUser user)

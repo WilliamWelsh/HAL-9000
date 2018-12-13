@@ -40,8 +40,8 @@ namespace Gideon.Minigames
             await m.AddReactionAsync(new Emoji("📰"));
             await m.AddReactionAsync(new Emoji("✂"));
             await m.AddReactionAsync(new Emoji("🌑"));
-            MessageID = m.Id;
             isPlaying = true;
+            MessageID = m.Id;
             Player = (SocketGuildUser)context.User;
         }
 
@@ -62,9 +62,9 @@ namespace Gideon.Minigames
             string result = GetWinner(playOne[0], playTwo[0]);
             await channel.SendMessageAsync("", false, embed($"{Player.Mention} chose {playOne}!\n\nI chose {playTwo}.\n\n{result}", ""));
 
-            if(result.Contains("lose 3 Coins"))
+            if(result.Contains("lose 3 coins"))
                 Config.CoinHandler.AdjustCoins(Player, -3);
-            else if (result.Contains("got 3 Coins"))
+            else if (result.Contains("got 3 coins"))
                 Config.CoinHandler.AdjustCoins(Player, 3);
 
             Player = null;
