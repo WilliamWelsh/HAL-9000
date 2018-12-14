@@ -35,7 +35,7 @@ namespace Gideon.Handlers
             char[] X = @"¿/˙'\‾¡zʎxʍʌnʇsɹbdouɯlʞɾıɥƃɟǝpɔqɐ".ToCharArray();
             string V = @"?\.,/_!zyxwvutsrqponmlkjihgfedcba";
             string upsideDownText = new string((from char obj in message.ToCharArray()
-                               select (V.IndexOf(obj) != -1) ? X[V.IndexOf(obj)] : obj).Reverse().ToArray());
+                               select (V.IndexOf(obj) != -1) ? X[V.IndexOf(obj)] : obj).Reverse().ToArray()); // thanks stack overflow
             await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Australian Translator", upsideDownText, new Color(255, 140, 0), "", ""));
         }
 
@@ -300,8 +300,8 @@ namespace Gideon.Handlers
 		{
 			string EmoteString = $"{Context.Guild.Emotes.Count} total emotes\n";
 			for (int i = 0; i < Context.Guild.Emotes.Count / 2; i++)
-				EmoteString += $":flash: ";
-			await Context.Channel.SendMessageAsync(EmoteString);
+				EmoteString += $"\\:{Context.Guild.Emotes.ElementAt(i).Name}:";
+            await Context.Channel.SendMessageAsync(EmoteString);
             //EmoteString = "";
             //for (int i = Context.Guild.Emotes.Count / 2; i < Context.Guild.Emotes.Count; i++)
             //    EmoteString += Context.Guild.Emotes.ElementAt(i);
@@ -648,14 +648,10 @@ namespace Gideon.Handlers
         public async Task ShowMendesArmy()
         {
             string users = "";
-            int amount = 0;
             var role = Context.Guild.Roles.FirstOrDefault(x => x.Name == "Shawn Mendes Fan");
             foreach (var user in Context.Guild.Users)
                 if (user.Roles.Contains(role))
-                {
                     users += user.Mention + "\n";
-                    //amount++;
-                }
             await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed($"Mendes Army ({users.Split('\n').Length-1})", users, new Color(208, 185, 179), "Shawn Mendes Fans", "https://cdn.discordapp.com/avatars/519261973737635842/55e95c3bd26751828c96802292897a41.png?size=128"));
         }
 
@@ -688,9 +684,11 @@ namespace Gideon.Handlers
             return desc;
         }
 
+        // Find the users that are in a certain role.
         [Command("roles")]
         public async Task FindPeopleInRoles([Remainder]string role) => await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("", FindPeopleWithRoles(role), new Color(0, 0, 0), "", ""));
 
+        // Show the current version of the bot, the changelog, and a link to the commit
         [Command("version")]
         public async Task GetCurrentVersion()
         {
@@ -715,6 +713,14 @@ namespace Gideon.Handlers
             time = time.Substring(0, time.IndexOf("</"));
 
             await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Current Version", $"Version Name: {title}\nUpdate Description:\n{description}\n\nTo view the changed files and code, visit {link}", new Color(127, 166, 208), $"Last updated {time}", "https://cdn.discordapp.com/avatars/437458514906972180/2d44b9b229fe91b5bff8d13799a1bcf9.png?size=128"));
+        }
+
+        // Get the dominant color of an image
+        [Command("color")]
+        public async Task GetDomColor(string url)
+        {
+            var color = Config.Utilities.DomColorFromURL(url);
+            await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Dominant Color", $"The dominant color for the image is:\n\nHexadecimal:\n`#{color.R:X2}{color.G:X2}{color.B:X2}`\n\nRGB:\n`Red: {color.R}`\n`Green: {color.G}`\n`Blue: {color.B}`", color, "", url));
         }
     }
 }

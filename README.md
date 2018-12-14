@@ -39,6 +39,7 @@ A multi-purpose Discord bot written in C# for my Discord server. The bot is them
 `lennyface` Posts a lennyface.  
 `!hex (red) (green) (blue)` Convert an RGB value a hexadecimal.  
 `!rgb (hexadecimal)` Convert a hexadecimal to an RGB value.  
+`!color (image link)` Get the dominant color of an image.  
 `!binary (text)` Convert text to binary.  
 `!ascii (binary)` Convert binary to text.  
 `!jumbo (emoji)` Make an emoji really big.  

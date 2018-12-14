@@ -105,8 +105,22 @@ namespace Gideon.Handlers
         {
             UserAccount account = UserAccounts.GetAccount(user);
             string name = (user as SocketGuildUser).Nickname != null ? (user as SocketGuildUser).Nickname : user.Username;
-            string desc = $"Level: {account.level}\nTotal XP: {account.xp}\nXP until next level: {account.xp}/{xpLevel[account.level + 1]}";
-            await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed($"{name}'s Level", desc, Config.Utilities.DomColorFromURL(user.GetAvatarUrl()), "", user.GetAvatarUrl()));
+            string desc = $"Rank: {LevelToRank(account.level)}\n\nLevel: {account.level}\n\nTotal XP: {account.xp}\n\nXP until next level: {account.xp}/{xpLevel[account.level + 1]}";
+            await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed($"{name}'s Level", desc, context.Guild.Roles.FirstOrDefault(x => x.Name == LevelToRank(account.level)).Color, "", user.GetAvatarUrl()));
+        }
+
+        public string LevelToRank(uint level)
+        {
+            if (level <= 5)
+                return "Noob";
+            else if (level > 5 && level <= 10)
+                return "Symbiote";
+            else if (level > 10 && level <= 15)
+                return "Speedster";
+            else if (level > 16 && level <= 20)
+                return "Kaiju Slayer";
+            else
+                return "Avenger";
         }
     }
 }

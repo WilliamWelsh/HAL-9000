@@ -4,6 +4,7 @@ using Discord.Commands;
 using System.Reflection;
 using Discord.WebSocket;
 using System.Threading.Tasks;
+using Discord;
 
 namespace Gideon
 {
@@ -18,13 +19,15 @@ namespace Gideon
             _service = new CommandService();
             await _service.AddModulesAsync(Assembly.GetEntryAssembly());
             _client.MessageReceived += HandleCommandAsync;
+
             _client.UserBanned += HandleUserBanned;
             _client.UserUnbanned += HandleUserUnbanned;
+
             _client.UserJoined += HandleUserJoining;
             _client.UserLeft += HandleUserLeaving;
         }
 
-        private async Task HandleUserUnbanned(SocketUser arg1, SocketGuild arg2) => await arg2.GetTextChannel(294699220743618561).SendMessageAsync("", false, Config.Utilities.Embed("Pardon", $"{arg1} has been unbanned.", Config.Utilities.DomColorFromURL(arg1.GetAvatarUrl()), "", arg1.GetAvatarUrl()));
+        private async Task HandleUserUnbanned(SocketUser arg1, SocketGuild arg2) => await arg2.GetTextChannel(294699220743618561).SendMessageAsync("", false, Config.Utilities.Embed("Pardon", $"{arg1} has been unbanned.", new Color(31, 139, 76), "", arg1.GetAvatarUrl()));
 
         private async Task HandleUserBanned(SocketUser arg1, SocketGuild arg2)
         {
@@ -34,14 +37,24 @@ namespace Gideon
                 if (ban.User.Id == arg1.Id)
                     reason = ban.Reason;
             if (reason == "")
-                await arg2.GetTextChannel(294699220743618561).SendMessageAsync("", false, Config.Utilities.Embed("Ban", $"{arg1} has been banned.", Config.Utilities.DomColorFromURL(arg1.GetAvatarUrl()), "", arg1.GetAvatarUrl()));
+                await arg2.GetTextChannel(294699220743618561).SendMessageAsync("", false, Config.Utilities.Embed("Ban", $"{arg1} has been banned.", new Color(231, 76, 60), "", arg1.GetAvatarUrl()));
             else
-                await arg2.GetTextChannel(294699220743618561).SendMessageAsync("", false, Config.Utilities.Embed("Ban", $"{arg1} has been banned for {reason}.", Config.Utilities.DomColorFromURL(arg1.GetAvatarUrl()), "", arg1.GetAvatarUrl()));
+                await arg2.GetTextChannel(294699220743618561).SendMessageAsync("", false, Config.Utilities.Embed("Ban", $"{arg1} has been banned for {reason}.", new Color(231, 76, 60), "", arg1.GetAvatarUrl()));
         }
 
-        private async Task HandleUserJoining(SocketGuildUser arg) => await arg.Guild.GetTextChannel(294699220743618561).SendMessageAsync("", false, Config.Utilities.Embed("New User", $"{arg} has joined the server.", Config.Utilities.DomColorFromURL(arg.GetAvatarUrl()), "", arg.GetAvatarUrl()));
+        private async Task HandleUserJoining(SocketGuildUser arg)
+        {
+            string desc = $"{arg} has joined the server.";
+            if (UserAccounts.GetAccount(arg).level != 0)
+            {
+                string rank = Config.RankHandler.LevelToRank(UserAccounts.GetAccount(arg).level);
+                await (arg as IGuildUser).AddRoleAsync(arg.Guild.Roles.FirstOrDefault(x => x.Name == rank));
+                desc += $" Their rank has been restored to {rank}.";
+            }
+            await arg.Guild.GetTextChannel(294699220743618561).SendMessageAsync("", false, Config.Utilities.Embed("New User", desc, new Color(31, 139, 76), "", arg.GetAvatarUrl()));
+        }
 
-        private async Task HandleUserLeaving(SocketGuildUser arg) => await arg.Guild.GetTextChannel(294699220743618561).SendMessageAsync("", false, Config.Utilities.Embed("User Left", $"{arg} has left the server.", Config.Utilities.DomColorFromURL(arg.GetAvatarUrl()), "", arg.GetAvatarUrl()));
+        private async Task HandleUserLeaving(SocketGuildUser arg) => await arg.Guild.GetTextChannel(294699220743618561).SendMessageAsync("", false, Config.Utilities.Embed("User Left", $"{arg} has left the server.", new Color(231, 76, 60), "", arg.GetAvatarUrl()));
 
         private async Task HandleCommandAsync(SocketMessage s)
         {
