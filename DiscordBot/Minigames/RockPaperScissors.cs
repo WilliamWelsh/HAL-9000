@@ -13,20 +13,12 @@ namespace Gideon.Minigames
     {
         public ulong MessageID;
         private bool isPlaying;
+        private static readonly Color color = new Color(251, 233, 231);
         private SocketGuildUser Player;
         private List<string> Plays = new List<string>(new string[] { "Rock", "Paper", "Scissors" });
         private static Random rnd = new Random();
 
-        private Embed embed (string description, string footer)
-        {
-            var Embed = new EmbedBuilder();
-            Embed.WithTitle("Rock-Paper-Scissors");
-            Embed.WithDescription(description);
-            Embed.WithFooter(footer);
-            Embed.WithColor(new Color(251, 233, 231));
-            Embed.WithThumbnailUrl("https://i.imgur.com/VXdDjho.png");
-            return Embed;
-        }
+        private Embed embed(string description, string footer) => Config.Utilities.Embed("Rock-Paper-Scissors", description, color, footer, "https://i.imgur.com/VXdDjho.png");
 
         public async Task StartRPS(SocketCommandContext context)
         {

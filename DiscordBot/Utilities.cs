@@ -6,6 +6,7 @@ using System.Drawing;
 using ColorThiefDotNet;
 using Discord.Commands;
 using System.Threading.Tasks;
+using Discord.WebSocket;
 
 namespace Gideon
 {
@@ -30,32 +31,30 @@ namespace Gideon
             return embed;
         }
 
+        // Generic Image Embed template
+        public Embed ImageEmbed(string t, string d, Discord.Color c, string f, string imageURL)
+        {
+            var embed = new EmbedBuilder();
+            embed.WithTitle(t);
+            embed.WithDescription(d);
+            embed.WithColor(c);
+            embed.WithFooter(f);
+            embed.WithImageUrl(imageURL);
+            return embed;
+        }
+
         // Print an error
         public async Task PrintError(SocketCommandContext context, string description) => await context.Channel.SendMessageAsync("", false, Embed("Error", description, new Discord.Color(227, 37, 39), "", ""));
 
         // Get a dominant color from an image (url)
         public Discord.Color DomColorFromURL(string url)
         {
-            var colorThief = new ColorThief();
-            WebClient client = new WebClient();
-
-            byte[] bytes = client.DownloadData(url);
+            byte[] bytes = new WebClient().DownloadData(url);
             MemoryStream ms = new MemoryStream(bytes);
             Bitmap bitmap = new Bitmap(System.Drawing.Image.FromStream(ms));
 
             // Get the hexadecimal and remove the '#'
-            string color = colorThief.GetColor(bitmap).Color.ToString().Substring(1);
-
-            // First two values of the hex
-            int r = int.Parse(color.Substring(0, color.Length - 4), System.Globalization.NumberStyles.AllowHexSpecifier);
-
-            // Get the middle two values of the hex
-            int g = int.Parse(color.Substring(2, 2), System.Globalization.NumberStyles.AllowHexSpecifier);
-
-            // Final two values
-            int b = int.Parse(color.Substring(4), System.Globalization.NumberStyles.AllowHexSpecifier);
-
-            return new Discord.Color(r, g, b);
+            return HexToRGB(new ColorThief().GetColor(bitmap).Color.ToString().Substring(1));
         }
 
 		// Convert a hexidecimal to an RGB value (input does not include the '#')
@@ -72,5 +71,10 @@ namespace Gideon
 
 			return new Discord.Color(r, g, b);
 		}
+
+        public async Task CheckForSuperadmin(SocketCommandContext context, SocketUser user)
+        {
+
+        }
 	}
 }

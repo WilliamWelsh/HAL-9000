@@ -9,6 +9,8 @@ namespace Gideon.Minigames
 {
     class RussianRoulette
     {
+        private static readonly Color color = new Color(0, 0, 0);
+
         private int round = 0, PlayerSlots = 0, currentChamber = 0, badChamber = 0, currentTurn = 0;
         private bool isGameGoing = false;
 
@@ -21,7 +23,7 @@ namespace Gideon.Minigames
         {
             var embed = new EmbedBuilder();
             embed.WithTitle($":gun: Russian Roulette");
-            embed.WithColor(new Color(0, 0, 0));
+            embed.WithColor(color);
             embed.WithDescription(Description);
             if (showPlayers)
             {
@@ -34,15 +36,7 @@ namespace Gideon.Minigames
             return embed;
         }
 
-        private Embed gameEmbed(string Description, string Footer)
-        {
-            var embed = new EmbedBuilder();
-            embed.WithTitle($":gun: Russian Roulette - Round {round}");
-            embed.WithColor(new Color(0, 0, 0));
-            embed.WithDescription(Description);
-            embed.WithFooter(Footer);
-            return embed;
-        }
+        private Embed gameEmbed(string description, string footer) => Config.Utilities.Embed($":gun: Russian Roulette - Round {round}", description, color, footer, "");
 
         public async Task TryToStartGame(SocketCommandContext context, string input)
         {

@@ -10,21 +10,14 @@ namespace Gideon.Minigames
 {
     class Trivia
     {
+        private static readonly Color color = new Color(31, 139, 76);
         private bool isTriviaBeingPlayed = false;
         private SocketGuildUser userPlaying = null;
         private string correctAnswer, triviaMode;
         private DateTime StartTime;
         private List<SocketGuildUser> PlayersAnswered = new List<SocketGuildUser>();
 
-        private Embed Embed(string Description, string Footer)
-        {
-            EmbedBuilder embed = new EmbedBuilder();
-            embed.WithTitle("Trivia");
-            embed.WithDescription(Description);
-            embed.WithColor(new Color(31, 139, 76));
-            embed.WithFooter(Footer);
-            return embed;
-        }
+        private Embed Embed(string description, string footer) => Config.Utilities.Embed("Trivia", description, color, footer, "");
 
         private string GetName(SocketGuildUser user) => user.Nickname ?? user.Username;
 

@@ -10,18 +10,19 @@ namespace Gideon.Minigames
 {
     class NumberGuess
     {
+        private static readonly Color color = new Color(0, 0, 0);
         private int number, playerSlots = 2;
         private struct Player { public SocketGuildUser user; public bool hasAnswered; public int guess; };
         private List<Player> Players = new List<Player>();
 
         public bool isGamingGoing;
 
-        Embed embed(string Description, string footer, bool showPlayers)
+        Embed embed(string description, string footer, bool showPlayers)
         {
             var embed = new EmbedBuilder();
             embed.WithTitle("Number Guess");
-            embed.WithDescription(Description);
-            embed.WithColor(new Color(0, 0, 0));
+            embed.WithDescription(description);
+            embed.WithColor(color);
             if (showPlayers)
             {
                 string PlayerDesc = "";
@@ -36,15 +37,7 @@ namespace Gideon.Minigames
             return embed;
         }
 
-        private void AddPlayer(SocketGuildUser user)
-        {
-            Player newPlayer = new Player
-            {
-                hasAnswered = false,
-                user = user
-            };
-            Players.Add(newPlayer);
-        }
+        private void AddPlayer(SocketGuildUser user) => Players.Add(new Player { hasAnswered = false, user = user });
 
         public async Task TryToStartGame(int RandomNumber, SocketGuildUser user, SocketCommandContext context, int players)
         {

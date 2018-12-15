@@ -10,8 +10,7 @@ namespace Gideon
         DiscordSocketClient _client;
         CommandHandler _handler;
 
-        static void Main(string[] args)
-        => new Program().StartAsync().GetAwaiter().GetResult();
+        static void Main(string[] args) => new Program().StartAsync().GetAwaiter().GetResult();
 
         public async Task StartAsync()
         {
@@ -26,6 +25,7 @@ namespace Gideon
             await Task.Delay(-1);
         }
 
+        // I hate this warning
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         private async Task Log(LogMessage msg) => Console.WriteLine(msg.Message);
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously

@@ -145,10 +145,8 @@ namespace Gideon.Handlers
 			char[] letters = message.ToCharArray();
 			for (int n = 0; n < letters.Length; n += 2)
 				letters[n] = char.ToUpper(letters[n]);
-			string new_s = new string(letters);
 			string name = ((SocketGuildUser)Context.User).Nickname ?? Context.User.Username;
-
-			await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("", new_s, new Color(247, 250, 58), $"Mocked by {name}", "http://i0.kym-cdn.com/photos/images/masonry/001/255/479/85b.png"));
+			await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("", new string(letters), new Color(247, 250, 58), $"Mocked by {name}", "http://i0.kym-cdn.com/photos/images/masonry/001/255/479/85b.png"));
 		}
 
 		// Display a random person on the server
@@ -197,19 +195,13 @@ namespace Gideon.Handlers
 		[Command("avatar")]
 		public async Task GetAvatar() => await GetAvatar((SocketGuildUser)Context.User);
 
-		[Command("avatar")]
-		public async Task GetAvatar(SocketGuildUser user)
-		{
-			var embed = new EmbedBuilder();
-			embed.WithColor(Config.Utilities.DomColorFromURL(user.GetAvatarUrl()));
-			embed.WithImageUrl(user.GetAvatarUrl());
-			await Context.Channel.SendMessageAsync("", false, embed);
-		}
+        [Command("avatar")]
+        public async Task GetAvatar(SocketGuildUser user) => await Context.Channel.SendMessageAsync("", false, Config.Utilities.ImageEmbed("", "", Config.Utilities.DomColorFromURL(user.GetAvatarUrl()), "", user.GetAvatarUrl()));
 
-		#region Coins Related Commands
+        #region Coins Related Commands
 
-		// Pickpocket a user
-		[Command("pickpocket")]
+        // Pickpocket a user
+        [Command("pickpocket")]
 		public async Task PickPocketCoins(SocketGuildUser user) => await Config.CoinHandler.PickPocket(Context, user);
 
 		// Start a Coins Lottery
@@ -294,22 +286,23 @@ namespace Gideon.Handlers
 		[Command("stats")]
 		public async Task DisplayUserStats([Remainder]SocketGuildUser user) => await Config.StatsHandler.DisplayUserStats(Context, user);
 
-		// View custom server emotes
-		[Command("emotes")]
-		public async Task ViewServerEmotes()
-		{
-			string EmoteString = $"{Context.Guild.Emotes.Count} total emotes\n";
-			for (int i = 0; i < Context.Guild.Emotes.Count / 2; i++)
-				EmoteString += $"\\:{Context.Guild.Emotes.ElementAt(i).Name}:";
-            await Context.Channel.SendMessageAsync(EmoteString);
-            //EmoteString = "";
-            //for (int i = Context.Guild.Emotes.Count / 2; i < Context.Guild.Emotes.Count; i++)
-            //    EmoteString += Context.Guild.Emotes.ElementAt(i);
-            //await Context.Channel.SendMessageAsync(EmoteString);
-        }
+        // View custom server emotes
+        // broken
+        //[Command("emotes")]
+        //public async Task ViewServerEmotes()
+        //{
+        //    string EmoteString = "";//$"{Context.Guild.Emotes.Count} total emotes\n";
+        //    for (int i = 0; i < Context.Guild.Emotes.Count; i++)
+        //        EmoteString += $"{Context.Guild.Emotes.ElementAt(i)}";
+        //    await Context.Channel.SendMessageAsync(EmoteString);
+        //    EmoteString = "";
+        //    for (int i = Context.Guild.Emotes.Count / 2; i < Context.Guild.Emotes.Count; i++)
+        //        EmoteString += Context.Guild.Emotes.ElementAt(i);
+        //    await Context.Channel.SendMessageAsync(EmoteString);
+        //}
 
-		// View server stats
-		[Command("serverstats")]
+        // View server stats
+        [Command("serverstats")]
 		public async Task ServerStats() => await Config.StatsHandler.DisplayServerStats(Context);
 
 		// Set the time for a user
@@ -317,8 +310,7 @@ namespace Gideon.Handlers
 		public async Task UserTimeSet(SocketGuildUser target, int offset)
 		{
 			if (!UserAccounts.GetAccount(Context.User).superadmin) return;
-			UserAccount targetAccount = UserAccounts.GetAccount(target);
-			targetAccount.localTime = offset;
+			UserAccounts.GetAccount(target).localTime = offset;
 			UserAccounts.SaveAccounts();
 			await Context.Channel.SendMessageAsync("User updated.");
 		}
@@ -328,8 +320,7 @@ namespace Gideon.Handlers
 		public async Task UserSetCountry(SocketGuildUser target, [Remainder]string name)
 		{
 			if (!UserAccounts.GetAccount(Context.User).superadmin) return;
-			UserAccount targetAccount = UserAccounts.GetAccount(target);
-			targetAccount.country = name;
+			UserAccounts.GetAccount(target).country = name;
 			UserAccounts.SaveAccounts();
 			await Context.Channel.SendMessageAsync("User updated.");
 		}
@@ -360,11 +351,9 @@ namespace Gideon.Handlers
 		public async Task SearchMovie([Remainder]string search)
 		{
 			MediaFetchHandler mediaFH = new MediaFetchHandler();
-			MediaFetchHandler.Movie media;
-			media = mediaFH.FetchMovie(search);
+			MediaFetchHandler.Movie media = mediaFH.FetchMovie(search);
 
-			string RTScore = "N/A";
-			string IMDBScore;
+			string RTScore = "N/A", IMDBScore;
 
 			for (int i = 0; i < media.Ratings.Length; i++)
 				if (media.Ratings[i].Source == "Rotten Tomatoes") RTScore = media.Ratings[i].Value;
@@ -390,13 +379,11 @@ namespace Gideon.Handlers
 		public async Task SearchShows([Remainder]string search)
 		{
 			MediaFetchHandler mediaFH = new MediaFetchHandler();
-			MediaFetchHandler.Movie media;
-			media = mediaFH.FetchMovie(search);
+			MediaFetchHandler.Movie media = mediaFH.FetchMovie(search);
 
-			string IMDBScore;
-
-			IMDBScore = media.imdbRating == "N/A" ? "N/A" : $"{media.imdbRating}/10";
+			string IMDBScore = media.imdbRating == "N/A" ? "N/A" : $"{media.imdbRating}/10";
 			media.Year = media.Year.Replace("â€“", "-");
+
 			var embed = new EmbedBuilder();
 			embed.WithTitle($":film_frames: {media.Title} ({media.Year})");
 			embed.WithThumbnailUrl(media.Poster);
@@ -492,10 +479,7 @@ namespace Gideon.Handlers
         public async Task RandomAlaniPic()
         {
             string pic = Config.bot.alaniPics[Config.Utilities.GetRandomNumber(0, Config.bot.alaniPics.Count)];
-            EmbedBuilder embed = new EmbedBuilder();
-            embed.WithColor(Config.Utilities.DomColorFromURL(pic));
-            embed.WithImageUrl(pic);
-            await Context.Channel.SendMessageAsync("", false, embed);
+            await Context.Channel.SendMessageAsync("", false, Config.Utilities.ImageEmbed("", "", Config.Utilities.DomColorFromURL(pic), "", pic));
         }
 
         // Send a random picture of R
@@ -503,10 +487,7 @@ namespace Gideon.Handlers
         public async Task DisplayRandomR()
         {
             string pic = Config.bot.Rs[Config.Utilities.GetRandomNumber(0, Config.bot.Rs.Count)];
-            EmbedBuilder embed = new EmbedBuilder();
-            embed.WithColor(Config.Utilities.DomColorFromURL(pic));
-            embed.WithImageUrl(pic);
-            await Context.Channel.SendMessageAsync("", false, embed);
+            await Context.Channel.SendMessageAsync("", false, Config.Utilities.ImageEmbed("", "", Config.Utilities.DomColorFromURL(pic), "", pic));
         }
 
         // Give xp to a user
@@ -564,6 +545,19 @@ namespace Gideon.Handlers
             await Context.Channel.SendMessageAsync(result);
         }
 
+        [Command("lb new")]
+        public async Task NewAccountLB()
+        {
+            List<DateTime> dates = MakeListAndOrderIt("created");
+            dates.Reverse();
+            string result = "";
+            for (int i = 0; i < 50; i++)
+                foreach (var user in Context.Guild.Users)
+                    if (dates.ElementAt(i) == user.CreatedAt.DateTime)
+                        result += $"{i + 1}. {user.Username}, `{dates.ElementAt(i).ToString("MMMM dd, yyy")}`\n";
+            await Context.Channel.SendMessageAsync(result);
+        }
+
         private List<DateTime> MakeListAndOrderIt(string whatToAdd)
         {
             List<DateTime> dates = new List<DateTime>();
@@ -603,6 +597,25 @@ namespace Gideon.Handlers
                 foreach (var user in Context.Guild.Users)
                     if (dates.ElementAt(i) == user.CreatedAt.DateTime)
                         result += $"{i + 1}. {user.Username}, `{dates.ElementAt(i).ToString("MMMM dd, yyy")}`\n";
+            await Context.Channel.SendMessageAsync(result);
+        }
+
+        [Command("lb level")]
+        public async Task LevelLB()
+        {
+            List<uint> levels = new List<uint>();
+            foreach (var user in Context.Guild.Users)
+                levels.Add(UserAccounts.GetAccount(user).level);
+            levels.Sort();
+            levels.Reverse();
+            string result = "";
+            for (int i = 0; i < 25; i++)
+                foreach (var user in Context.Guild.Users)
+                    if (levels.ElementAt(i) == UserAccounts.GetAccount(user).level && !result.Contains(user.Username))
+                    {
+                        result += $"{i + 1}. {user.Username}, `Level {levels.ElementAt(i)}`\n";
+                        break;
+                    }
             await Context.Channel.SendMessageAsync(result);
         }
 
@@ -686,7 +699,7 @@ namespace Gideon.Handlers
 
         // Find the users that are in a certain role.
         [Command("roles")]
-        public async Task FindPeopleInRoles([Remainder]string role) => await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("", FindPeopleWithRoles(role), new Color(0, 0, 0), "", ""));
+        public async Task FindPeopleInRoles([Remainder]string role) => await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("", FindPeopleWithRoles(role), Context.Guild.Roles.FirstOrDefault(x => x.Name == role).Color, "", ""));
 
         // Show the current version of the bot, the changelog, and a link to the commit
         [Command("version")]

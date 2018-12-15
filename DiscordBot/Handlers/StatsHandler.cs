@@ -67,7 +67,8 @@ namespace Gideon.Handlers
                     text = $"It's {t.ToString("h:mm tt")} for {name}.\n{t.ToString("dddd, MMMM d.")}";
                     break;
             }
-            await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Time Teller", text, new Color(127, 166, 208), "", ""));
+            string footer = UserAccounts.GetAccount(user).country != "Not set." ? UserAccounts.GetAccount(user).country : "No country set.";
+            await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Time Teller", text, new Color(127, 166, 208), footer, ""));
         }
 
         // Display a User's country

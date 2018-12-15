@@ -10,11 +10,11 @@ namespace Gideon.Handlers
 {
     class CoinsHandler
     {
-        private static Color embedColor = new Color(215, 154, 14);
+        private static Color color = new Color(215, 154, 14);
         private const string icon = "https://i.imgur.com/w09rWQg.png";
 
-        private async Task PrintEmbed(SocketCommandContext context, string description) => await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Coins", description, embedColor, "", icon));
-        private async Task PrintEmbedNoFooter(SocketCommandContext context, string description) => await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Coins", description, embedColor, "", ""));
+        private async Task PrintEmbed(SocketCommandContext context, string description) => await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Coins", description, color, "", icon));
+        private async Task PrintEmbedNoFooter(SocketCommandContext context, string description) => await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Coins", description, color, "", ""));
 
         public async Task GiveCoins(SocketCommandContext context, SocketGuildUser sender, SocketGuildUser reciever, int amount)
         {
@@ -61,12 +61,12 @@ namespace Gideon.Handlers
         public async Task DisplayCoins(SocketCommandContext context, SocketGuildUser user, ISocketMessageChannel channel)
         {
             string name = user.Nickname != null ? user.Nickname : user.Username;
-            await channel.SendMessageAsync("", false, Config.Utilities.Embed($"{name}", $"{UserAccounts.GetAccount(user).coins.ToString("#,##0")} Coins", embedColor, "", icon));
+            await channel.SendMessageAsync("", false, Config.Utilities.Embed($"{name}", $"{UserAccounts.GetAccount(user).coins.ToString("#,##0")} Coins", color, "", icon));
         }
 
         public async Task DisplayCoinsStore(SocketCommandContext context, SocketGuildUser user, ISocketMessageChannel channel)
         {
-            await channel.SendMessageAsync("", false, Config.Utilities.Embed($"Coins Store", $"500 XP - ??? Coins\n1000 XP - ???", embedColor, $"You have {UserAccounts.GetAccount(user).coins} Coins.", icon));
+            await channel.SendMessageAsync("", false, Config.Utilities.Embed($"Coins Store", $"500 XP - ??? Coins\n1000 XP - ???", color, $"You have {UserAccounts.GetAccount(user).coins} Coins.", icon));
         }
 
         private struct PickPocketUser { public SocketGuildUser user; public DateTime timeStamp; }
@@ -90,7 +90,7 @@ namespace Gideon.Handlers
                             timeLeft = $"{Math.Round(12 - ((DateTime.Now - ppu.timeStamp).TotalMinutes), 0)} minutes";
                         else
                             timeLeft = $"{Math.Round(12 - ((DateTime.Now - ppu.timeStamp).TotalHours), 0)} hours";
-                        await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed($"PickPocket", $"You must wait {timeLeft} before pickpocketing again.", embedColor, "", icon));
+                        await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed($"PickPocket", $"You must wait {timeLeft} before pickpocketing again.", color, "", icon));
                         return;
                     }
                     PickPocketHistory.Remove(ppu);
@@ -101,14 +101,14 @@ namespace Gideon.Handlers
                 // Success
                 case 0:
                     int CoinsGained = (int)(UserAccounts.GetAccount(target).coins * 0.1);
-                    await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed($"PickPocket", $"{self.Mention} successfully pickpocketed {CoinsGained} coins from {target.Mention}.", embedColor, "", icon));
+                    await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed($"PickPocket", $"{self.Mention} successfully pickpocketed {CoinsGained} coins from {target.Mention}.", color, "", icon));
                     AdjustCoins(self, CoinsGained);
                     AdjustCoins(target, -CoinsGained);
                     break;
                 // Fail
                 case 1:
                     int CoinsLost = (int)(UserAccounts.GetAccount(self).coins * 0.1);
-                    await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed($"PickPocket", $"{self.Mention} attempted to pickpocket {target.Mention} and failed, losing {CoinsLost} coins.", embedColor, "", icon));
+                    await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed($"PickPocket", $"{self.Mention} attempted to pickpocket {target.Mention} and failed, losing {CoinsLost} coins.", color, "", icon));
                     AdjustCoins(self, -CoinsLost);
                     break;
             }

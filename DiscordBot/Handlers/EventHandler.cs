@@ -1,10 +1,10 @@
 ﻿using System;
+using Discord;
 using System.Linq;
 using Discord.Commands;
 using System.Reflection;
 using Discord.WebSocket;
 using System.Threading.Tasks;
-using Discord;
 
 namespace Gideon
 {
