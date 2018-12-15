@@ -406,32 +406,26 @@ namespace Gideon.Handlers
 		[Command("help")]
 		public async Task Help() => await Context.Channel.SendMessageAsync($"View available commands here:\nhttps://github.com/WilliamWelsh/GideonBot/blob/master/README.md");
 
-        // Makes an emoji big, code from my friend Elias // @Elias#6666 -- 208409824818364426 (discord ID)
+        // Makes an emoji big, @Elias WE FINALLY DID IT
         [Command("jumbo")]
-		public async Task Jumbo(string emoji)
-		{
-			string emojiUrl = null;
+        public async Task Jumbo([Remainder]string input) => await GetEmojiURLS(input);
 
-			if (Emote.TryParse(emoji, out Emote found))
-				emojiUrl = found.Url;
-			else
-			{
-				int codepoint = char.ConvertToUtf32(emoji, 0);
-				string codepointHex = codepoint.ToString("X").ToLower();
-				emojiUrl = "https://raw.githubusercontent.com/twitter/twemoji/gh-pages/2/72x72/{codepointHex}.png";
-			}
+        [Command("url")]
+        public async Task GetEmojiURLS([Remainder]string input)
+        {
+            var emojis = input.Split('>');
+            foreach (var s in emojis)
+                await GetEmojiURL(s + ">");
+        }
 
-			try
-			{
-				HttpClient client = new HttpClient();
-				var req = await client.GetStreamAsync(emojiUrl);
-				await Context.Channel.SendFileAsync(req, Path.GetFileName(emojiUrl));
-			}
-			catch (HttpRequestException) { } { }
-		}
+        private async Task GetEmojiURL(string emoji)
+        {
+            string url = $"https://cdn.discordapp.com/emojis/{Regex.Replace(emoji, "[^0-9.]", "")}.{(emoji.StartsWith("<a:") ? "gif" : "png")}";
+            await Context.Channel.SendMessageAsync("", false, Config.Utilities.ImageEmbed("", "", Config.Utilities.DomColorFromURL(url), "", url));
+        }
 
-		// Convert a hexadecimal to an RGB value
-		[Command("rgb")]
+        // Convert a hexadecimal to an RGB value
+        [Command("rgb")]
 		public async Task HexToRGB(string input)
 		{
 			input = input.Replace("#", "");

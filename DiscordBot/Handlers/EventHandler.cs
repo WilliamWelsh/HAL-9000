@@ -44,6 +44,12 @@ namespace Gideon
 
         private async Task HandleUserJoining(SocketGuildUser arg)
         {
+            if (arg.IsBot)
+            {
+                await (arg as IGuildUser).AddRoleAsync(arg.Guild.Roles.FirstOrDefault(x => x.Name == "Bot"));
+                await arg.Guild.GetTextChannel(294699220743618561).SendMessageAsync("", false, Config.Utilities.Embed("New Bot", $"The {arg.Username} bot has been added to the server.", new Color(31, 139, 76), "", arg.GetAvatarUrl()));
+                return;
+            }
             string desc = $"{arg} has joined the server.";
             if (UserAccounts.GetAccount(arg).level != 0)
             {
@@ -54,7 +60,13 @@ namespace Gideon
             await arg.Guild.GetTextChannel(294699220743618561).SendMessageAsync("", false, Config.Utilities.Embed("New User", desc, new Color(31, 139, 76), "", arg.GetAvatarUrl()));
         }
 
-        private async Task HandleUserLeaving(SocketGuildUser arg) => await arg.Guild.GetTextChannel(294699220743618561).SendMessageAsync("", false, Config.Utilities.Embed("User Left", $"{arg} has left the server.", new Color(231, 76, 60), "", arg.GetAvatarUrl()));
+        private async Task HandleUserLeaving(SocketGuildUser arg)
+        {
+            if (arg.IsBot)
+                await arg.Guild.GetTextChannel(294699220743618561).SendMessageAsync("", false, Config.Utilities.Embed("Bot Removed", $"The {arg.Username} bot has been removed from the server.", new Color(231, 76, 60), "", arg.GetAvatarUrl()));
+            else
+                await arg.Guild.GetTextChannel(294699220743618561).SendMessageAsync("", false, Config.Utilities.Embed("User Left", $"{arg} has left the server.", new Color(231, 76, 60), "", arg.GetAvatarUrl()));
+        }
 
         private async Task HandleCommandAsync(SocketMessage s)
         {
