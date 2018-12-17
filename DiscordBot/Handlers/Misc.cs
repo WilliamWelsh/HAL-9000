@@ -1,10 +1,7 @@
 ﻿using System;
 using Discord;
-using System.IO;
-using System.Net;
 using System.Text;
 using System.Linq;
-using System.Net.Http;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
@@ -122,9 +119,8 @@ namespace Gideon.Handlers
 		[Command("say")]
 		public async Task Say([Remainder]string message)
 		{
-			if (!UserAccounts.GetAccount(Context.User).superadmin) return;
-			var messages = await Context.Channel.GetMessagesAsync(1).Flatten();
-			await Context.Channel.DeleteMessagesAsync(messages);
+            if (!await Config.Utilities.CheckForSuperadmin(Context, Context.User)) return;
+            await Context.Channel.DeleteMessagesAsync(await Context.Channel.GetMessagesAsync(1).Flatten());
 			await Context.Channel.SendMessageAsync(message);
 		}
 
@@ -132,9 +128,8 @@ namespace Gideon.Handlers
 		[Command("dm")]
 		public async Task DM(SocketGuildUser target, [Remainder]string message)
 		{
-			if (!UserAccounts.GetAccount(Context.User).superadmin) return;
-			var messages = await Context.Channel.GetMessagesAsync(1).Flatten();
-			await Context.Channel.DeleteMessagesAsync(messages);
+            if (!await Config.Utilities.CheckForSuperadmin(Context, Context.User)) return;
+            await Context.Channel.DeleteMessagesAsync(await Context.Channel.GetMessagesAsync(1).Flatten());
 			await target.SendMessageAsync(message);
 		}
 
@@ -309,8 +304,8 @@ namespace Gideon.Handlers
 		[Command("time set")]
 		public async Task UserTimeSet(SocketGuildUser target, int offset)
 		{
-			if (!UserAccounts.GetAccount(Context.User).superadmin) return;
-			UserAccounts.GetAccount(target).localTime = offset;
+            if (!await Config.Utilities.CheckForSuperadmin(Context, Context.User)) return;
+            UserAccounts.GetAccount(target).localTime = offset;
 			UserAccounts.SaveAccounts();
 			await Context.Channel.SendMessageAsync("User updated.");
 		}
@@ -319,8 +314,8 @@ namespace Gideon.Handlers
 		[Command("country set")]
 		public async Task UserSetCountry(SocketGuildUser target, [Remainder]string name)
 		{
-			if (!UserAccounts.GetAccount(Context.User).superadmin) return;
-			UserAccounts.GetAccount(target).country = name;
+            if (!await Config.Utilities.CheckForSuperadmin(Context, Context.User)) return;
+            UserAccounts.GetAccount(target).country = name;
 			UserAccounts.SaveAccounts();
 			await Context.Channel.SendMessageAsync("User updated.");
 		}
@@ -329,17 +324,16 @@ namespace Gideon.Handlers
 		[Command("delete")]
 		public async Task DeleteMessage([Remainder]string amount)
 		{
-			if (!UserAccounts.GetAccount(Context.User).superadmin) return;
-			var messages = await Context.Channel.GetMessagesAsync(int.Parse(amount) + 1).Flatten();
-			await Context.Channel.DeleteMessagesAsync(messages);
+            if (!await Config.Utilities.CheckForSuperadmin(Context, Context.User)) return;
+            await Context.Channel.DeleteMessagesAsync(await Context.Channel.GetMessagesAsync(int.Parse(amount) + 1).Flatten());
 		}
 
 		// Nickname a user
 		[Command("nick")]
 		public async Task NicknameUser(SocketGuildUser user, [Remainder]string input)
 		{
-			if (!UserAccounts.GetAccount(Context.User).superadmin) return;
-			await user.ModifyAsync(x => { x.Nickname = input; });
+            if (!await Config.Utilities.CheckForSuperadmin(Context, Context.User)) return;
+            await user.ModifyAsync(x => { x.Nickname = input; });
 			await Context.Channel.SendMessageAsync("User updated.");
 		}
 
@@ -350,8 +344,7 @@ namespace Gideon.Handlers
 		[Command("movie")]
 		public async Task SearchMovie([Remainder]string search)
 		{
-			MediaFetchHandler mediaFH = new MediaFetchHandler();
-			MediaFetchHandler.Movie media = mediaFH.FetchMovie(search);
+			MediaFetchHandler.Movie media = Config.MediaFetchHandler.FetchMovie(search);
 
 			string RTScore = "N/A", IMDBScore;
 
@@ -378,8 +371,7 @@ namespace Gideon.Handlers
 		[Command("tv")]
 		public async Task SearchShows([Remainder]string search)
 		{
-			MediaFetchHandler mediaFH = new MediaFetchHandler();
-			MediaFetchHandler.Movie media = mediaFH.FetchMovie(search);
+			MediaFetchHandler.Movie media = Config.MediaFetchHandler.FetchMovie(search);
 
 			string IMDBScore = media.imdbRating == "N/A" ? "N/A" : $"{media.imdbRating}/10";
 			media.Year = media.Year.Replace("â€“", "-");
@@ -432,7 +424,7 @@ namespace Gideon.Handlers
 
 			if (!new Regex("^[a-zA-Z0-9]*$").IsMatch(input) || input.Length != 6)
 			{
-				await Context.Channel.SendMessageAsync("Please enter a valid hexadecimal.");
+                await Config.Utilities.PrintError(Context.Channel, $"Please enter a valid hexadecimal, {Context.User.Mention}.");
 				return;
 			}
 
@@ -450,20 +442,20 @@ namespace Gideon.Handlers
 		{
 			if (R < 0 || R > 255)
 			{
-				await Context.Channel.SendMessageAsync("Please enter a valid Red number.");
-				return;
+                await Config.Utilities.PrintError(Context.Channel, $"Please enter a valid red value, {Context.User.Mention}.");
+                return;
 			}
 
 			else if (G < 0 || G > 255)
 			{
-				await Context.Channel.SendMessageAsync("Please enter a valid Green number.");
-				return;
+                await Config.Utilities.PrintError(Context.Channel, $"Please enter a valid green value, {Context.User.Mention}.");
+                return;
 			}
 
 			else if (B < 0 || B > 255)
 			{
-				await Context.Channel.SendMessageAsync("Please enter a valid Blue number.");
-				return;
+                await Config.Utilities.PrintError(Context.Channel, $"Please enter a valid blue value, {Context.User.Mention}.");
+                return;
 			}
 			await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("RGB to Hexadecimal", $"`{R}, {G}, {B}` = `#{R:X2}{G:X2}{B:X2}`", new Color(R, G, B), "", ""));
 		}
@@ -488,11 +480,7 @@ namespace Gideon.Handlers
         [Command("xp add")]
         public async Task AddXP(SocketUser user, int xp)
         {
-            if (!(UserAccounts.GetAccount(Context.User).superadmin))
-            {
-                await Config.Utilities.PrintError(Context, $"You do not have permission to do that command, {Context.User.Mention}.");
-                return;
-            }
+            if (!await Config.Utilities.CheckForSuperadmin(Context, Context.User)) return;
             Config.RankHandler.GiveUserXP(user, xp);
             await Config.RankHandler.CheckXP(Context, user);
             await Context.Channel.SendMessageAsync("Updated user.");
@@ -669,7 +657,7 @@ namespace Gideon.Handlers
             string bans = "";
             Discord.Rest.RestBan[] banArray = Context.Guild.GetBansAsync().Result.ToArray();
             foreach (var ban in banArray)
-                bans += $"{ban.User} for \"{ban.Reason}\"\n";
+                bans += $"{ban.User} for `{ban.Reason}`\n\n";
             await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed($"Server Bans ({banArray.Length})", bans, new Color(227, 37, 39), "", ""));
         }
 
@@ -699,13 +687,12 @@ namespace Gideon.Handlers
         [Command("version")]
         public async Task GetCurrentVersion()
         {
-            WebClient webClient = new WebClient();
-            string html = webClient.DownloadString("https://github.com/WilliamWelsh/GideonBot");
+            string html = Config.Utilities.webClient.DownloadString("https://github.com/WilliamWelsh/GideonBot");
             html = html.Substring(html.IndexOf("commit-tease-sha"));
             html = html.Substring(html.IndexOf("href=\"") + 6);
 
             string link = "https://github.com" + html.Substring(0, html.IndexOf("\""));
-            html = webClient.DownloadString(link);
+            html = Config.Utilities.webClient.DownloadString(link);
 
             string title = html, description = html, time = html;
 

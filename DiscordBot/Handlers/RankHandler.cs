@@ -24,7 +24,7 @@ namespace Gideon.Handlers
             timer.Elapsed += Reset;
         }
 
-        // Empty the list of users that got xp in the last minute
+        // Every minute, empty the list of users that got xp in the last minute
         private void Reset(object sender, ElapsedEventArgs e) => UsersGivenXPInLastMinute = new List<ulong>();
 
         // Give a user XP when they talk (15-25 xp once a minute) and then check if they can level up
@@ -104,7 +104,7 @@ namespace Gideon.Handlers
         public async Task DisplayLevelAndXP(SocketCommandContext context, SocketUser user)
         {
             UserAccount account = UserAccounts.GetAccount(user);
-            string name = (user as SocketGuildUser).Nickname != null ? (user as SocketGuildUser).Nickname : user.Username;
+            string name = (user as SocketGuildUser).Nickname ?? user.Username;
             string desc = $"Rank: {LevelToRank(account.level)}\n\nLevel: {account.level}\n\nTotal XP: {account.xp.ToString("#,##0")}\n\nXP until next level: {(account.xp- xpLevel[account.level]).ToString("#,##0")}/{(xpLevel[account.level + 1]-xpLevel[account.level]).ToString("#,##0")}";
             await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed($"{name}'s Level", desc, context.Guild.Roles.FirstOrDefault(x => x.Name == LevelToRank(account.level)).Color, "", user.GetAvatarUrl()));
         }

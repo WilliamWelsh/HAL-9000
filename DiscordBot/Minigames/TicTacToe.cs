@@ -44,6 +44,7 @@ namespace Gideon.Minigames
 				Player2 = context.User as SocketGuildUser;
 			else return;
 
+            hasGameStarted = true;
 			m = await context.Channel.SendMessageAsync("Please wait for the game to load...");
 			await m.RemoveAllReactionsAsync();
 			await m.AddReactionAsync(new Emoji("↖"));

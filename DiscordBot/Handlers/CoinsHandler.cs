@@ -187,19 +187,11 @@ namespace Gideon.Handlers
 
         public async Task StartCoinsLottery(SocketCommandContext context, int amount, int cost)
         {
-            if (context.Channel.Id != 518846214603669537)
+            if (!await Config.Utilities.CheckForSuperadmin(context, context.User)) return;
+            if (!await Config.Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
+            if (isLotteryGoing)
             {
-                await Config.Utilities.PrintError(context, $"Please use the {context.Guild.GetTextChannel(518846214603669537).Mention} chat for that, {context.User.Mention}.");
-                return;
-            }
-            if (!UserAccounts.GetAccount(context.User).superadmin)
-            {
-                await Config.Utilities.PrintError(context, $"You do not have permission for that command, {context.User.Mention}.");
-                return;
-            }
-            if(isLotteryGoing)
-            {
-                await Config.Utilities.PrintError(context, $"A lottery is already active, {context.User.Mention}.");
+                await Config.Utilities.PrintError(context.Channel, $"A lottery is already active, {context.User.Mention}.");
                 return;
             }
 
@@ -214,12 +206,12 @@ namespace Gideon.Handlers
         {
             if (!isLotteryGoing)
             {
-                await Config.Utilities.PrintError(context, $"There is no active lottery, {context.User.Mention}.");
+                await Config.Utilities.PrintError(context.Channel, $"There is no active lottery, {context.User.Mention}.");
                 return;
             }
             if (UserAccounts.GetAccount(context.User).coins < LotteryFee)
             {
-                await Config.Utilities.PrintError(context, $"You do not have enough Coins to enter the lottery, {context.User.Mention}.");
+                await Config.Utilities.PrintError(context.Channel, $"You do not have enough Coins to enter the lottery, {context.User.Mention}.");
                 return;
             }
 
@@ -230,19 +222,11 @@ namespace Gideon.Handlers
 
         public async Task DrawLottery(SocketCommandContext context)
         {
-            if (context.Channel.Id != 518846214603669537)
-            {
-                await Config.Utilities.PrintError(context, $"Please use the {context.Guild.GetTextChannel(518846214603669537).Mention} chat for that, {context.User.Mention}.");
-                return;
-            }
-            if (!UserAccounts.GetAccount(context.User).superadmin)
-            {
-                await Config.Utilities.PrintError(context, $"You do not have permission for that command, {context.User.Mention}.");
-                return;
-            }
+            if (!await Config.Utilities.CheckForSuperadmin(context, context.User)) return;
+            if (!await Config.Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
             if (!isLotteryGoing)
             {
-                await Config.Utilities.PrintError(context, $"There is no active Lottery, {context.User.Mention}.");
+                await Config.Utilities.PrintError(context.Channel, $"There is no active Lottery, {context.User.Mention}.");
                 return;
             }
 
@@ -257,11 +241,7 @@ namespace Gideon.Handlers
         {
             if (isFromUser)
             {
-                if (!UserAccounts.GetAccount(context.User).superadmin)
-                {
-                    await Config.Utilities.PrintError(context, $"You do not have permission for that command, {context.User.Mention}.");
-                    return;
-                }
+                if (!await Config.Utilities.CheckForSuperadmin(context, context.User)) return;
                 await PrintEmbed(context, $"{context.User.Mention} has reset the Lottery.");
             }
             isLotteryGoing = false;

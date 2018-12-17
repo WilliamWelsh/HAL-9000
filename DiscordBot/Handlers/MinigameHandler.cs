@@ -19,11 +19,7 @@ namespace Gideon.Handlers
 
         public async Task DisplayGames(SocketCommandContext context)
         {
-            if (context.Channel.Id != 518846214603669537)
-            {
-                await Config.Utilities.PrintError(context, $"Please use the {context.Guild.GetTextChannel(518846214603669537).Mention} chat for that, {context.User.Mention}.");
-                return;
-            }
+            if (!await Config.Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
             await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("MiniGames", "Trivia\n`!trivia`\n\nTic-Tac-Toe\n`!ttt`\n\nNumber Guess\n`!play ng`\n\nRussian Roulette\n`!rr`\n\n8-Ball\n`!8ball`", new Color(31, 139, 76), "", ""));
         }
 
@@ -39,8 +35,7 @@ namespace Gideon.Handlers
         // Reset a game
         public async Task ResetGame(SocketCommandContext context, string game)
         {
-            if (!UserAccounts.GetAccount(context.User).superadmin)
-                await Config.Utilities.PrintError(context, $"You do not have permission to do that command, {context.User.Mention}.");
+            if (!await Config.Utilities.CheckForSuperadmin(context, context.User)) return;
             else if (game == "trivia")
             {
                 await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("MiniGames", $"{context.User.Mention} has reset Trivia.", color, "", ""));
@@ -62,9 +57,9 @@ namespace Gideon.Handlers
                 NG.Reset();
             }
             else if (game == "")
-                await Config.Utilities.PrintError(context, "Please specify a game to reset.");
+                await Config.Utilities.PrintError(context.Channel, "Please specify a game to reset.");
             else
-                await Config.Utilities.PrintError(context, $"I was unable to find the `{game}` game.\n\nAvailable games to reset:\nTrivia\n`!trivia`\n\nTic-Tac-Toe\n`!ttt`\n\nNumber Guess\n`!play ng`\n\nRussian Roulette\n`!rr`");
+                await Config.Utilities.PrintError(context.Channel, $"I was unable to find the `{game}` game.\n\nAvailable games to reset:\nTrivia\n`!trivia`\n\nTic-Tac-Toe\n`!ttt`\n\nNumber Guess\n`!play ng`\n\nRussian Roulette\n`!rr`");
         }
     }
 }

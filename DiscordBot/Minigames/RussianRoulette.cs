@@ -17,14 +17,14 @@ namespace Gideon.Minigames
         private SocketGuildUser host = null;
         private List<SocketGuildUser> Players = new List<SocketGuildUser>();
 
-        private int RandomChamber() => Config.Utilities.GetRandomNumber(1, 6);
+        private int RandomChamber() => Config.Utilities.GetRandomNumber(0, 6);
 
-        private Embed embed(string Description, string Footer, bool showPlayers)
+        private Embed embed(string description, string footer, bool showPlayers)
         {
             var embed = new EmbedBuilder();
             embed.WithTitle($":gun: Russian Roulette");
             embed.WithColor(color);
-            embed.WithDescription(Description);
+            embed.WithDescription(description);
             if (showPlayers)
             {
                 string PlayerDesc = "";
@@ -32,7 +32,7 @@ namespace Gideon.Minigames
                     PlayerDesc += $"Player {i + 1}: {Players.ElementAt(i).Mention}\n";
                 embed.AddField("Players", PlayerDesc);
             }
-            embed.WithFooter(Footer);
+            embed.WithFooter(footer);
             return embed;
         }
 
@@ -40,11 +40,7 @@ namespace Gideon.Minigames
 
         public async Task TryToStartGame(SocketCommandContext context, string input)
         {
-            if (context.Channel.Id != 518846214603669537)
-            {
-                await Config.Utilities.PrintError(context, $"Please use the {context.Guild.GetTextChannel(518846214603669537).Mention} chat for that, {context.User.Mention}.");
-                return;
-            }
+            if (!await Config.Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
             if (isGameGoing)
             {
                 await context.Channel.SendMessageAsync("", false, embed($"Sorry, {host.Mention} is currently hosting a game.", "", false));
@@ -80,13 +76,8 @@ namespace Gideon.Minigames
 
         public async Task TryToJoin(SocketCommandContext context)
         {
-            if (context.Channel.Id != 518846214603669537)
-            {
-                await Config.Utilities.PrintError(context, $"Please use the {context.Guild.GetTextChannel(518846214603669537).Mention} chat for that, {context.User.Mention}.");
-                return;
-            }
-            if (!isGameGoing) return;
-            if (Players.Count == PlayerSlots) return;
+            if (!await Config.Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
+            if (!isGameGoing || Players.Count == PlayerSlots) return;
 
             SocketGuildUser newPlayer = (SocketGuildUser)context.User;
             Players.Add(newPlayer);
@@ -101,12 +92,7 @@ namespace Gideon.Minigames
 
         public async Task PullTrigger(SocketCommandContext context)
         {
-            if (context.Channel.Id != 518846214603669537)
-            {
-                await Config.Utilities.PrintError(context, $"Please use the {context.Guild.GetTextChannel(518846214603669537).Mention} chat for that, {context.User.Mention}.");
-                return;
-            }
-            if (!isGameGoing) return;
+            if (!await Config.Utilities.CheckForChannel(context, 518846214603669537, context.User) || !isGameGoing) return;
 
             SocketGuildUser player = (SocketGuildUser)context.User;
             if (Players.ElementAt(currentTurn) != player) return;

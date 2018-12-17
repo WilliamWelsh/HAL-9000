@@ -16,17 +16,12 @@ namespace Gideon.Minigames
         private static readonly Color color = new Color(251, 233, 231);
         private SocketGuildUser Player;
         private List<string> Plays = new List<string>(new string[] { "Rock", "Paper", "Scissors" });
-        private static Random rnd = new Random();
 
         private Embed embed(string description, string footer) => Config.Utilities.Embed("Rock-Paper-Scissors", description, color, footer, "https://i.imgur.com/VXdDjho.png");
 
         public async Task StartRPS(SocketCommandContext context)
         {
-            if (context.Channel.Id != 518846214603669537)
-            {
-                await Config.Utilities.PrintError(context, $"Please use the {context.Guild.GetTextChannel(518846214603669537).Mention} chat for that, {context.User.Mention}.");
-                return;
-            }
+            if (!await Config.Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
             string name = ((SocketGuildUser)context.User).Nickname ?? context.User.Username;
             RestUserMessage m = await context.Channel.SendMessageAsync("", false, embed("Pick your play and see if you can beat me!", $"{name} is playing."));
             await m.AddReactionAsync(new Emoji("📰"));
@@ -49,9 +44,9 @@ namespace Gideon.Minigames
             else if (emote == "🌑")
                 playOne = "Rock";
 
-            string playTwo = Plays.ElementAt(rnd.Next(Plays.Count));
-
+            string playTwo = Plays.ElementAt(Config.Utilities.GetRandomNumber(0, 3));
             string result = GetWinner(playOne[0], playTwo[0]);
+
             await channel.SendMessageAsync("", false, embed($"{Player.Mention} chose {playOne}!\n\nI chose {playTwo}.\n\n{result}", ""));
 
             if(result.Contains("lose 3 coins"))

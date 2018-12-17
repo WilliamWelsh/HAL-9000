@@ -1,18 +1,15 @@
 ﻿// Get Movie data, TV show data, and YouTube channel data
-using System.Net;
 using Newtonsoft.Json;
 
 namespace Gideon
 {
     class MediaFetchHandler
     {
-        private WebClient webClient = new WebClient();
+        public Movie FetchMovie(string Search) => JsonConvert.DeserializeObject<Movie>(Config.Utilities.webClient.DownloadString($"http://www.omdbapi.com/?t={Search}&apikey={Config.bot.MovieTVAPIKey}"));
 
-        public Movie FetchMovie(string Search) => JsonConvert.DeserializeObject<Movie>(webClient.DownloadString($"http://www.omdbapi.com/?t={Search}&apikey={Config.bot.MovieTVAPIKey}"));
+        public TVShow FetchShow(string Search) => JsonConvert.DeserializeObject<TVShow>(Config.Utilities.webClient.DownloadString($"http://www.omdbapi.com/?t={Search}&apikey={Config.bot.MovieTVAPIKey}"));
 
-        public TVShow FetchShow(string Search) => JsonConvert.DeserializeObject<TVShow>(webClient.DownloadString($"http://www.omdbapi.com/?t={Search}&apikey={Config.bot.MovieTVAPIKey}"));
-
-        public YTChannel FetchYTChannel(string ID) => JsonConvert.DeserializeObject<YTChannel>(webClient.DownloadString($"https://www.googleapis.com/youtube/v3/channels?part=statistics&id={ID}&key={Config.bot.YouTubeAPIKey}"));
+        public YTChannel FetchYTChannel(string ID) => JsonConvert.DeserializeObject<YTChannel>(Config.Utilities.webClient.DownloadString($"https://www.googleapis.com/youtube/v3/channels?part=statistics&id={ID}&key={Config.bot.YouTubeAPIKey}"));
 
         public struct Rating
         {

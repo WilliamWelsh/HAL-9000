@@ -12,6 +12,12 @@ namespace Gideon
 {
     class Utilities
     {
+        // Universal Web Client
+        public WebClient webClient = new WebClient();
+
+        // Color Thief (gets the dominant color of an image, makes my embeds look pretty)
+        private ColorThief colorThief = new ColorThief();
+
         // Get a random number
         private static readonly Random getrandom = new Random();
         public int GetRandomNumber(int min, int max)
@@ -44,17 +50,17 @@ namespace Gideon
         }
 
         // Print an error
-        public async Task PrintError(SocketCommandContext context, string description) => await context.Channel.SendMessageAsync("", false, Embed("Error", description, new Discord.Color(227, 37, 39), "", ""));
+        public async Task PrintError(ISocketMessageChannel channel, string description) => await channel.SendMessageAsync("", false, Embed("Error", description, new Discord.Color(227, 37, 39), "", ""));
 
         // Get a dominant color from an image (url)
         public Discord.Color DomColorFromURL(string url)
         {
-            byte[] bytes = new WebClient().DownloadData(url);
+            byte[] bytes = webClient.DownloadData(url);
             MemoryStream ms = new MemoryStream(bytes);
             Bitmap bitmap = new Bitmap(System.Drawing.Image.FromStream(ms));
 
-            // Get the hexadecimal and remove the '#'
-            return HexToRGB(new ColorThief().GetColor(bitmap).Color.ToString().Substring(1));
+            // Remove the '#' from the string and get the hexadecimal
+            return HexToRGB(colorThief.GetColor(bitmap).Color.ToString().Substring(1));
         }
 
 		// Convert a hexidecimal to an RGB value (input does not include the '#')
@@ -72,9 +78,22 @@ namespace Gideon
 			return new Discord.Color(r, g, b);
 		}
 
-        public async Task CheckForSuperadmin(SocketCommandContext context, SocketUser user)
+        // Checks if a user is a superadmin, this is to see if they can do a certain command
+        public async Task<bool> CheckForSuperadmin(SocketCommandContext context, SocketUser user)
         {
+            if (UserAccounts.GetAccount(user).superadmin)
+                return true;
+            await PrintError(context.Channel, $"You do not have permission to do that command, {user.Mention}.");
+            return false;
+        }
 
+        // Checks if the current channel is the required channel (like minigames)
+        public async Task<bool> CheckForChannel(SocketCommandContext context, ulong requiredChannel, SocketUser user)
+        {
+            if (context.Channel.Id == requiredChannel)
+                return true;
+            await Config.Utilities.PrintError(context.Channel, $"Please use the {context.Guild.GetTextChannel(requiredChannel).Mention} chat for that, {user.Mention}.");
+            return false;
         }
 	}
 }

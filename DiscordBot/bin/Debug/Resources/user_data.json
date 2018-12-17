@@ -1,11 +1,11 @@
 [
   {
     "userID": 354458973572956160,
-    "coins": 7,
+    "coins": 0,
     "superadmin": true,
     "localTime": 0,
     "country": "United States",
-    "xp": 36137,
+    "xp": 36533,
     "level": 30
   },
   {
@@ -41,7 +41,7 @@
     "superadmin": false,
     "localTime": 5,
     "country": "Scotland",
-    "xp": 12690,
+    "xp": 12712,
     "level": 15
   },
   {
@@ -514,12 +514,12 @@
   },
   {
     "userID": 342220702658592768,
-    "coins": 0,
+    "coins": 7,
     "superadmin": false,
     "localTime": 999,
     "country": "Not set.",
-    "xp": 6885,
-    "level": 11
+    "xp": 7030,
+    "level": 12
   },
   {
     "userID": 180068123557363712,

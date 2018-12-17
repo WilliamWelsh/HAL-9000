@@ -17,10 +17,11 @@ namespace Gideon
         public static TriviaQuestions triviaQuestions;
 
         public static Utilities Utilities = new Utilities();
-        public static StatsHandler StatsHandler = new StatsHandler();
-        public static CoinsHandler CoinHandler = new CoinsHandler();
-        public static MinigameHandler MinigameHandler = new MinigameHandler();
         public static RankHandler RankHandler = new RankHandler();
+        public static CoinsHandler CoinHandler = new CoinsHandler();
+        public static StatsHandler StatsHandler = new StatsHandler();
+        public static MinigameHandler MinigameHandler = new MinigameHandler();
+        public static MediaFetchHandler MediaFetchHandler = new MediaFetchHandler();
 
         static Config()
         {

@@ -18,6 +18,7 @@ namespace Gideon
             _client = client;
             _service = new CommandService();
             await _service.AddModulesAsync(Assembly.GetEntryAssembly());
+
             _client.MessageReceived += HandleCommandAsync;
 
             _client.UserBanned += HandleUserBanned;
@@ -92,13 +93,14 @@ namespace Gideon
             if (m.Contains("lennyface"))
                 await context.Channel.SendMessageAsync("( ͡° ͜ʖ ͡°)");
 
+            // Fix some spelling mistakes
             string[] spellingMistakes = { "should of", "would of", "wouldnt of", "wouldn't of", "would not of", "couldnt of", "couldn't of", "could not of", "better of", "shouldnt of", "shouldn't of", "should not of", "alot", "could of" };
             string[] spellingFix = { "should have", "would have", "wouldn't have", "wouldn't have", "would not have", "couldn't have", "couldn't have", "could not have", "better have", "shouldn't have", "shouldn't have", "should not have", "a lot", "could have" };
-
             for (int i = 0; i < spellingMistakes.Length; i++)
                 if (m.Contains(spellingMistakes[i]))
                     await msg.Channel.SendMessageAsync(spellingFix[i] + "*");
 
+            // Print a DM message to console
             if (s.Channel.Name.StartsWith("@"))
                 Console.WriteLine($" ----------\n DIRECT MESSAGE\n From: {s.Channel}\n {s}\n ----------");
         }
