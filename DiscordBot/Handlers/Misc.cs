@@ -661,10 +661,6 @@ namespace Gideon.Handlers
             await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed($"Server Bans ({banArray.Length})", bans, new Color(227, 37, 39), "", ""));
         }
 
-        // Easter Egg command for Josef -- 361678050255044619
-        [Command("gae")]
-        public async Task Gae() => await Context.Channel.SendMessageAsync("https://i.imgur.com/iLpCs7K.png");
-
         // View Leaderboards
         [Command("lb")]
         public async Task Leaderboards() => await Context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Leaderboards", "`!lb coins` People with the most coins.\n`!lb joined` First people that joined the server.\n`!lb created` People with the oldest accounts.", new Color(0, 173, 0), "", ""));
