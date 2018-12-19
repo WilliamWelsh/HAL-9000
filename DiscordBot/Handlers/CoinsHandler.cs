@@ -13,10 +13,10 @@ namespace Gideon.Handlers
         private static Color color = new Color(215, 154, 14);
         private const string icon = "https://i.imgur.com/w09rWQg.png";
 
-        private async Task PrintEmbed(SocketCommandContext context, string description) => await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Coins", description, color, "", icon));
-        private async Task PrintEmbedNoFooter(SocketCommandContext context, string description) => await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Coins", description, color, "", ""));
+        private static async Task PrintEmbed(SocketCommandContext context, string description) => await context.Channel.SendMessageAsync("", false, Utilities.Embed("Coins", description, color, "", icon));
+        private static async Task PrintEmbedNoFooter(SocketCommandContext context, string description) => await context.Channel.SendMessageAsync("", false, Utilities.Embed("Coins", description, color, "", ""));
 
-        public async Task GiveCoins(SocketCommandContext context, SocketGuildUser sender, SocketGuildUser reciever, int amount)
+        public static async Task GiveCoins(SocketCommandContext context, SocketGuildUser sender, SocketGuildUser reciever, int amount)
         {
             var SenderAccount = UserAccounts.GetAccount(sender);
             var RecieverAccount = UserAccounts.GetAccount(reciever);
@@ -36,20 +36,20 @@ namespace Gideon.Handlers
             await PrintEmbedNoFooter(context, $"{sender.Mention} gave {reciever.Mention} {amount} coins.");
         }
 
-        public async Task SpawnCoins(SocketCommandContext context, SocketGuildUser user, int amount)
+        public static async Task SpawnCoins(SocketCommandContext context, SocketGuildUser user, int amount)
         {
             UserAccounts.GetAccount(user).coins += amount;
             UserAccounts.SaveAccounts();
             await PrintEmbedNoFooter(context, $"Spawned {user.Mention} {amount} coins.");
         }
 
-        public async Task RemoveCoins(SocketCommandContext context, SocketGuildUser user, int amount)
+        public static async Task RemoveCoins(SocketCommandContext context, SocketGuildUser user, int amount)
         {
             AdjustCoins(user, -amount);
             await PrintEmbedNoFooter(context, $"{user.Mention} lost {amount} coins.");
         }
 
-        public void AdjustCoins(SocketGuildUser user, int amount)
+        public static void AdjustCoins(SocketGuildUser user, int amount)
         {
             var account = UserAccounts.GetAccount(user);
             account.coins += amount;
@@ -58,20 +58,20 @@ namespace Gideon.Handlers
             UserAccounts.SaveAccounts();
         }
 
-        public async Task DisplayCoins(SocketCommandContext context, SocketGuildUser user, ISocketMessageChannel channel)
+        public static async Task DisplayCoins(SocketCommandContext context, SocketGuildUser user, ISocketMessageChannel channel)
         {
             string name = user.Nickname != null ? user.Nickname : user.Username;
-            await channel.SendMessageAsync("", false, Config.Utilities.Embed($"{name}", $"{UserAccounts.GetAccount(user).coins.ToString("#,##0")} Coins", color, "", icon));
+            await channel.SendMessageAsync("", false, Utilities.Embed($"{name}", $"{UserAccounts.GetAccount(user).coins.ToString("#,##0")} Coins", color, "", icon));
         }
 
-        public async Task DisplayCoinsStore(SocketCommandContext context, SocketGuildUser user, ISocketMessageChannel channel)
+        public static async Task DisplayCoinsStore(SocketCommandContext context, SocketGuildUser user, ISocketMessageChannel channel)
         {
-            await channel.SendMessageAsync("", false, Config.Utilities.Embed($"Coins Store", $"500 XP - ??? Coins\n1000 XP - ???", color, $"You have {UserAccounts.GetAccount(user).coins} Coins.", icon));
+            await channel.SendMessageAsync("", false, Utilities.Embed($"Coins Store", $"500 XP - ??? Coins\n1000 XP - ???", color, $"You have {UserAccounts.GetAccount(user).coins} Coins.", icon));
         }
 
         private struct PickPocketUser { public SocketGuildUser user; public DateTime timeStamp; }
-        private List<PickPocketUser> PickPocketHistory = new List<PickPocketUser>();
-        public async Task PickPocket(SocketCommandContext context, SocketGuildUser target)
+        private static List<PickPocketUser> PickPocketHistory = new List<PickPocketUser>();
+        public static async Task PickPocket(SocketCommandContext context, SocketGuildUser target)
         {
             SocketGuildUser self = (SocketGuildUser)context.User;
             if(self == target)
@@ -90,25 +90,25 @@ namespace Gideon.Handlers
                             timeLeft = $"{Math.Round(12 - ((DateTime.Now - ppu.timeStamp).TotalMinutes), 0)} minutes";
                         else
                             timeLeft = $"{Math.Round(12 - ((DateTime.Now - ppu.timeStamp).TotalHours), 0)} hours";
-                        await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed($"PickPocket", $"You must wait {timeLeft} before pickpocketing again.", color, "", icon));
+                        await context.Channel.SendMessageAsync("", false, Utilities.Embed($"PickPocket", $"You must wait {timeLeft} before pickpocketing again.", color, "", icon));
                         return;
                     }
                     PickPocketHistory.Remove(ppu);
                 }
             }
-            switch (Config.Utilities.GetRandomNumber(0,2))
+            switch (Utilities.GetRandomNumber(0,2))
             {
                 // Success
                 case 0:
                     int CoinsGained = (int)(UserAccounts.GetAccount(target).coins * 0.1);
-                    await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed($"PickPocket", $"{self.Mention} successfully pickpocketed {CoinsGained} coins from {target.Mention}.", color, "", icon));
+                    await context.Channel.SendMessageAsync("", false, Utilities.Embed($"PickPocket", $"{self.Mention} successfully pickpocketed {CoinsGained} coins from {target.Mention}.", color, "", icon));
                     AdjustCoins(self, CoinsGained);
                     AdjustCoins(target, -CoinsGained);
                     break;
                 // Fail
                 case 1:
                     int CoinsLost = (int)(UserAccounts.GetAccount(self).coins * 0.1);
-                    await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed($"PickPocket", $"{self.Mention} attempted to pickpocket {target.Mention} and failed, losing {CoinsLost} coins.", color, "", icon));
+                    await context.Channel.SendMessageAsync("", false, Utilities.Embed($"PickPocket", $"{self.Mention} attempted to pickpocket {target.Mention} and failed, losing {CoinsLost} coins.", color, "", icon));
                     AdjustCoins(self, -CoinsLost);
                     break;
             }
@@ -118,7 +118,7 @@ namespace Gideon.Handlers
             PickPocketHistory.Add(p);
         }
 
-        public async Task PrintCoinsLeaderboard(SocketCommandContext context)
+        public static async Task PrintCoinsLeaderboard(SocketCommandContext context)
         {
             List<int> list = new List<int>();
             for (int i = 0; i < context.Guild.Users.Count; i++)
@@ -180,18 +180,18 @@ namespace Gideon.Handlers
             await context.Channel.SendMessageAsync("", false, embed);
         }
 
-        private bool isLotteryGoing = false;
-        private List<SocketGuildUser> PeopleEnteredInLottery;
-        private int LotteryFee = 0;
-        private int LotteryPrize = 0;
+        private static bool isLotteryGoing = false;
+        private static List<SocketGuildUser> PeopleEnteredInLottery;
+        private static int LotteryFee = 0;
+        private static int LotteryPrize = 0;
 
-        public async Task StartCoinsLottery(SocketCommandContext context, int amount, int cost)
+        public static async Task StartCoinsLottery(SocketCommandContext context, int amount, int cost)
         {
-            if (!await Config.Utilities.CheckForSuperadmin(context, context.User)) return;
-            if (!await Config.Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
+            if (!await Utilities.CheckForSuperadmin(context, context.User)) return;
+            if (!await Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
             if (isLotteryGoing)
             {
-                await Config.Utilities.PrintError(context.Channel, $"A lottery is already active, {context.User.Mention}.");
+                await Utilities.PrintError(context.Channel, $"A lottery is already active, {context.User.Mention}.");
                 return;
             }
 
@@ -202,16 +202,16 @@ namespace Gideon.Handlers
             await PrintEmbed(context, $"{context.User.Mention} has started a lottery for {amount} coins!\n\nType `!coins lottery join` to enter!\n\nIt cost `{cost}` Coins!");
         }
 
-        public async Task JoinCoinsLottery(SocketCommandContext context)
+        public static async Task JoinCoinsLottery(SocketCommandContext context)
         {
             if (!isLotteryGoing)
             {
-                await Config.Utilities.PrintError(context.Channel, $"There is no active lottery, {context.User.Mention}.");
+                await Utilities.PrintError(context.Channel, $"There is no active lottery, {context.User.Mention}.");
                 return;
             }
             if (UserAccounts.GetAccount(context.User).coins < LotteryFee)
             {
-                await Config.Utilities.PrintError(context.Channel, $"You do not have enough Coins to enter the lottery, {context.User.Mention}.");
+                await Utilities.PrintError(context.Channel, $"You do not have enough Coins to enter the lottery, {context.User.Mention}.");
                 return;
             }
 
@@ -220,28 +220,28 @@ namespace Gideon.Handlers
             await PrintEmbed(context, $"{context.User.Mention} has joined the lottery!\n\n{PeopleEnteredInLottery.Count} currently entered.");
         }
 
-        public async Task DrawLottery(SocketCommandContext context)
+        public static async Task DrawLottery(SocketCommandContext context)
         {
-            if (!await Config.Utilities.CheckForSuperadmin(context, context.User)) return;
-            if (!await Config.Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
+            if (!await Utilities.CheckForSuperadmin(context, context.User)) return;
+            if (!await Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
             if (!isLotteryGoing)
             {
-                await Config.Utilities.PrintError(context.Channel, $"There is no active Lottery, {context.User.Mention}.");
+                await Utilities.PrintError(context.Channel, $"There is no active Lottery, {context.User.Mention}.");
                 return;
             }
 
             SocketGuildUser winner;
-            winner = PeopleEnteredInLottery.ElementAt(Config.Utilities.GetRandomNumber(1, PeopleEnteredInLottery.Count));
+            winner = PeopleEnteredInLottery.ElementAt(Utilities.GetRandomNumber(1, PeopleEnteredInLottery.Count));
             AdjustCoins(winner, LotteryPrize);
             await PrintEmbed(context, $"{winner.Mention} has won {LotteryPrize} coins!\n\nThanks for playing!");
             await ResetCoinsLottery(context, false);
         }
 
-        public async Task ResetCoinsLottery(SocketCommandContext context, bool isFromUser)
+        public static async Task ResetCoinsLottery(SocketCommandContext context, bool isFromUser)
         {
             if (isFromUser)
             {
-                if (!await Config.Utilities.CheckForSuperadmin(context, context.User)) return;
+                if (!await Utilities.CheckForSuperadmin(context, context.User)) return;
                 await PrintEmbed(context, $"{context.User.Mention} has reset the Lottery.");
             }
             isLotteryGoing = false;

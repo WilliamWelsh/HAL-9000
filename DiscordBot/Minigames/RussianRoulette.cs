@@ -1,5 +1,6 @@
 ﻿using Discord;
 using System.Linq;
+using Gideon.Handlers;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ namespace Gideon.Minigames
         private SocketGuildUser host = null;
         private List<SocketGuildUser> Players = new List<SocketGuildUser>();
 
-        private int RandomChamber() => Config.Utilities.GetRandomNumber(0, 6);
+        private int RandomChamber() => Utilities.GetRandomNumber(0, 6);
 
         private Embed embed(string description, string footer, bool showPlayers)
         {
@@ -36,11 +37,11 @@ namespace Gideon.Minigames
             return embed;
         }
 
-        private Embed gameEmbed(string description, string footer) => Config.Utilities.Embed($":gun: Russian Roulette - Round {round}", description, color, footer, "");
+        private Embed gameEmbed(string description, string footer) => Utilities.Embed($":gun: Russian Roulette - Round {round}", description, color, footer, "");
 
         public async Task TryToStartGame(SocketCommandContext context, string input)
         {
-            if (!await Config.Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
+            if (!await Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
             if (isGameGoing)
             {
                 await context.Channel.SendMessageAsync("", false, embed($"Sorry, {host.Mention} is currently hosting a game.", "", false));
@@ -76,7 +77,7 @@ namespace Gideon.Minigames
 
         public async Task TryToJoin(SocketCommandContext context)
         {
-            if (!await Config.Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
+            if (!await Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
             if (!isGameGoing || Players.Count == PlayerSlots) return;
 
             SocketGuildUser newPlayer = (SocketGuildUser)context.User;
@@ -92,7 +93,7 @@ namespace Gideon.Minigames
 
         public async Task PullTrigger(SocketCommandContext context)
         {
-            if (!await Config.Utilities.CheckForChannel(context, 518846214603669537, context.User) || !isGameGoing) return;
+            if (!await Utilities.CheckForChannel(context, 518846214603669537, context.User) || !isGameGoing) return;
 
             SocketGuildUser player = (SocketGuildUser)context.User;
             if (Players.ElementAt(currentTurn) != player) return;
@@ -110,7 +111,7 @@ namespace Gideon.Minigames
             {
                 await DieAndCheckForWin(player, context);
                 await context.Channel.SendMessageAsync("", false, gameEmbed($"The cylinder spins...\n\n*BANG*\n\n{player.Mention} died and lost 3 Coins!\n\nWaiting for {Players.ElementAt(currentTurn).Mention} to pull the trigger. (`!pt`)", ""));
-                Config.CoinHandler.AdjustCoins(player, -3);
+                CoinsHandler.AdjustCoins(player, -3);
             }
             else
                 await context.Channel.SendMessageAsync("", false, gameEmbed($"The cylinder spins...\n\n*click*\n\n{player.Mention} survived!\n\nWaiting for {Players.ElementAt(currentTurn).Mention} to pull the trigger. (`!pt`)", ""));
@@ -121,8 +122,8 @@ namespace Gideon.Minigames
             Players.Remove(player);
             if(Players.Count == 1)
             {
-                Config.CoinHandler.AdjustCoins(Players.ElementAt(0), 3 + (2 * PlayerSlots));
-                Config.CoinHandler.AdjustCoins(player, -3);
+                CoinsHandler.AdjustCoins(Players.ElementAt(0), 3 + (2 * PlayerSlots));
+                CoinsHandler.AdjustCoins(player, -3);
 
                 await context.Channel.SendMessageAsync("", false, gameEmbed($"The cylinder spins...\n\n*BANG*\n\n{player.Mention} died and lost 3 Coins!\n\n{Players.ElementAt(0).Mention} won the game and got {3 + (2*PlayerSlots)} coins!", ""));
                 Reset();

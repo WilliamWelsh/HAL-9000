@@ -8,7 +8,7 @@ namespace Gideon.Handlers
 {
     class StatsHandler
     {
-        public string GetCreatedDate(SocketGuildUser user)
+        public static string GetCreatedDate(SocketGuildUser user)
         {
             try
             {
@@ -20,7 +20,7 @@ namespace Gideon.Handlers
             }
         }
 
-        public string GetJoinedDate(SocketGuildUser user)
+        public static string GetJoinedDate(SocketGuildUser user)
         {
             try
             {
@@ -33,7 +33,7 @@ namespace Gideon.Handlers
         }
 
         private static readonly Color timeColor = new Color(127, 166, 208);
-        private string GetTime(SocketGuildUser user)
+        private static string GetTime(SocketGuildUser user)
         {
             if (UserAccounts.GetAccount(user).localTime == 999)
                 return $"Not set.\nContact Reverse to set it up.";
@@ -42,7 +42,7 @@ namespace Gideon.Handlers
         }
 
         // Print server stats
-        public async Task DisplayServerStats(SocketCommandContext context)
+        public static async Task DisplayServerStats(SocketCommandContext context)
         {
             var embed = new EmbedBuilder();
             embed.WithTitle(context.Guild.Name);
@@ -50,24 +50,24 @@ namespace Gideon.Handlers
             embed.AddField("Owner", context.Guild.Owner.Mention);
             embed.AddField("Emotes", context.Guild.Emotes.Count);
             embed.AddField("Members", context.Guild.MemberCount.ToString("#,##0"));
-            embed.WithColor(Config.Utilities.DomColorFromURL(context.Guild.IconUrl));
+            embed.WithColor(Utilities.DomColorFromURL(context.Guild.IconUrl));
             embed.WithThumbnailUrl(context.Guild.IconUrl);
             await context.Channel.SendMessageAsync("", false, embed);
         }
 
         // Display a User's local time
-        public async Task DisplayTime(SocketCommandContext context, SocketGuildUser user) => await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed("Time Teller", GetTime(user), timeColor, UserAccounts.GetAccount(user).country, ""));
+        public static async Task DisplayTime(SocketCommandContext context, SocketGuildUser user) => await context.Channel.SendMessageAsync("", false, Utilities.Embed("Time Teller", GetTime(user), timeColor, UserAccounts.GetAccount(user).country, ""));
 
         // Display a User's country
-        public async Task DisplayCountry(SocketCommandContext context, SocketGuildUser user)
+        public static async Task DisplayCountry(SocketCommandContext context, SocketGuildUser user)
         {
             string country = UserAccounts.GetAccount(user).country;
             string flagEmoji = GetFlag(country);
-            await context.Channel.SendMessageAsync("", false, Config.Utilities.Embed($"{user.Nickname ?? user.Username}'s Country", $"{flagEmoji} {country} {flagEmoji}", Config.Utilities.DomColorFromURL(user.GetAvatarUrl()), "", user.GetAvatarUrl()));
+            await context.Channel.SendMessageAsync("", false, Utilities.Embed($"{user.Nickname ?? user.Username}'s Country", $"{flagEmoji} {country} {flagEmoji}", Utilities.DomColorFromURL(user.GetAvatarUrl()), "", user.GetAvatarUrl()));
         }
 
         // Get Discord flag emoji for a country
-        private string GetFlag(string country)
+        private static string GetFlag(string country)
         {
 			if (country == "United States")
 				return ":flag_us:";
@@ -101,7 +101,7 @@ namespace Gideon.Handlers
         }
 
         // Display Stats for a user
-        public async Task DisplayUserStats(SocketCommandContext context, SocketGuildUser user)
+        public static async Task DisplayUserStats(SocketCommandContext context, SocketGuildUser user)
         {
             var embed = new EmbedBuilder();
             embed.WithTitle("Stats for " + user.ToString());
@@ -130,7 +130,7 @@ namespace Gideon.Handlers
             embed.AddField("Level", account.level.ToString());
             embed.AddField("XP", account.xp.ToString("#,##0"));
             embed.AddField("Local Time", GetTime(user));
-            embed.WithColor(Config.Utilities.DomColorFromURL(user.GetAvatarUrl()));
+            embed.WithColor(Utilities.DomColorFromURL(user.GetAvatarUrl()));
             embed.WithThumbnailUrl(user.GetAvatarUrl());
             await context.Channel.SendMessageAsync("", false, embed);
         }

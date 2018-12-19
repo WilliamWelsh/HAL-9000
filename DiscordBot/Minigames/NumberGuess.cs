@@ -1,6 +1,7 @@
 ﻿using System;
 using Discord;
 using System.Linq;
+using Gideon.Handlers;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
@@ -41,7 +42,7 @@ namespace Gideon.Minigames
 
         public async Task TryToStartGame(int RandomNumber, SocketGuildUser user, SocketCommandContext context, int players)
         {
-            if (!await Config.Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
+            if (!await Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
             if (isGamingGoing) return;
             isGamingGoing = true;
             number = RandomNumber;
@@ -55,7 +56,7 @@ namespace Gideon.Minigames
 
         public async Task JoinGame(SocketGuildUser user, SocketCommandContext context)
         {
-            if (!await Config.Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
+            if (!await Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
             if (!isGamingGoing)
             {
                 await context.Channel.SendMessageAsync("", false, embed("There is no game currently going.\n\nType `!help ng` for Number Guess game help.", "", false));
@@ -77,7 +78,7 @@ namespace Gideon.Minigames
 
         public async Task TryToGuess(SocketGuildUser user, SocketCommandContext context, int input)
         {
-            if (!await Config.Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
+            if (!await Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
             if (!isGamingGoing) return;
             if (playerSlots != Players.Count && playerSlots != 0)
                 return;
@@ -115,13 +116,13 @@ namespace Gideon.Minigames
                 if(Players.ElementAt(0).guess == number)
                 {
                     embed.WithDescription($"Great job, {Players.ElementAt(0).user.Mention}! You got it exactly right and won 101 Coins!");
-                    Config.CoinHandler.AdjustCoins(Players.ElementAt(0).user, 101);
+                    CoinsHandler.AdjustCoins(Players.ElementAt(0).user, 101);
                 }
                 else
                 {
                     embed.WithDescription($"Sorry, {Players.ElementAt(0).user.Mention}. You did not get it right.");
                     embed.WithFooter("Lost 1 Coin.");
-                    Config.CoinHandler.AdjustCoins(Players.ElementAt(0).user, -1);
+                    CoinsHandler.AdjustCoins(Players.ElementAt(0).user, -1);
                 }
                 await context.Channel.SendMessageAsync("", false, embed);
                 Reset();
@@ -141,7 +142,7 @@ namespace Gideon.Minigames
                     Description += "\n\nEveryone else lost 10 coins!";
                     lost10 = true;
                     embed.WithFooter("100 + 2 * Players played.");
-                    Config.CoinHandler.AdjustCoins(Players.ElementAt(i).user, 100 + (2 * playerSlots));
+                    CoinsHandler.AdjustCoins(Players.ElementAt(i).user, 100 + (2 * playerSlots));
                     winner = Players.ElementAt(i).user;
                     break;
                 }
@@ -167,9 +168,9 @@ namespace Gideon.Minigames
             for(int i =0; i < Players.Count; i++)
                 if(!(winner == Players.ElementAt(i).user))
                     if (lost10)
-                        Config.CoinHandler.AdjustCoins(Players.ElementAt(i).user, -10);
+                        CoinsHandler.AdjustCoins(Players.ElementAt(i).user, -10);
                     else
-                        Config.CoinHandler.AdjustCoins(Players.ElementAt(i).user, -1);
+                        CoinsHandler.AdjustCoins(Players.ElementAt(i).user, -1);
 
             await context.Channel.SendMessageAsync("", false, embed);
             Reset();

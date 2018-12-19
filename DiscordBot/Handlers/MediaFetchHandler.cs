@@ -5,11 +5,11 @@ namespace Gideon
 {
     class MediaFetchHandler
     {
-        public Movie FetchMovie(string Search) => JsonConvert.DeserializeObject<Movie>(Config.Utilities.webClient.DownloadString($"http://www.omdbapi.com/?t={Search}&apikey={Config.bot.MovieTVAPIKey}"));
+        public static Movie FetchMovie(string Search) => JsonConvert.DeserializeObject<Movie>(Utilities.webClient.DownloadString($"http://www.omdbapi.com/?t={Search}&apikey={Config.bot.MovieTVAPIKey}"));
 
-        public TVShow FetchShow(string Search) => JsonConvert.DeserializeObject<TVShow>(Config.Utilities.webClient.DownloadString($"http://www.omdbapi.com/?t={Search}&apikey={Config.bot.MovieTVAPIKey}"));
+        public static TVShow FetchShow(string Search) => JsonConvert.DeserializeObject<TVShow>(Utilities.webClient.DownloadString($"http://www.omdbapi.com/?t={Search}&apikey={Config.bot.MovieTVAPIKey}"));
 
-        public YTChannel FetchYTChannel(string ID) => JsonConvert.DeserializeObject<YTChannel>(Config.Utilities.webClient.DownloadString($"https://www.googleapis.com/youtube/v3/channels?part=statistics&id={ID}&key={Config.bot.YouTubeAPIKey}"));
+        //public static YTChannel FetchYTChannel(string ID) => JsonConvert.DeserializeObject<YTChannel>(Utilities.webClient.DownloadString($"https://www.googleapis.com/youtube/v3/channels?part=statistics&id={ID}&key={Config.bot.YouTubeAPIKey}"));
 
         public struct Rating
         {
@@ -40,21 +40,20 @@ namespace Gideon
             public string Plot { get; set; }
         }
 
-        public struct item
-        {
-            public stats statistics { get; set; }
-        }
-
-        public struct stats
-        {
-            public string viewCount { get; set; }
-            public string subscriberCount { get; set; }
-            public string videoCount { get; set; }
-        }
-
-        public struct YTChannel
-        {
-            public item[] items { get; set; }
-        }
+        // YouTube's json thingy is weird
+        //public struct item
+        //{
+        //    public stats statistics { get; set; }
+        //}
+        //public struct stats
+        //{
+        //    public string viewCount { get; set; }
+        //    public string subscriberCount { get; set; }
+        //    public string videoCount { get; set; }
+        //}
+        //public struct YTChannel
+        //{
+        //    public item[] items { get; set; }
+        //}
     }
 }

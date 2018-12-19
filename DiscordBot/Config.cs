@@ -12,16 +12,11 @@ namespace Gideon
         private const string resourcesFile = "resources.json";
         private const string questionsFile = "questions.json";
         private const string triviaQuestionsFile = "trivia_questions.json";
+        private const string whoSaidItResourcesFile = "whoSaidIt.json";
 
         public static BotConfig bot;
         public static TriviaQuestions triviaQuestions;
-
-        public static Utilities Utilities = new Utilities();
-        public static RankHandler RankHandler = new RankHandler();
-        public static CoinsHandler CoinHandler = new CoinsHandler();
-        public static StatsHandler StatsHandler = new StatsHandler();
-        public static MinigameHandler MinigameHandler = new MinigameHandler();
-        public static MediaFetchHandler MediaFetchHandler = new MediaFetchHandler();
+        public static whoSaidItResources whoSaidItResources;
 
         static Config()
         {
@@ -30,26 +25,37 @@ namespace Gideon
             if (!Directory.Exists(configFolder))
                 Directory.CreateDirectory(configFolder);
 
-            if (!File.Exists(configFolder + "/" + configFile))
+            if (!File.Exists($"{configFolder}/{configFile}"))
             {
                 string json = JsonConvert.SerializeObject(bot, Formatting.Indented);
-                File.WriteAllText(configFolder + "/" + configFile, json);
+                File.WriteAllText($"{configFolder}/{configFile}", json);
             }
             else
             {
-                string json = File.ReadAllText(configFolder + "/" + configFile);
+                string json = File.ReadAllText($"{configFolder}/{configFile}");
                 bot = JsonConvert.DeserializeObject<BotConfig>(json);
             }
 
-            if (!File.Exists(configFolder + "/" + triviaQuestionsFile))
+            if (!File.Exists($"{configFolder}/{triviaQuestionsFile}"))
             {
                 string json = JsonConvert.SerializeObject(triviaQuestions, Formatting.Indented);
-                File.WriteAllText(configFolder + "/" + triviaQuestionsFile, json);
+                File.WriteAllText($"{configFolder}/{triviaQuestionsFile}", json);
             }
             else
             {
-                string json = File.ReadAllText(configFolder + "/" + triviaQuestionsFile);
+                string json = File.ReadAllText($"{configFolder}/{triviaQuestionsFile}");
                 triviaQuestions = JsonConvert.DeserializeObject<TriviaQuestions>(json);
+            }
+
+            if (!File.Exists($"{configFolder}/{whoSaidItResourcesFile}"))
+            {
+                string json = JsonConvert.SerializeObject(whoSaidItResources, Formatting.Indented);
+                File.WriteAllText($"{configFolder}/{whoSaidItResourcesFile}", json);
+            }
+            else
+            {
+                string json = File.ReadAllText($"{configFolder}/{whoSaidItResourcesFile}");
+                whoSaidItResources = JsonConvert.DeserializeObject<whoSaidItResources>(json);
             }
         }
     }
@@ -69,9 +75,19 @@ namespace Gideon
         public string Answer;
         public List<string> IncorrectAnswers;
     }
-
     public struct TriviaQuestions
     {
         public List<TriviaQuestion> Questions;
+    }
+
+    public struct whoSaidItQuote
+    {
+        public string Quote;
+        public string Speaker;
+    }
+    public struct whoSaidItResources
+    {
+        public List<whoSaidItQuote> Quotes;
+        public List<string> Options;
     }
 }

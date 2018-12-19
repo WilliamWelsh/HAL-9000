@@ -1,5 +1,6 @@
 ﻿using System;
 using Discord;
+using Gideon.Handlers;
 using Discord.WebSocket;
 using System.Threading.Tasks;
 
@@ -33,10 +34,10 @@ namespace Gideon
         // If someone adds a reaction, check to see if it's for a minigame that's being played
         private async Task OnReactionAdded(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel channel, SocketReaction reaction)
 		{
-			if (Config.MinigameHandler.RPS.MessageID == reaction.MessageId)
-				await Config.MinigameHandler.RPS.ViewPlay(reaction.Emote.ToString(), channel, reaction.User);
+			if (MinigameHandler.RPS.MessageID == reaction.MessageId)
+				await MinigameHandler.RPS.ViewPlay(reaction.Emote.ToString(), channel, reaction.User);
 			else
-				await Config.MinigameHandler.TTT.Play(reaction, channel, reaction.User);
+				await MinigameHandler.TTT.Play(reaction, channel, reaction.User);
 		}
 	}
 }

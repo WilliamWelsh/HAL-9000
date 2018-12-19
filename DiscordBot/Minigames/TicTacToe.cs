@@ -3,6 +3,7 @@ using Discord.Rest;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
+using Gideon.Handlers;
 
 namespace Gideon.Minigames
 {
@@ -145,6 +146,6 @@ namespace Gideon.Minigames
 			Reset();
 		}
 
-        private void Reset() => Config.MinigameHandler.ResetTTT();
+        private void Reset() => MinigameHandler.ResetTTT();
 	}
 }

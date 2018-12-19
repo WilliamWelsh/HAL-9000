@@ -1,6 +1,7 @@
 ﻿using System;
 using Discord;
 using System.Linq;
+using Gideon.Handlers;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
@@ -17,13 +18,13 @@ namespace Gideon.Minigames
         private DateTime StartTime;
         private List<SocketGuildUser> PlayersAnswered = new List<SocketGuildUser>();
 
-        private Embed Embed(string description, string footer) => Config.Utilities.Embed("Trivia", description, color, footer, "");
+        private Embed Embed(string description, string footer) => Utilities.Embed("Trivia", description, color, footer, "");
 
         private string GetName(SocketGuildUser user) => user.Nickname ?? user.Username;
 
         public async Task TryToStartTrivia(SocketGuildUser user, SocketCommandContext context, string input)
         {
-            if (!await Config.Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
+            if (!await Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
             if (isTriviaBeingPlayed && (DateTime.Now - StartTime).TotalSeconds < 60)
             {
                 await context.Channel.SendMessageAsync("", false, Embed($"Sorry, {userPlaying.Mention} is currently playing.\nYou can ask an admin to `!reset trivia` if there is an issue.", ""));
@@ -41,7 +42,7 @@ namespace Gideon.Minigames
 
         private async Task CancelGame(SocketGuildUser user, SocketCommandContext context)
         {
-            Config.CoinHandler.AdjustCoins(user, -1);
+            CoinsHandler.AdjustCoins(user, -1);
             await context.Channel.SendMessageAsync("", false, Embed($"{user.Mention} took too long to answer and lost 1 coin.", ""));
         }
 
@@ -51,7 +52,7 @@ namespace Gideon.Minigames
             triviaMode = mode;
             isTriviaBeingPlayed = true;
             StartTime = DateTime.Now;
-            int QuestionNum = Config.Utilities.GetRandomNumber(0, Config.triviaQuestions.Questions.Count);
+            int QuestionNum = Utilities.GetRandomNumber(0, Config.triviaQuestions.Questions.Count);
 
             string[] Fakes = {"","","",""};
 
@@ -103,12 +104,12 @@ namespace Gideon.Minigames
                 if (input == correctAnswer)
                 {
                     await context.Channel.SendMessageAsync("", false, Embed("Correct.", $"{GetName(user)} has been awarded 1 coin."));
-                    Config.CoinHandler.AdjustCoins(user, 1);
+                    CoinsHandler.AdjustCoins(user, 1);
                     ResetTrivia();
                     return;
                 }
                 await context.Channel.SendMessageAsync("", false, Embed($"Wrong, it is {correctAnswer.ToUpper()}.", $"{GetName(user)} lost 1 coin."));
-                Config.CoinHandler.AdjustCoins(user, -1);
+                CoinsHandler.AdjustCoins(user, -1);
                 ResetTrivia();
                 return;
             }
@@ -125,7 +126,7 @@ namespace Gideon.Minigames
                 if (input == correctAnswer)
                 {
                     await context.Channel.SendMessageAsync("", false, Embed($"Correct, {user.Mention} won!", $"{GetName(user)} has been awarded 1 coin."));
-                    Config.CoinHandler.AdjustCoins(user, 1);
+                    CoinsHandler.AdjustCoins(user, 1);
                     ResetTrivia();
                     return;
                 }

@@ -1,7 +1,7 @@
-﻿using System;
-using Discord;
+﻿using Discord;
 using System.Linq;
 using Discord.Rest;
+using Gideon.Handlers;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
@@ -17,11 +17,11 @@ namespace Gideon.Minigames
         private SocketGuildUser Player;
         private List<string> Plays = new List<string>(new string[] { "Rock", "Paper", "Scissors" });
 
-        private Embed embed(string description, string footer) => Config.Utilities.Embed("Rock-Paper-Scissors", description, color, footer, "https://i.imgur.com/VXdDjho.png");
+        private Embed embed(string description, string footer) => Utilities.Embed("Rock-Paper-Scissors", description, color, footer, "https://i.imgur.com/VXdDjho.png");
 
         public async Task StartRPS(SocketCommandContext context)
         {
-            if (!await Config.Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
+            if (!await Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
             string name = ((SocketGuildUser)context.User).Nickname ?? context.User.Username;
             RestUserMessage m = await context.Channel.SendMessageAsync("", false, embed("Pick your play and see if you can beat me!", $"{name} is playing."));
             await m.AddReactionAsync(new Emoji("📰"));
@@ -44,15 +44,15 @@ namespace Gideon.Minigames
             else if (emote == "🌑")
                 playOne = "Rock";
 
-            string playTwo = Plays.ElementAt(Config.Utilities.GetRandomNumber(0, 3));
+            string playTwo = Plays.ElementAt(Utilities.GetRandomNumber(0, 3));
             string result = GetWinner(playOne[0], playTwo[0]);
 
             await channel.SendMessageAsync("", false, embed($"{Player.Mention} chose {playOne}!\n\nI chose {playTwo}.\n\n{result}", ""));
 
             if(result.Contains("lose 3 coins"))
-                Config.CoinHandler.AdjustCoins(Player, -3);
+                CoinsHandler.AdjustCoins(Player, -3);
             else if (result.Contains("got 3 coins"))
-                Config.CoinHandler.AdjustCoins(Player, 3);
+                CoinsHandler.AdjustCoins(Player, 3);
 
             Player = null;
             isPlaying = false;

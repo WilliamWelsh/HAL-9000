@@ -13,20 +13,20 @@ namespace Gideon
     class Utilities
     {
         // Universal Web Client
-        public WebClient webClient = new WebClient();
+        public static WebClient webClient = new WebClient();
 
         // Color Thief (gets the dominant color of an image, makes my embeds look pretty)
-        private ColorThief colorThief = new ColorThief();
+        private static ColorThief colorThief = new ColorThief();
 
         // Get a random number
-        private static readonly Random getrandom = new Random();
-        public int GetRandomNumber(int min, int max)
+        public static readonly Random getrandom = new Random();
+        public static int GetRandomNumber(int min, int max)
         {
             lock (getrandom) { return getrandom.Next(min, max); }
         }
 
         // Generic Embed template
-        public Embed Embed(string t, string d, Discord.Color c, string f, string thURL)
+        public static Embed Embed(string t, string d, Discord.Color c, string f, string thURL)
         {
             var embed = new EmbedBuilder();
             embed.WithTitle(t);
@@ -38,7 +38,7 @@ namespace Gideon
         }
 
         // Generic Image Embed template
-        public Embed ImageEmbed(string t, string d, Discord.Color c, string f, string imageURL)
+        public static Embed ImageEmbed(string t, string d, Discord.Color c, string f, string imageURL)
         {
             var embed = new EmbedBuilder();
             embed.WithTitle(t);
@@ -50,10 +50,10 @@ namespace Gideon
         }
 
         // Print an error
-        public async Task PrintError(ISocketMessageChannel channel, string description) => await channel.SendMessageAsync("", false, Embed("Error", description, new Discord.Color(227, 37, 39), "", ""));
+        public static async Task PrintError(ISocketMessageChannel channel, string description) => await channel.SendMessageAsync("", false, Embed("Error", description, new Discord.Color(227, 37, 39), "", ""));
 
         // Get a dominant color from an image (url)
-        public Discord.Color DomColorFromURL(string url)
+        public static Discord.Color DomColorFromURL(string url)
         {
             byte[] bytes = webClient.DownloadData(url);
             MemoryStream ms = new MemoryStream(bytes);
@@ -64,7 +64,7 @@ namespace Gideon
         }
 
 		// Convert a hexidecimal to an RGB value (input does not include the '#')
-		public Discord.Color HexToRGB(string hex)
+		public static Discord.Color HexToRGB(string hex)
 		{
 			// First two values of the hex
 			int r = int.Parse(hex.Substring(0, hex.Length - 4), System.Globalization.NumberStyles.AllowHexSpecifier);
@@ -79,7 +79,7 @@ namespace Gideon
 		}
 
         // Checks if a user is a superadmin, this is to see if they can do a certain command
-        public async Task<bool> CheckForSuperadmin(SocketCommandContext context, SocketUser user)
+        public static async Task<bool> CheckForSuperadmin(SocketCommandContext context, SocketUser user)
         {
             if (UserAccounts.GetAccount(user).superadmin)
                 return true;
@@ -88,12 +88,12 @@ namespace Gideon
         }
 
         // Checks if the current channel is the required channel (like minigames)
-        public async Task<bool> CheckForChannel(SocketCommandContext context, ulong requiredChannel, SocketUser user)
+        public static async Task<bool> CheckForChannel(SocketCommandContext context, ulong requiredChannel, SocketUser user)
         {
             if (context.Channel.Id == requiredChannel)
                 return true;
-            await Config.Utilities.PrintError(context.Channel, $"Please use the {context.Guild.GetTextChannel(requiredChannel).Mention} chat for that, {user.Mention}.");
+            await PrintError(context.Channel, $"Please use the {context.Guild.GetTextChannel(requiredChannel).Mention} chat for that, {user.Mention}.");
             return false;
         }
-	}
+    }
 }
