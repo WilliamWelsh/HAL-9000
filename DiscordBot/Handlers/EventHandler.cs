@@ -88,12 +88,14 @@ namespace Gideon
             // Answer minigames
             if (context.Channel.Id == 518846214603669537)
             {
+                // Answer Trivia
                 if (m == "a" || m == "b" || m == "c" || m == "d")
                     await MinigameHandler.Trivia.AnswerTrivia((SocketGuildUser)msg.Author, context, m);
 
+                // Answer "Who Said It?"
                 int x = 0;
                 if (int.TryParse(m, out x))
-                    if (x <= 4 && x >= 1)
+                    if (x <= 4 && x >= 1 && MinigameHandler.WSI.isGameGoing)
                         await MinigameHandler.WSI.TryToGuess(context, x);
             }
 

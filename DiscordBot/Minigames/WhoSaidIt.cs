@@ -17,6 +17,8 @@ namespace Gideon.Minigames
         private List<string> availableOptions = new List<string>();
         private string Speaker;
 
+        private static SocketUser Player;
+
         public async Task TryToStartGame(SocketCommandContext context)
         {
             if (!await Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
@@ -27,6 +29,7 @@ namespace Gideon.Minigames
             }
 
             isGameGoing = true;
+            Player = context.User;
             int quoteIndex = Utilities.GetRandomNumber(0, Config.whoSaidItResources.Quotes.Count);
             string options = "";
 
@@ -70,7 +73,11 @@ namespace Gideon.Minigames
 
         public async Task TryToGuess(SocketCommandContext context, int number)
         {
-            Console.WriteLine($"Number: {number}");
+            if (Player != context.User)
+            {
+                await Utilities.PrintError(context.Channel, $"Sorry, {Player.Mention} is currently playing.\nYou can ask an admin to `!reset wsi` if there is an issue.");
+                return;
+            }
             if (availableOptions.ElementAt(number-1) == Speaker)
             {
                 await context.Channel.SendMessageAsync("", false, Utilities.Embed("Who Said It?", "Correct!", color, $"{((SocketGuildUser)context.User).Nickname ?? context.User.Username} got 1 coin.", ""));
@@ -78,7 +85,7 @@ namespace Gideon.Minigames
             }
             else
             {
-                await context.Channel.SendMessageAsync("", false, Utilities.Embed("Who Said It?", "Inorrect.", color, $"{((SocketGuildUser)context.User).Nickname ?? context.User.Username} lost 1 coin.", ""));
+                await context.Channel.SendMessageAsync("", false, Utilities.Embed("Who Said It?", "Incorrect.", color, $"{((SocketGuildUser)context.User).Nickname ?? context.User.Username} lost 1 coin.", ""));
                 CoinsHandler.AdjustCoins((SocketGuildUser)context.User, -1);
             }
             Reset();

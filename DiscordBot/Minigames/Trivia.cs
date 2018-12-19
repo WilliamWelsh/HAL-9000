@@ -13,10 +13,11 @@ namespace Gideon.Minigames
     {
         private static readonly Color color = new Color(31, 139, 76);
         private bool isTriviaBeingPlayed = false;
-        private SocketGuildUser userPlaying = null;
+        private SocketGuildUser Player = null;
         private string correctAnswer, triviaMode;
         private DateTime StartTime;
         private List<SocketGuildUser> PlayersAnswered = new List<SocketGuildUser>();
+        private static Random rdn = new Random();
 
         private Embed Embed(string description, string footer) => Utilities.Embed("Trivia", description, color, footer, "");
 
@@ -27,7 +28,7 @@ namespace Gideon.Minigames
             if (!await Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
             if (isTriviaBeingPlayed && (DateTime.Now - StartTime).TotalSeconds < 60)
             {
-                await context.Channel.SendMessageAsync("", false, Embed($"Sorry, {userPlaying.Mention} is currently playing.\nYou can ask an admin to `!reset trivia` if there is an issue.", ""));
+                await Utilities.PrintError(context.Channel, $"Sorry, {Player.Mention} is currently playing.\nYou can ask an admin to `!reset trivia` if there is an issue.");
                 return;
             }
             if(input == "trivia")
@@ -36,7 +37,7 @@ namespace Gideon.Minigames
                 return;
             }
             if (isTriviaBeingPlayed && (DateTime.Now - StartTime).TotalSeconds > 60)
-                await CancelGame(userPlaying, context);
+                await CancelGame(Player, context);
             await StartTrivia(user, context, input.Replace("trivia ", ""));
         }
 
@@ -48,7 +49,7 @@ namespace Gideon.Minigames
 
         private async Task StartTrivia(SocketGuildUser user, SocketCommandContext context, string mode)
         {
-            userPlaying = user;
+            Player = user;
             triviaMode = mode;
             isTriviaBeingPlayed = true;
             StartTime = DateTime.Now;
@@ -61,7 +62,6 @@ namespace Gideon.Minigames
             Fakes[2] = Config.triviaQuestions.Questions.ElementAt(QuestionNum).IncorrectAnswers.ElementAt(2);
             Fakes[3] = Config.triviaQuestions.Questions.ElementAt(QuestionNum).Answer;
 
-            Random rdn = new Random();
             string[] RandomFakes = Fakes.OrderBy(x => rdn.Next()).ToArray();
 
             for (int n = 0; n < RandomFakes.Length; n++)
@@ -98,7 +98,7 @@ namespace Gideon.Minigames
 
         public async Task AnswerTrivia(SocketGuildUser user, SocketCommandContext context, string input)
         {
-            if (user == userPlaying && triviaMode == "solo")
+            if (user == Player && triviaMode == "solo")
             {
                 string name = user.Nickname != null ? user.Nickname : user.ToString();
                 if (input == correctAnswer)
@@ -118,7 +118,7 @@ namespace Gideon.Minigames
                 for (int i = 0; i < PlayersAnswered.Count; i++)
                     if (PlayersAnswered.ElementAt(i) == user)
                     {
-                        await context.Channel.SendMessageAsync("", false, Embed($"You already answered, {user.Mention}.", ""));
+                        await Utilities.PrintError(context.Channel, $"You already answered, {user.Mention}.");
                         return;
                     }
 
@@ -135,7 +135,7 @@ namespace Gideon.Minigames
 
         public void ResetTrivia()
         {
-            userPlaying = null;
+            Player = null;
             isTriviaBeingPlayed = false;
             PlayersAnswered.Clear();
         }
