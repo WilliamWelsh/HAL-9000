@@ -177,7 +177,7 @@ namespace Gideon.Handlers
                 }
             }
 
-            await context.Channel.SendMessageAsync("", false, embed);
+            await context.Channel.SendMessageAsync("", false, embed.Build());
         }
 
         private static bool isLotteryGoing = false;

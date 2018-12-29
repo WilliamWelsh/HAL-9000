@@ -31,7 +31,7 @@ namespace Gideon.Handlers
         }
 
         // Have to call this from TicTacToe
-        public static void ResetTTT() => MinigameHandler.TTT = new TicTacToe();
+        public static void ResetTTT() => TTT = new TicTacToe();
 
         // Reset a game
         public static async Task ResetGame(SocketCommandContext context, string game)

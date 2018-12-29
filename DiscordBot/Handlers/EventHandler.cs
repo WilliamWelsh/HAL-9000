@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Gideon
 {
-    class CommandHandler
+    class EventHandler
     {
         DiscordSocketClient _client;
         CommandService _service;
@@ -18,7 +18,7 @@ namespace Gideon
         {
             _client = client;
             _service = new CommandService();
-            await _service.AddModulesAsync(Assembly.GetEntryAssembly());
+            await _service.AddModulesAsync(Assembly.GetEntryAssembly(), null);
 
             _client.MessageReceived += HandleCommandAsync;
 
@@ -80,8 +80,9 @@ namespace Gideon
             await RankHandler.TryToGiveUserXP(context, msg.Author);
 
             int argPos = 0;
+            //IServiceProvider services;
             if (msg.HasStringPrefix("!", ref argPos))
-                await _service.ExecuteAsync(context, argPos);
+                await _service.ExecuteAsync(context, argPos, null, MultiMatchHandling.Exception);
 
             string m = msg.Content.ToLower();
 

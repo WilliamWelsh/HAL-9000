@@ -68,7 +68,7 @@ namespace Gideon.Minigames
                 embed.AddField("Quote", Config.whoSaidItResources.Quotes[quoteIndex].Quote);
                 embed.AddField("Options", options);
             }
-            await context.Channel.SendMessageAsync("", false, embed);
+            await context.Channel.SendMessageAsync("", false, embed.Build());
         }
 
         public async Task TryToGuess(SocketCommandContext context, int number)

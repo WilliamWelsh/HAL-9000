@@ -9,7 +9,7 @@ namespace Gideon
     class Program
     {
         DiscordSocketClient _client;
-        CommandHandler _handler;
+        EventHandler _handler;
 
         static void Main(string[] args) => new Program().StartAsync().GetAwaiter().GetResult();
 
@@ -21,7 +21,7 @@ namespace Gideon
 			_client.ReactionAdded += OnReactionAdded;
 			await _client.LoginAsync(TokenType.Bot, Config.bot.DisordBotToken);
             await _client.StartAsync();
-            _handler = new CommandHandler();
+            _handler = new EventHandler();
             await _handler.InitializeAsync(_client);
             await Task.Delay(-1);
         }

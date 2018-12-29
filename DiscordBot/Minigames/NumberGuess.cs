@@ -18,24 +18,21 @@ namespace Gideon.Minigames
 
         public bool isGamingGoing;
 
-        Embed embed(string description, string footer, bool showPlayers)
+        private Embed embed(string description, string footer, bool showPlayers)
         {
-            var embed = new EmbedBuilder();
-            embed.WithTitle("Number Guess");
-            embed.WithDescription(description);
-            embed.WithColor(color);
+            var embed = new EmbedBuilder()
+                .WithTitle("Number Guess")
+                .WithDescription(description)
+                .WithColor(color)
+                .WithFooter(footer);
             if (showPlayers)
             {
                 string PlayerDesc = "";
                 for (int i = 0; i < Players.Count; i++)
-                {
-                    string name = Players.ElementAt(i).user.Nickname != null ? Players.ElementAt(i).user.Nickname: Players.ElementAt(i).user.Username;
-                    PlayerDesc += $"Player {i + 1}: {name}\n";
-                }
+                    PlayerDesc += $"Player {i + 1}: {(Players.ElementAt(i).user.Nickname ?? Players.ElementAt(i).user.Username)}\n";
                 embed.AddField("Players", PlayerDesc);
             }
-            embed.WithFooter(footer);
-            return embed;
+            return embed.Build();
         }
 
         private void AddPlayer(SocketGuildUser user) => Players.Add(new Player { hasAnswered = false, user = user });
@@ -108,9 +105,9 @@ namespace Gideon.Minigames
                 if (p.hasAnswered == false)
                     return;
 
-            var embed = new EmbedBuilder();
-            embed.WithTitle("Number Guess");
-            embed.WithColor(new Color(0, 0, 0));
+            var embed = new EmbedBuilder()
+                .WithTitle("Number Guess")
+                .WithColor(new Color(0, 0, 0));
             if(playerSlots == 0)
             {
                 if(Players.ElementAt(0).guess == number)
@@ -124,7 +121,7 @@ namespace Gideon.Minigames
                     embed.WithFooter("Lost 1 Coin.");
                     CoinsHandler.AdjustCoins(Players.ElementAt(0).user, -1);
                 }
-                await context.Channel.SendMessageAsync("", false, embed);
+                await context.Channel.SendMessageAsync("", false, embed.Build());
                 Reset();
                 return;
             }
@@ -172,7 +169,7 @@ namespace Gideon.Minigames
                     else
                         CoinsHandler.AdjustCoins(Players.ElementAt(i).user, -1);
 
-            await context.Channel.SendMessageAsync("", false, embed);
+            await context.Channel.SendMessageAsync("", false, embed.Build());
             Reset();
         }
 

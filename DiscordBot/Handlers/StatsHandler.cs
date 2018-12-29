@@ -42,18 +42,15 @@ namespace Gideon.Handlers
         }
 
         // Print server stats
-        public static async Task DisplayServerStats(SocketCommandContext context)
-        {
-            var embed = new EmbedBuilder();
-            embed.WithTitle(context.Guild.Name);
-            embed.AddField("Created", context.Guild.CreatedAt.ToString("dddd, MMMM d, yyyy"));
-            embed.AddField("Owner", context.Guild.Owner.Mention);
-            embed.AddField("Emotes", context.Guild.Emotes.Count);
-            embed.AddField("Members", context.Guild.MemberCount.ToString("#,##0"));
-            embed.WithColor(Utilities.DomColorFromURL(context.Guild.IconUrl));
-            embed.WithThumbnailUrl(context.Guild.IconUrl);
-            await context.Channel.SendMessageAsync("", false, embed);
-        }
+        public static async Task DisplayServerStats(SocketCommandContext context) => await context.Channel.SendMessageAsync("", false, new EmbedBuilder()
+            .WithTitle(context.Guild.Name)
+            .AddField("Created", context.Guild.CreatedAt.ToString("dddd, MMMM d, yyyy"))
+            .AddField("Owner", context.Guild.Owner.Mention)
+            .AddField("Emotes", context.Guild.Emotes.Count)
+            .AddField("Members", context.Guild.MemberCount.ToString("#,##0"))
+            .WithColor(Utilities.DomColorFromURL(context.Guild.IconUrl))
+            .WithThumbnailUrl(context.Guild.IconUrl)
+            .Build());
 
         // Display a User's local time
         public static async Task DisplayTime(SocketCommandContext context, SocketGuildUser user) => await context.Channel.SendMessageAsync("", false, Utilities.Embed("Time Teller", GetTime(user), timeColor, UserAccounts.GetAccount(user).country, ""));
@@ -103,12 +100,11 @@ namespace Gideon.Handlers
         // Display Stats for a user
         public static async Task DisplayUserStats(SocketCommandContext context, SocketGuildUser user)
         {
-            var embed = new EmbedBuilder();
-            embed.WithTitle("Stats for " + user.ToString());
-            embed.AddField("Created", GetCreatedDate(user));
-            embed.AddField("Joined", GetJoinedDate(user));
-
-            embed.AddField("Nickname", user.Nickname ?? "none");
+            var embed = new EmbedBuilder()
+                .WithTitle("Stats for " + user.ToString())
+                .AddField("Created", GetCreatedDate(user))
+                .AddField("Joined", GetJoinedDate(user))
+                .AddField("Nickname", user.Nickname ?? "none");
 
             string roles = "";
             foreach (SocketRole r in user.Roles) roles += $"{r.Mention}, ";
@@ -132,7 +128,7 @@ namespace Gideon.Handlers
             embed.AddField("Local Time", GetTime(user));
             embed.WithColor(Utilities.DomColorFromURL(user.GetAvatarUrl()));
             embed.WithThumbnailUrl(user.GetAvatarUrl());
-            await context.Channel.SendMessageAsync("", false, embed);
+            await context.Channel.SendMessageAsync("", false, embed.Build());
         }
     }
 }

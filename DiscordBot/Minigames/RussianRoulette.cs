@@ -22,10 +22,11 @@ namespace Gideon.Minigames
 
         private Embed embed(string description, string footer, bool showPlayers)
         {
-            var embed = new EmbedBuilder();
-            embed.WithTitle($":gun: Russian Roulette");
-            embed.WithColor(color);
-            embed.WithDescription(description);
+            var embed = new EmbedBuilder()
+                .WithTitle($":gun: Russian Roulette")
+                .WithColor(color)
+                .WithDescription(description)
+                .WithFooter(footer);
             if (showPlayers)
             {
                 string PlayerDesc = "";
@@ -33,8 +34,7 @@ namespace Gideon.Minigames
                     PlayerDesc += $"Player {i + 1}: {Players.ElementAt(i).Mention}\n";
                 embed.AddField("Players", PlayerDesc);
             }
-            embed.WithFooter(footer);
-            return embed;
+            return embed.Build();
         }
 
         private Embed gameEmbed(string description, string footer) => Utilities.Embed($":gun: Russian Roulette - Round {round}", description, color, footer, "");

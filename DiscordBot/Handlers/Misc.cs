@@ -125,7 +125,7 @@ namespace Gideon.Handlers
 		public async Task Say([Remainder]string message)
 		{
             if (!await Utilities.CheckForSuperadmin(Context, Context.User)) return;
-            await Context.Channel.DeleteMessagesAsync(await Context.Channel.GetMessagesAsync(1).Flatten());
+            await Context.Channel.DeleteMessageAsync(Context.Message.Id);
 			await Context.Channel.SendMessageAsync(message);
 		}
 
@@ -134,7 +134,7 @@ namespace Gideon.Handlers
 		public async Task DM(SocketGuildUser target, [Remainder]string message)
 		{
             if (!await Utilities.CheckForSuperadmin(Context, Context.User)) return;
-            await Context.Channel.DeleteMessagesAsync(await Context.Channel.GetMessagesAsync(1).Flatten());
+            await Context.Channel.DeleteMessageAsync(Context.Message.Id);
 			await target.SendMessageAsync(message);
 		}
 
@@ -330,7 +330,7 @@ namespace Gideon.Handlers
 		public async Task DeleteMessage([Remainder]string amount)
 		{
             if (!await Utilities.CheckForSuperadmin(Context, Context.User)) return;
-            await Context.Channel.DeleteMessagesAsync(await Context.Channel.GetMessagesAsync(int.Parse(amount) + 1).Flatten());
+            //await Context.Channel.DeleteMessageAsync(await Context.Channel.GetMessagesAsync(int.Parse(amount) + 1).Fl);
 		}
 
 		// Nickname a user
@@ -358,18 +358,17 @@ namespace Gideon.Handlers
 
 			IMDBScore = media.imdbRating == "N/A" ? "N/A" : $"{media.imdbRating}/10";
 
-			var embed = new EmbedBuilder();
-			embed.WithTitle($":film_frames: {media.Title} ({media.Year})");
-			embed.WithThumbnailUrl(media.Poster);
-			embed.WithDescription(media.Plot);
-			embed.AddField("Director", media.Director);
-			embed.AddField("Runtime", media.Runtime);
-			embed.AddField("Box Office", media.BoxOffice);
-			embed.AddField("IMDB Score", IMDBScore);
-			embed.AddField("Rotten Tomatoes", RTScore);
-			embed.WithColor(Utilities.DomColorFromURL(media.Poster));
-
-			await Context.Channel.SendMessageAsync("", false, embed);
+			await Context.Channel.SendMessageAsync("", false, new EmbedBuilder()
+                .WithTitle($":film_frames: {media.Title} ({media.Year})")
+                .WithThumbnailUrl(media.Poster)
+                .WithDescription(media.Plot)
+                .AddField("Director", media.Director)
+                .AddField("Runtime", media.Runtime)
+                .AddField("Box Office", media.BoxOffice)
+                .AddField("IMDB Score", IMDBScore)
+                .AddField("Rotten Tomatoes", RTScore)
+                .WithColor(Utilities.DomColorFromURL(media.Poster))
+                .Build());
 		}
 
 		// View stats for a TV show
@@ -381,15 +380,14 @@ namespace Gideon.Handlers
 			string IMDBScore = media.imdbRating == "N/A" ? "N/A" : $"{media.imdbRating}/10";
 			media.Year = media.Year.Replace("â€“", "-");
 
-			var embed = new EmbedBuilder();
-			embed.WithTitle($":film_frames: {media.Title} ({media.Year})");
-			embed.WithThumbnailUrl(media.Poster);
-			embed.WithDescription(media.Plot);
-			embed.AddField("Runtime", media.Runtime);
-			embed.AddField("IMDB Score", IMDBScore);
-			embed.WithColor(Utilities.DomColorFromURL(media.Poster));
-
-			await Context.Channel.SendMessageAsync("", false, embed);
+			await Context.Channel.SendMessageAsync("", false, new EmbedBuilder()
+                .WithTitle($":film_frames: {media.Title} ({media.Year})")
+                .WithThumbnailUrl(media.Poster)
+                .WithDescription(media.Plot)
+                .AddField("Runtime", media.Runtime)
+                .AddField("IMDB Score", IMDBScore)
+                .WithColor(Utilities.DomColorFromURL(media.Poster))
+                .Build());
 		}
 
 		// Print a link to Gideon's sourcecode
@@ -518,7 +516,7 @@ namespace Gideon.Handlers
         }
 
         [Command("playing")]
-        public async Task ViewRanks(SocketUser user) => await Context.Channel.SendMessageAsync($"{(user.Game.ToString() == "" ? "Not currently playing anything." : user.Game.ToString())}");
+        public async Task ViewRanks(SocketUser user) => await Context.Channel.SendMessageAsync($"{(user.Activity.Name == "" ? "Not currently playing anything." : user.Activity.Name.ToString())}");
 
         [Command("lb joined")]
         public async Task JoinedLB()

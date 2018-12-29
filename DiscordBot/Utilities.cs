@@ -26,28 +26,22 @@ namespace Gideon
         }
 
         // Generic Embed template
-        public static Embed Embed(string t, string d, Discord.Color c, string f, string thURL)
-        {
-            var embed = new EmbedBuilder();
-            embed.WithTitle(t);
-            embed.WithDescription(d);
-            embed.WithColor(c);
-            embed.WithFooter(f);
-            embed.WithThumbnailUrl(thURL);
-            return embed;
-        }
+        public static Embed Embed(string t, string d, Discord.Color c, string f, string thURL) => new EmbedBuilder()
+            .WithTitle(t)
+            .WithDescription(d)
+            .WithColor(c)
+            .WithFooter(f)
+            .WithThumbnailUrl(thURL)
+            .Build();
 
         // Generic Image Embed template
-        public static Embed ImageEmbed(string t, string d, Discord.Color c, string f, string imageURL)
-        {
-            var embed = new EmbedBuilder();
-            embed.WithTitle(t);
-            embed.WithDescription(d);
-            embed.WithColor(c);
-            embed.WithFooter(f);
-            embed.WithImageUrl(imageURL);
-            return embed;
-        }
+        public static Embed ImageEmbed(string t, string d, Discord.Color c, string f, string imageURL) => new EmbedBuilder()
+            .WithTitle(t)
+            .WithDescription(d)
+            .WithColor(c)
+            .WithFooter(f)
+            .WithImageUrl(imageURL)
+            .Build();
 
         // Print an error
         public static async Task PrintError(ISocketMessageChannel channel, string description) => await channel.SendMessageAsync("", false, Embed("Error", description, new Discord.Color(227, 37, 39), "", ""));
