@@ -162,12 +162,9 @@ namespace Gideon.Minigames
             }
             embed.WithDescription(Description);
 
-            for(int i =0; i < Players.Count; i++)
-                if(!(winner == Players.ElementAt(i).user))
-                    if (lost10)
-                        CoinsHandler.AdjustCoins(Players.ElementAt(i).user, -10);
-                    else
-                        CoinsHandler.AdjustCoins(Players.ElementAt(i).user, -1);
+            for (int i = 0; i < Players.Count; i++)
+                if (!(winner == Players.ElementAt(i).user))
+                    CoinsHandler.AdjustCoins(Players.ElementAt(i).user, lost10 ? -10 : -1);
 
             await context.Channel.SendMessageAsync("", false, embed.Build());
             Reset();

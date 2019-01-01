@@ -1,4 +1,5 @@
-﻿using System;
+﻿// Handles the currency system: giving, adding, spawning, pickpocketing, and a lottery
+using System;
 using Discord;
 using System.Linq;
 using Discord.Commands;
@@ -64,6 +65,7 @@ namespace Gideon.Handlers
             await channel.SendMessageAsync("", false, Utilities.Embed($"{name}", $"{UserAccounts.GetAccount(user).coins.ToString("#,##0")} Coins", color, "", icon));
         }
 
+        // Still in development
         public static async Task DisplayCoinsStore(SocketCommandContext context, SocketGuildUser user, ISocketMessageChannel channel)
         {
             await channel.SendMessageAsync("", false, Utilities.Embed($"Coins Store", $"500 XP - ??? Coins\n1000 XP - ???", color, $"You have {UserAccounts.GetAccount(user).coins} Coins.", icon));
@@ -96,26 +98,26 @@ namespace Gideon.Handlers
                     PickPocketHistory.Remove(ppu);
                 }
             }
-            switch (Utilities.GetRandomNumber(0,2))
+            if (Utilities.GetRandomNumber(0, 2) == 0)
             {
-                // Success
-                case 0:
-                    int CoinsGained = (int)(UserAccounts.GetAccount(target).coins * 0.1);
-                    await context.Channel.SendMessageAsync("", false, Utilities.Embed($"PickPocket", $"{self.Mention} successfully pickpocketed {CoinsGained} coins from {target.Mention}.", color, "", icon));
-                    AdjustCoins(self, CoinsGained);
-                    AdjustCoins(target, -CoinsGained);
-                    break;
-                // Fail
-                case 1:
-                    int CoinsLost = (int)(UserAccounts.GetAccount(self).coins * 0.1);
-                    await context.Channel.SendMessageAsync("", false, Utilities.Embed($"PickPocket", $"{self.Mention} attempted to pickpocket {target.Mention} and failed, losing {CoinsLost} coins.", color, "", icon));
-                    AdjustCoins(self, -CoinsLost);
-                    break;
+                // Successful pickpocket
+                int CoinsGained = (int)(UserAccounts.GetAccount(target).coins * 0.1);
+                await context.Channel.SendMessageAsync("", false, Utilities.Embed($"PickPocket", $"{self.Mention} successfully pickpocketed {CoinsGained} coins from {target.Mention}.", color, "", icon));
+                AdjustCoins(self, CoinsGained);
+                AdjustCoins(target, -CoinsGained);
             }
-            PickPocketUser p = new PickPocketUser();
-            p.user = self;
-            p.timeStamp = DateTime.Now;
-            PickPocketHistory.Add(p);
+            else
+            {
+                // Failed pickpocket
+                int CoinsLost = (int)(UserAccounts.GetAccount(self).coins * 0.1);
+                await context.Channel.SendMessageAsync("", false, Utilities.Embed($"PickPocket", $"{self.Mention} attempted to pickpocket {target.Mention} and failed, losing {CoinsLost} coins.", color, "", icon));
+                AdjustCoins(self, -CoinsLost);
+            }
+            PickPocketHistory.Add(new PickPocketUser
+            {
+                user = self,
+                timeStamp = DateTime.Now
+            });
         }
 
         public static async Task PrintCoinsLeaderboard(SocketCommandContext context)
@@ -156,9 +158,7 @@ namespace Gideon.Handlers
                 }
             }
 
-            var embed = new EmbedBuilder();
-            embed.WithTitle("Coins Leaderboard");
-            embed.WithColor(new Color(215, 154, 14));
+            var embed = new EmbedBuilder().WithTitle("Coins Leaderboard").WithColor(color);
 
             Array.Sort(MostCoinsArray);
             Array.Reverse(MostCoinsArray);

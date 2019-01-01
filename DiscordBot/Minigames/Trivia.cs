@@ -31,7 +31,7 @@ namespace Gideon.Minigames
                 await Utilities.PrintError(context.Channel, $"Sorry, {Player.Mention} is currently playing.\nYou can ask an admin to `!reset trivia` if there is an issue.");
                 return;
             }
-            if(input == "trivia")
+            if (input == "trivia")
             {
                 await context.Channel.SendMessageAsync("", false, Embed("Please select a mode.\n\n`!trivia solo` - Play alone.\n\n`!trivia all` - First to answer wins.", ""));
                 return;
@@ -64,7 +64,7 @@ namespace Gideon.Minigames
 
             string[] RandomFakes = Fakes.OrderBy(x => rdn.Next()).ToArray();
 
-            for (int n = 0; n < RandomFakes.Length; n++)
+            for (int n = 0; n < 4; n++)
             {
                 if (RandomFakes[n] == Config.triviaQuestions.Questions.ElementAt(QuestionNum).Answer)
                 {

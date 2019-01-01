@@ -27,7 +27,34 @@ namespace Gideon
 
             _client.UserJoined += HandleUserJoining;
             _client.UserLeft += HandleUserLeaving;
+
+            _service.Log += Log;
+
+            //Config.AudioHandler.client = _client;
+
+            //_client.MessageDeleted += HandleMessageDeleted;
         }
+
+        private Task Log(LogMessage arg)
+        {
+            Console.WriteLine(arg);
+            return Task.CompletedTask;
+        }
+
+        // I don't want my bot to log delete messages, but I have this here just because
+        //private async Task HandleMessageDeleted(Cacheable<IMessage, ulong> arg1, ISocketMessageChannel arg2)
+        //{
+        //    var msg = arg1.HasValue ? arg1.Value : null;
+        //     await arg2.SendMessageAsync("", false, new EmbedBuilder()
+        //        .WithTitle("Deleted Message")
+        //        .AddField("Message", msg.Content)
+        //        .AddField("User", msg.Author)
+        //        .AddField("User ID", msg.Author.Id)
+        //        .AddField("Time", msg.Timestamp.ToString("h:mm tt, dddd, MMMM d."))
+        //        .WithColor(new Color(31, 139, 76))
+        //        .WithThumbnailUrl(msg.Author.GetAvatarUrl())
+        //        .Build());
+        //}
 
         private async Task HandleUserUnbanned(SocketUser arg1, SocketGuild arg2) => await arg2.GetTextChannel(294699220743618561).SendMessageAsync("", false, Utilities.Embed("Pardon", $"{arg1} has been unbanned.", new Color(31, 139, 76), "", arg1.GetAvatarUrl()));
 
@@ -80,7 +107,6 @@ namespace Gideon
             await RankHandler.TryToGiveUserXP(context, msg.Author);
 
             int argPos = 0;
-            //IServiceProvider services;
             if (msg.HasStringPrefix("!", ref argPos))
                 await _service.ExecuteAsync(context, argPos, null, MultiMatchHandling.Exception);
 

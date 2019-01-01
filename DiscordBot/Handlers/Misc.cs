@@ -13,7 +13,7 @@ namespace Gideon.Handlers
     [RequireContext(ContextType.Guild)]
 	public class Misc : ModuleBase<SocketCommandContext>
 	{
-		[Command("rolecolors")]
+        [Command("rolecolors")]
 		public async Task DisplayRoleColors()
 		{
 			string s = "";
@@ -42,10 +42,7 @@ namespace Gideon.Handlers
 
         // Reset a game
         [Command("reset")]
-        public async Task ResetAGame() => await MinigameHandler.ResetGame(Context, "");
-
-        [Command("reset")]
-        public async Task ResetAGame([Remainder]string game) => await MinigameHandler.ResetGame(Context, game);
+        public async Task ResetAGame([Remainder]string game = "") => await MinigameHandler.ResetGame(Context, game);
 
         [Command("wsi")]
         public async Task PlayWSI() => await MinigameHandler.WSI.TryToStartGame(Context);
@@ -61,13 +58,9 @@ namespace Gideon.Handlers
 		#endregion
 
 		#region Russian Roulette Commands
-		// RR Menu
+		// RR menu or try to start a game of RR
 		[Command("rr")]
-		public async Task RRMenu() => await MinigameHandler.RR.TryToStartGame(Context, "");
-
-		// Try to start a game of RR
-		[Command("rr")]
-		public async Task RRTryToStart(string input) => await MinigameHandler.RR.TryToStartGame(Context, input);
+		public async Task RRTryToStart(string input = null) => await MinigameHandler.RR.TryToStartGame(Context, input ?? "");
 
 		// Join RR
 		[Command("join rr")]
@@ -78,15 +71,9 @@ namespace Gideon.Handlers
 		public async Task RRPullTrigger() => await MinigameHandler.RR.PullTrigger(Context);
 		#endregion
 
-		#region Trivia Commands
-		// Trivia Menu
+		// Trivia menu & modes
 		[Command("trivia")]
-		public async Task TryToStartTrivia() => await MinigameHandler.Trivia.TryToStartTrivia((SocketGuildUser)Context.User, Context, "trivia");
-
-		// Start Trivia
-		[Command("trivia")]
-		public async Task TryToStartTrivia(string input) => await MinigameHandler.Trivia.TryToStartTrivia((SocketGuildUser)Context.User, Context, input);
-		#endregion
+		public async Task TryToStartTrivia(string input = null) => await MinigameHandler.Trivia.TryToStartTrivia((SocketGuildUser)Context.User, Context, input ?? "trivia");
 
 		#region Number Guess Game Commands
 		// Play NG (Solo)
@@ -181,22 +168,13 @@ namespace Gideon.Handlers
 		public async Task CountUsersOnline() => await Context.Channel.SendMessageAsync($"There are currently {Context.Guild.Users.ToArray().Length} members online.");
 
 		[Command("joined")]
-		public async Task JoinedAt() => await JoinedAt((SocketGuildUser)Context.User);
+		public async Task JoinedAt(SocketGuildUser user = null) => await Context.Channel.SendMessageAsync(StatsHandler.GetJoinedDate(user ?? (SocketGuildUser)Context.User));
 
-		[Command("joined")]
-		public async Task JoinedAt(SocketGuildUser user) => await Context.Channel.SendMessageAsync(StatsHandler.GetJoinedDate(user));
-
-		[Command("created")]
-		public async Task Created() => await Created((SocketGuildUser)Context.User);
-
-		[Command("created")]
-		public async Task Created([Remainder]SocketGuildUser user) => await Context.Channel.SendMessageAsync(StatsHandler.GetCreatedDate(user));
-
-		[Command("avatar")]
-		public async Task GetAvatar() => await GetAvatar((SocketGuildUser)Context.User);
+        [Command("created")]
+		public async Task Created(SocketGuildUser user = null) => await Context.Channel.SendMessageAsync(StatsHandler.GetCreatedDate(user ?? Context.User));
 
         [Command("avatar")]
-        public async Task GetAvatar(SocketGuildUser user) => await Context.Channel.SendMessageAsync("", false, Utilities.ImageEmbed("", "", Utilities.DomColorFromURL(user.GetAvatarUrl()), "", user.GetAvatarUrl()));
+        public async Task GetAvatar(SocketGuildUser user = null) => await Context.Channel.SendMessageAsync("", false, Utilities.ImageEmbed("", "", Utilities.DomColorFromURL((user ?? Context.User).GetAvatarUrl()), "", (user ?? Context.User).GetAvatarUrl().Replace("?size=128", "?size=512")));
 
         #region Coins Related Commands
 
@@ -224,25 +202,21 @@ namespace Gideon.Handlers
 		[Command("coins spawn")]
 		public async Task SpawnCoins(SocketGuildUser user, [Remainder]int amount)
 		{
-			if (354458973572956160 != Context.User.Id) return;
-			await CoinsHandler.SpawnCoins(Context, user, amount);
+            if (!await Utilities.CheckForSuperadmin(Context, Context.User)) return;
+            await CoinsHandler.SpawnCoins(Context, user, amount);
 		}
 
 		// Remove Coins for a user
 		[Command("coins remove")]
 		public async Task RemoveCoins(SocketGuildUser user, [Remainder]int amount)
 		{
-			if (354458973572956160 != Context.User.Id) return;
-			await CoinsHandler.RemoveCoins(Context, user, amount);
+            if (!await Utilities.CheckForSuperadmin(Context, Context.User)) return;
+            await CoinsHandler.RemoveCoins(Context, user, amount);
 		}
 
-		// See how many Coins you have
+		// See how many Coins another user has
 		[Command("coins")]
-		public async Task SeeCoins() => await CoinsHandler.DisplayCoins(Context, (SocketGuildUser)Context.User, Context.Channel);
-
-		// (Overloaded) See how many Coins another user has
-		[Command("coins")]
-		public async Task SeeCoins([Remainder]SocketGuildUser user) => await CoinsHandler.DisplayCoins(Context, user, Context.Channel);
+		public async Task SeeCoins(SocketGuildUser user = null) => await CoinsHandler.DisplayCoins(Context, user ?? (SocketGuildUser)Context.User, Context.Channel);
 
 		// Give Coins to another user (not spawning them)
 		[Command("coins give")]
@@ -262,29 +236,17 @@ namespace Gideon.Handlers
 
 		#endregion
 
-		// View local time for yourself (not sure why)
+		// View local time for a user (if it's set up for them)
 		[Command("time")]
-		public async Task ViewTime() => await StatsHandler.DisplayTime(Context, (SocketGuildUser)Context.User);
+		public async Task ViewTime(SocketGuildUser user = null) => await StatsHandler.DisplayTime(Context, user ?? (SocketGuildUser)Context.User);
 
-		// View local time for a user
-		[Command("time")]
-		public async Task ViewTime(SocketGuildUser user) => await StatsHandler.DisplayTime(Context, user);
-
-		// View your country (not sure why)
+		// View a User's country (if it's set up for them)
 		[Command("country")]
-		public async Task ViewCountry() => await StatsHandler.DisplayCountry(Context, (SocketGuildUser)Context.User);
-
-		// View a User's country
-		[Command("country")]
-		public async Task ViewCountry(SocketGuildUser user) => await StatsHandler.DisplayCountry(Context, user);
-
-		// See stats for yourself
-		[Command("stats")]
-		public async Task DisplayUserStats() => await DisplayUserStats((SocketGuildUser)Context.User);
+		public async Task ViewCountry(SocketGuildUser user = null) => await StatsHandler.DisplayCountry(Context, user ?? (SocketGuildUser)Context.User);
 
 		// See stats for a certain user
 		[Command("stats")]
-		public async Task DisplayUserStats([Remainder]SocketGuildUser user) => await StatsHandler.DisplayUserStats(Context, user);
+		public async Task DisplayUserStats(SocketGuildUser user = null) => await StatsHandler.DisplayUserStats(Context, user ?? (SocketGuildUser)Context.User);
 
         // View custom server emotes
         // broken
@@ -392,28 +354,24 @@ namespace Gideon.Handlers
 
 		// Print a link to Gideon's sourcecode
 		[Command("source")]
+        [Alias("sourcecode", "github", "code")]
 		public async Task GetSourceCode1() => await Context.Channel.SendMessageAsync("https://github.com/WilliamWelsh/GideonBot");
-
-		[Command("sourcecode")]
-		public async Task GetSourceCode2() => await Context.Channel.SendMessageAsync("https://github.com/WilliamWelsh/GideonBot");
 
 		// Display available commands
 		[Command("help")]
 		public async Task Help() => await Context.Channel.SendMessageAsync($"View available commands here:\nhttps://github.com/WilliamWelsh/GideonBot/blob/master/README.md");
 
         // Makes an emoji big, @Elias WE FINALLY DID IT
-        [Command("jumbo")]
-        public async Task Jumbo([Remainder]string input) => await GetEmojiURLS(input);
-
         [Command("url")]
-        public async Task GetEmojiURLS([Remainder]string input)
+        [Alias("jumbo")]
+        public async Task PrintEmojis([Remainder]string input)
         {
             var emojis = input.Split('>');
             foreach (var s in emojis)
-                await GetEmojiURL(s + ">");
+                await PrintEmoji(s + ">");
         }
 
-        private async Task GetEmojiURL(string emoji)
+        private async Task PrintEmoji(string emoji)
         {
             string url = $"https://cdn.discordapp.com/emojis/{Regex.Replace(emoji, "[^0-9.]", "")}.{(emoji.StartsWith("<a:") ? "gif" : "png")}";
             await Context.Channel.SendMessageAsync("", false, Utilities.ImageEmbed("", "", Utilities.DomColorFromURL(url), "", url));
@@ -489,22 +447,16 @@ namespace Gideon.Handlers
             await Context.Channel.SendMessageAsync("Updated user.");
         }
 
-        [Command("level")]
-        public async Task ViewLevel() => await RankHandler.DisplayLevelAndXP(Context, Context.User);
-
-        [Command("level")]
-        public async Task ViewLevel(SocketUser user) => await RankHandler.DisplayLevelAndXP(Context, user);
-
         [Command("xp")]
+        [Alias("level", "rank")]
         public async Task ViewXP() => await RankHandler.DisplayLevelAndXP(Context, Context.User);
 
         [Command("xp")]
+        [Alias("level", "rank")]
         public async Task ViewXP(SocketUser user) => await RankHandler.DisplayLevelAndXP(Context, user);
 
-        [Command("levels")]
-        public async Task ViewLevels() => await ViewRanks();
-
         [Command("ranks")]
+        [Alias("levels")]
         public async Task ViewRanks()
         {
             string ranks = "Level 0-5 Noob\n" +
@@ -515,8 +467,8 @@ namespace Gideon.Handlers
             await Context.Channel.SendMessageAsync("", false, Utilities.Embed("Ranks", ranks, new Color(127, 166, 208), "You get 15-25 xp for sending a message, but only once a minute.", ""));
         }
 
-        [Command("playing")]
-        public async Task ViewRanks(SocketUser user) => await Context.Channel.SendMessageAsync($"{(user.Activity.Name == "" ? "Not currently playing anything." : user.Activity.Name.ToString())}");
+        //[Command("playing")]
+        //public async Task ViewRanks(SocketUser user) => await Context.Channel.SendMessageAsync($"{(user.Activity.Name == "" ? "Not currently playing anything." : user.Activity.Name.ToString())}");
 
         [Command("lb joined")]
         public async Task JoinedLB()
@@ -714,6 +666,28 @@ namespace Gideon.Handlers
         {
             var color = Utilities.DomColorFromURL(url);
             await Context.Channel.SendMessageAsync("", false, Utilities.Embed("Dominant Color", $"The dominant color for the image is:\n\nHexadecimal:\n`#{color.R:X2}{color.G:X2}{color.B:X2}`\n\nRGB:\n`Red: {color.R}`\n`Green: {color.G}`\n`Blue: {color.B}`", color, "", url));
+        }
+
+        [Command("ping")]
+        public async Task Pong() => await Context.Channel.SendMessageAsync("pong!");
+
+        //[Command("join", RunMode = RunMode.Async)]
+        //public async Task JoinVC() => await Config.AudioHandler.Join(Context);
+
+        [Command("userdata")]
+        public async Task DisplayData(SocketUser user = null)
+        {
+            var account = UserAccounts.GetAccount(user ?? Context.User);
+            string data = "```json\n  {\n";
+            data += $"    \"userID\": {(user == null ? Context.User.Id : user.Id)},\n";
+            data += $"    \"coins\": {account.coins},\n";
+            data += $"    \"superadmin\": {account.superadmin.ToString().ToLower()},\n";
+            data += $"    \"localTime\": {account.localTime},\n";
+            data += $"    \"country\": {account.country},\n";
+            data += $"    \"xp\": {account.xp},\n";
+            data += $"    \"level\": {account.level}\n";
+            data += "  }```";
+            await Context.Channel.SendMessageAsync(data);
         }
     }
 }

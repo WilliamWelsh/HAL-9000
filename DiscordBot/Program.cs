@@ -8,7 +8,7 @@ namespace Gideon
 {
     class Program
     {
-        DiscordSocketClient _client;
+        public static DiscordSocketClient _client;
         EventHandler _handler;
 
         static void Main(string[] args) => new Program().StartAsync().GetAwaiter().GetResult();
@@ -26,10 +26,11 @@ namespace Gideon
             await Task.Delay(-1);
         }
 
-        // I hate this warning
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        private async Task Log(LogMessage msg) => Console.WriteLine(msg.Message);
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        private Task Log(LogMessage msg)
+        {
+            Console.WriteLine(msg.Message);
+            return Task.CompletedTask;
+        }
 
         // If someone adds a reaction, check to see if it's for a minigame that's being played
         private async Task OnReactionAdded(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel channel, SocketReaction reaction)

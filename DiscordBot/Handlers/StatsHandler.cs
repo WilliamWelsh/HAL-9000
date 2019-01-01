@@ -8,7 +8,7 @@ namespace Gideon.Handlers
 {
     class StatsHandler
     {
-        public static string GetCreatedDate(SocketGuildUser user)
+        public static string GetCreatedDate(IUser user)
         {
             try
             {
@@ -66,35 +66,37 @@ namespace Gideon.Handlers
         // Get Discord flag emoji for a country
         private static string GetFlag(string country)
         {
-			if (country == "United States")
-				return ":flag_us:";
-			else if (country == "Australia")
-				return ":flag_au:";
-			else if (country == "Sweden")
-				return ":flag_se:";
-			else if (country == "Spain")
-				return ":flag_ea:";
-			else if (country == "United Kingdom")
-				return ":flag_gb:";
-			else if (country == "France")
-				return ":flag_fr:";
-			else if (country == "Bosnia and Herzegovina")
-				return ":flag_ba:";
-			else if (country == "New Zealand")
-				return ":flag_nz:";
-			else if (country == "Philippines")
-				return ":flag_ph:";
-			else if (country == "Canada")
-				return ":flag_ca:";
-			else if (country == "China")
-				return ":flag_cn:";
-			else if (country == "Israel")
-				return ":flag_il:";
-			else if (country == "Indonesia")
-				return ":flag_id:";
-			else if (country == "Scotland")
-				return "<:flag_scotland:518880178999525426>"; // Custom emoji, Discord doesn't seem to have a Scotland flag (unless I'm blind)
-			else return "";
+            if (country == "United States")
+                return ":flag_us:";
+            else if (country == "Australia")
+                return ":flag_au:";
+            else if (country == "Sweden")
+                return ":flag_se:";
+            else if (country == "Spain")
+                return ":flag_ea:";
+            else if (country == "United Kingdom")
+                return ":flag_gb:";
+            else if (country == "France")
+                return ":flag_fr:";
+            else if (country == "Bosnia and Herzegovina")
+                return ":flag_ba:";
+            else if (country == "New Zealand")
+                return ":flag_nz:";
+            else if (country == "Philippines")
+                return ":flag_ph:";
+            else if (country == "Canada")
+                return ":flag_ca:";
+            else if (country == "China")
+                return ":flag_cn:";
+            else if (country == "Israel")
+                return ":flag_il:";
+            else if (country == "Indonesia")
+                return ":flag_id:";
+            else if (country == "Czech Republic")
+                return ":flag_cz:";
+            else if (country == "Scotland")
+                return "<:flag_scotland:518880178999525426>"; // Custom emoji, Discord doesn't seem to have a Scotland flag (unless I'm blind)
+            else return "";
         }
 
         // Display Stats for a user
@@ -106,28 +108,19 @@ namespace Gideon.Handlers
                 .AddField("Joined", GetJoinedDate(user))
                 .AddField("Nickname", user.Nickname ?? "none");
 
-            string roles = "";
-            foreach (SocketRole r in user.Roles) roles += $"{r.Mention}, ";
-            if (roles == "<@&333843634606702602>, ")
-                roles = "none";
-            else
-            {
-                roles = roles.Substring(23, roles.Length - 23); // Remove the @everyone role
-                roles = roles.Substring(0, roles.Length - 2);
-            }
-            if(user.Roles.Count <= 2)
-                embed.AddField("Role", roles);
-            else
-                embed.AddField("Roles", roles);
+            string roles = string.Join(", ", user.Roles);
+
+            // If the user's role description is just "@everyone, " then they have no role, otherwise replace @everyone because that's not a role
+            embed.AddField($"{(user.Roles.Count <= 2 ? "Role" : "Roles")}", roles == "@everyone, " ? "none" : roles.Substring(0, roles.Length - 2).Replace("@everyone, ", ""));
 
             var account = UserAccounts.GetAccount(user);
-            embed.AddField("Coins", account.coins.ToString("#,##0"));
-            embed.AddField("Country", $"{GetFlag(account.country)} {account.country}");
-            embed.AddField("Level", account.level.ToString());
-            embed.AddField("XP", account.xp.ToString("#,##0"));
-            embed.AddField("Local Time", GetTime(user));
-            embed.WithColor(Utilities.DomColorFromURL(user.GetAvatarUrl()));
-            embed.WithThumbnailUrl(user.GetAvatarUrl());
+            embed.AddField("Coins", account.coins.ToString("#,##0"))
+                .AddField("Country", $"{GetFlag(account.country)} {account.country}")
+                .AddField("Level", account.level.ToString())
+                .AddField("XP", account.xp.ToString("#,##0"))
+                .AddField("Local Time", GetTime(user))
+                .WithColor(Utilities.DomColorFromURL(user.GetAvatarUrl()))
+                .WithThumbnailUrl(user.GetAvatarUrl());
             await context.Channel.SendMessageAsync("", false, embed.Build());
         }
     }

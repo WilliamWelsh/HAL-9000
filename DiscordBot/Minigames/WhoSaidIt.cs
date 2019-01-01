@@ -60,15 +60,12 @@ namespace Gideon.Minigames
             for (int i = 0; i < availableOptions.Count; i++)
                 options += $"`{i+1}`. {availableOptions[i]}\n";
 
-            EmbedBuilder embed = new EmbedBuilder();
-            {
-                embed.WithTitle("Who Said It?");
-                embed.WithColor(color);
-                embed.WithFooter($"Only {((SocketGuildUser)context.User).Nickname ?? context.User.Username} can answer.");
-                embed.AddField("Quote", Config.whoSaidItResources.Quotes[quoteIndex].Quote);
-                embed.AddField("Options", options);
-            }
-            await context.Channel.SendMessageAsync("", false, embed.Build());
+            await context.Channel.SendMessageAsync("", false, new EmbedBuilder()
+                .WithTitle("Who Said It?")
+                .WithColor(color)
+                .WithFooter($"Only {((SocketGuildUser)context.User).Nickname ?? context.User.Username} can answer.")
+                .AddField("Options", options)
+                .Build());
         }
 
         public async Task TryToGuess(SocketCommandContext context, int number)

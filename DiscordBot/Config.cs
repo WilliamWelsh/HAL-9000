@@ -7,56 +7,39 @@ namespace Gideon
 {
     class Config
     {
-        private const string configFolder = "Resources";
-        private const string configFile = "config.json";
-        private const string resourcesFile = "resources.json";
-        private const string questionsFile = "questions.json";
-        private const string triviaQuestionsFile = "trivia_questions.json";
-        private const string whoSaidItResourcesFile = "whoSaidIt.json";
-
         public static BotConfig bot;
         public static TriviaQuestions triviaQuestions;
         public static whoSaidItResources whoSaidItResources;
+
+        //public static AudioHandler AudioHandler = new AudioHandler();
 
         static Config()
         {
             RankHandler.Start();
 
-            if (!Directory.Exists(configFolder))
-                Directory.CreateDirectory(configFolder);
+            if (!Directory.Exists("Resources"))
+                Directory.CreateDirectory("Resources");
 
-            if (!File.Exists($"{configFolder}/{configFile}"))
-            {
-                string json = JsonConvert.SerializeObject(bot, Formatting.Indented);
-                File.WriteAllText($"{configFolder}/{configFile}", json);
-            }
-            else
-            {
-                string json = File.ReadAllText($"{configFolder}/{configFile}");
-                bot = JsonConvert.DeserializeObject<BotConfig>(json);
-            }
+            // If the file doesn't exist, WriteAllText with the json
+            // If it exists, deserialize the json into the corresponding object
 
-            if (!File.Exists($"{configFolder}/{triviaQuestionsFile}"))
-            {
-                string json = JsonConvert.SerializeObject(triviaQuestions, Formatting.Indented);
-                File.WriteAllText($"{configFolder}/{triviaQuestionsFile}", json);
-            }
+            // config.json
+            if (!File.Exists("Resources/config.json"))
+                File.WriteAllText("Resources/config.json", JsonConvert.SerializeObject(bot, Formatting.Indented));
             else
-            {
-                string json = File.ReadAllText($"{configFolder}/{triviaQuestionsFile}");
-                triviaQuestions = JsonConvert.DeserializeObject<TriviaQuestions>(json);
-            }
+                bot = JsonConvert.DeserializeObject<BotConfig>(File.ReadAllText("Resources/config.json"));
 
-            if (!File.Exists($"{configFolder}/{whoSaidItResourcesFile}"))
-            {
-                string json = JsonConvert.SerializeObject(whoSaidItResources, Formatting.Indented);
-                File.WriteAllText($"{configFolder}/{whoSaidItResourcesFile}", json);
-            }
+            // trivia_questions.json
+            if (!File.Exists("Resources/trivia_questions.json"))
+                File.WriteAllText("Resources/trivia_questions.json", JsonConvert.SerializeObject(triviaQuestions, Formatting.Indented));
             else
-            {
-                string json = File.ReadAllText($"{configFolder}/{whoSaidItResourcesFile}");
-                whoSaidItResources = JsonConvert.DeserializeObject<whoSaidItResources>(json);
-            }
+                triviaQuestions = JsonConvert.DeserializeObject<TriviaQuestions>(File.ReadAllText("Resources/trivia_questions.json"));
+
+            // whoSaidIt.json
+            if (!File.Exists("Resources/whoSaidIt.json"))
+                File.WriteAllText("Resources/whoSaidIt.json", JsonConvert.SerializeObject(whoSaidItResources, Formatting.Indented));
+            else
+                whoSaidItResources = JsonConvert.DeserializeObject<whoSaidItResources>(File.ReadAllText("Resources/whoSaidIt.json"));
         }
     }
 

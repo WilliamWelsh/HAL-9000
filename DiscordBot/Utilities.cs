@@ -5,8 +5,8 @@ using System.Net;
 using System.Drawing;
 using ColorThiefDotNet;
 using Discord.Commands;
-using System.Threading.Tasks;
 using Discord.WebSocket;
+using System.Threading.Tasks;
 
 namespace Gideon
 {

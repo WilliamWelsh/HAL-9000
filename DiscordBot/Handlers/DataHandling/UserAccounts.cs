@@ -31,7 +31,7 @@ namespace Gideon
                          where a.userID == id
                          select a;
             var account = result.FirstOrDefault();
-            if(account == null)account = CreateUserAccount(id);
+            if (account == null) account = CreateUserAccount(id);
             return account;
         }
 
