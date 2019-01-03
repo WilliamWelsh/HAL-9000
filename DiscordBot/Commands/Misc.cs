@@ -37,8 +37,22 @@ namespace Gideon.Handlers
             await Utilities.SendEmbed(Context.Channel, "Australian Translator", upsideDownText, new Color(1, 33, 105), "", "");
         }
 
-		// Make Gideon say something
-		[Command("say")]
+        [Command("reverse")]
+        public async Task ReverseText([Remainder]string input)
+        {
+            char[] chars = input.ToCharArray();
+            int len = input.Length - 1;
+            for (uint i = 0; i < len; i++, len--)
+            {
+                chars[i] ^= chars[len];
+                chars[len] ^= chars[i];
+                chars[i] ^= chars[len];
+            }
+            await Utilities.SendEmbed(Context.Channel, "Reversed Text", new string(chars), Colors.Blue, "", "");
+        }
+
+        // Make Gideon say something
+        [Command("say")]
 		public async Task Say([Remainder]string message)
 		{
             if (!await Utilities.CheckForSuperadmin(Context, Context.User)) return;
@@ -81,12 +95,13 @@ namespace Gideon.Handlers
 		public async Task GetRandomPerson(SocketGuildUser user)
 		{
 			SocketGuildUser[] s = Context.Guild.Users.ToArray();
-			uint count = 0;
+            uint count = 0;
+            int arraySize = s.Length;
 			bool hasFound = false;
 			do
 			{
 				count++;
-				SocketGuildUser randomUser = s[Utilities.GetRandomNumber(0, s.Length)];
+				SocketGuildUser randomUser = s[Utilities.GetRandomNumber(0, arraySize)];
 				if (randomUser == user) hasFound = true;
 			} while (!hasFound);
 
@@ -152,14 +167,16 @@ namespace Gideon.Handlers
 
 		// Delete a certain amount of messages
 		[Command("delete")]
-		public async Task DeleteMessage([Remainder]string amount)
+		public async Task DeleteMessage(int amount)
 		{
             if (!await Utilities.CheckForSuperadmin(Context, Context.User)) return;
-            //await Context.Channel.DeleteMessageAsync(await Context.Channel.GetMessagesAsync(int.Parse(amount) + 1).Fl);
+            var channel = (ITextChannel)Context.Channel;
+            var messages = await channel.GetMessagesAsync(++amount).Flatten().ToList();
+            await channel.DeleteMessagesAsync(messages);
 		}
 
-		// Nickname a user
-		[Command("nick")]
+        // Nickname a user
+        [Command("nick")]
 		public async Task NicknameUser(SocketGuildUser user, [Remainder]string input)
 		{
             if (!await Utilities.CheckForSuperadmin(Context, Context.User)) return;
@@ -253,11 +270,12 @@ namespace Gideon.Handlers
 			}
 
 			var RGB = Utilities.HexToRGB(input);
-			string result = $"`#{input}` = `{RGB.R}, {RGB.G}, {RGB.B}`\n\n" +
-				$"`Red: {RGB.R}`\n" +
-				$"`Green: {RGB.G}`\n" +
-				$"`Blue: {RGB.B}`\n";
-			await Utilities.SendEmbed(Context.Channel, "Hexadecimal to RGB", result, RGB, "", "");
+            StringBuilder description = new StringBuilder()
+                .AppendLine($"`#{input}` = `{RGB.R}, {RGB.G}, {RGB.B}`").AppendLine()
+                .AppendLine($"`Red: {RGB.R}`")
+                .AppendLine($"`Green: {RGB.G}`")
+                .AppendLine($"`Blue: {RGB.B}`");
+			await Utilities.SendEmbed(Context.Channel, "Hexadecimal to RGB", description.ToString(), RGB, "", "");
 		}
 
 		// Convert an RGB value to a hexadecimal
@@ -318,12 +336,13 @@ namespace Gideon.Handlers
         [Alias("levels")]
         public async Task ViewRanks()
         {
-            string ranks = "Level 0-5 Noob\n" +
-                "Level 6-10 Symbiote\n" +
-                "Level 11-15 Speedster\n" +
-                "Level 16-20 Kaiju Slayer\n" +
-                "Level 21-25 Avenger";
-            await Utilities.SendEmbed(Context.Channel, "Ranks", ranks, Colors.LightBlue, "You get 15-25 xp for sending a message, but only once a minute.", "");
+            StringBuilder ranks = new StringBuilder()
+                .AppendLine("Level 0-5 Noob")
+                .AppendLine("Level 6-10 Symbiote")
+                .AppendLine("Level 11-15 Speedster")
+                .AppendLine("Level 16-20 Kaiju Slayer")
+                .AppendLine("Level 21-25 Avenger");
+            await Utilities.SendEmbed(Context.Channel, "Ranks", ranks.ToString(), Colors.LightBlue, "You get 15-25 xp for sending a message, but only once a minute.", "");
         }
 
         //[Command("playing")]
@@ -356,8 +375,8 @@ namespace Gideon.Handlers
             var list = new List<byte>();
             for (int i = 0; i < input.Length; i += 8)
             {
-                string t = input.Substring(i, 8);
-                list.Add(Convert.ToByte(t, 2));
+                string bit = input.Substring(i, 8);
+                list.Add(Convert.ToByte(bit, 2));
             }
 
             await Utilities.SendEmbed(Context.Channel, "Binary to ASCII Converter", Encoding.ASCII.GetString(list.ToArray()), Colors.Green, "", "");
@@ -416,9 +435,14 @@ namespace Gideon.Handlers
             title = title.Substring(title.IndexOf("commit-title\">") + 14);
             title = title.Substring(0, title.IndexOf("</p>")).Replace(" ", "");
 
-            description = description.Substring(description.IndexOf("<pre>") + 5);
-            description = description.Substring(0, description.IndexOf("</pre>"));
-
+            if (description.Contains("<pre"))
+            {
+                description = description.Substring(description.IndexOf("<pre>") + 5);
+                description = description.Substring(0, description.IndexOf("</pre>"));
+            }
+            else
+                description = "No description.";
+            
             time = time.Substring(time.IndexOf("datetime"));
             time = time.Substring(time.IndexOf(">") + 1);
             time = time.Substring(0, time.IndexOf("</"));
