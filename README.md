@@ -32,8 +32,14 @@ A multi-purpose Discord bot written in C# for my Discord server. The bot is them
 `!someone @mentionedUser` See how many times it takes to find the user randomly.  
 `!australia (text)` Turn text upside down.  
 `!source` or `!sourcecode` View Gideon's source code.  
+#### Leaderboard Commands
+`!lb` View available leaderboards.  
+`!lb joined` View the people who joined the server first.  
+`!lb coins` View the people with the most coins.  
+`!lb created` or `!lb old` View the oldest accounts on the server.  
+`!lb level` View the people with the highest level.  
 #### Misc and Notes
-`!time (user)` (limited) View the local time for a user.  
+[REMOVED FOR NEW BOT] `!time (user)` (limited) View the local time for a user.  
 `!country (user)` (limited) View someone's country.  
 `!alani` Posts a random picture of Alani.  
 `lennyface` Posts a lennyface.  
@@ -47,5 +53,6 @@ A multi-purpose Discord bot written in C# for my Discord server. The bot is them
 `!serverstats` View the server stats.  
 `!bans` View server bans.  
 `!mendesarmy` View everyone on the server that is a fan of Shawn Mendes.  
+`!version` View the latest GitHub commit details & link.  
 
 and many more commands that I don't feel like writing here

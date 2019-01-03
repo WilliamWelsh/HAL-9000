@@ -444,16 +444,16 @@ namespace Gideon.Handlers
         public async Task DisplayData(SocketUser user = null)
         {
             var account = UserAccounts.GetAccount(user ?? Context.User);
-            StringBuilder data = new StringBuilder();
-            data.Append("```json\n  {").AppendLine();
-            data.Append($"    \"userID\": {(user == null ? Context.User.Id : user.Id)},").AppendLine();
-            data.Append($"    \"coins\": {account.coins},").AppendLine();
-            data.Append($"    \"superadmin\": {account.superadmin.ToString().ToLower()},").AppendLine();
-            data.Append($"    \"localTime\": {account.localTime},").AppendLine();
-            data.Append($"    \"country\": {account.country},").AppendLine();
-            data.Append($"    \"xp\": {account.xp},").AppendLine();
-            data.Append($"    \"level\": {account.level}").AppendLine();
-            data.Append("  }```").AppendLine();
+            StringBuilder data = new StringBuilder()
+                .AppendLine("```json\n  {")
+                .AppendLine($"    \"userID\": {(user == null ? Context.User.Id : user.Id)},")
+                .AppendLine($"    \"coins\": {account.coins},")
+                .AppendLine($"    \"superadmin\": {account.superadmin.ToString().ToLower()},")
+                .AppendLine($"    \"localTime\": {account.localTime},")
+                .AppendLine($"    \"country\": {account.country},")
+                .AppendLine($"    \"xp\": {account.xp},")
+                .AppendLine($"    \"level\": {account.level}")
+                .AppendLine("  }```");
             await Context.Channel.SendMessageAsync(data.ToString());
         }
     }

@@ -104,11 +104,11 @@ namespace Gideon.Handlers
         public static async Task DisplayLevelAndXP(SocketCommandContext context, SocketUser user)
         {
             UserAccount account = UserAccounts.GetAccount(user);
-            StringBuilder description = new StringBuilder();
-            description.AppendLine($"Rank: {LevelToRank(account.level)}").AppendLine();
-            description.AppendLine($"Level: {account.level}").AppendLine();
-            description.AppendLine($"Total XP: {account.xp.ToString("#,##0")}").AppendLine();
-            description.AppendLine($"XP until next level: {(account.xp - xpLevel[account.level]).ToString("#,##0")}/{(xpLevel[account.level + 1] - xpLevel[account.level]).ToString("#,##0")}").AppendLine();
+            StringBuilder description = new StringBuilder()
+                .AppendLine($"Rank: {LevelToRank(account.level)}").AppendLine()
+                .AppendLine($"Level: {account.level}").AppendLine()
+                .AppendLine($"Total XP: {account.xp.ToString("#,##0")}").AppendLine()
+                .AppendLine($"XP until next level: {(account.xp - xpLevel[account.level]).ToString("#,##0")}/{(xpLevel[account.level + 1] - xpLevel[account.level]).ToString("#,##0")}").AppendLine();
             Color rankColor = context.Guild.Roles.FirstOrDefault(x => x.Name == LevelToRank(account.level)).Color;
             await Utilities.SendEmbed(context.Channel, $"{(user as SocketGuildUser).Nickname ?? user.Username}'s Level", description.ToString(), rankColor, "", user.GetAvatarUrl());
         }
