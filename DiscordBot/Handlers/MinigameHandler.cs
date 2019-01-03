@@ -8,8 +8,6 @@ namespace Gideon.Handlers
 {
     class MinigameHandler
     {
-        private static readonly Color color = new Color(31, 139, 76);
-        
         public static _8ball _8ball = new _8ball();
         public static Trivia Trivia = new Trivia();
         public static TicTacToe TTT = new TicTacToe();
@@ -21,7 +19,7 @@ namespace Gideon.Handlers
         public static async Task DisplayGames(SocketCommandContext context)
         {
             if (!await Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
-            await context.Channel.SendMessageAsync("", false, Utilities.Embed("MiniGames", "Trivia\n`!trivia`\n\nTic-Tac-Toe\n`!ttt`\n\nNumber Guess\n`!play ng`\n\nRussian Roulette\n`!rr`\n\n8-Ball\n`!8ball`", new Color(31, 139, 76), "", ""));
+            await Utilities.SendEmbed(context.Channel, "MiniGames", "Trivia\n`!trivia`\n\nTic-Tac-Toe\n`!ttt`\n\nNumber Guess\n`!play ng`\n\nRussian Roulette\n`!rr`\n\n8-Ball\n`!8ball`", Colors.Green, "", "");
         }
 
         public async Task TryToStartTrivia(SocketCommandContext context, string input)
@@ -39,27 +37,27 @@ namespace Gideon.Handlers
             if (!await Utilities.CheckForSuperadmin(context, context.User)) return;
             else if (game == "trivia")
             {
-                await context.Channel.SendMessageAsync("", false, Utilities.Embed("MiniGames", $"{context.User.Mention} has reset Trivia.", color, "", ""));
+                await Utilities.SendEmbed(context.Channel, "MiniGames", $"{context.User.Mention} has reset Trivia.", Colors.Green, "", "");
                 Trivia.ResetTrivia();
             }
             else if (game == "rr")
             {
-                await context.Channel.SendMessageAsync("", false, Utilities.Embed("MiniGames", $"{context.User.Mention} has reset Russian Roulette.", color, "", ""));
+                await Utilities.SendEmbed(context.Channel, "MiniGames", $"{context.User.Mention} has reset Russian Roulette.", Colors.Green, "", "");
                 RR.Reset();
             }
             else if (game == "ttt")
             {
-                await context.Channel.SendMessageAsync("", false, Utilities.Embed("MiniGames", $"{context.User.Mention} has reset Tic-Tac-Toe.", color, "", ""));
+                await Utilities.SendEmbed(context.Channel, "MiniGames", $"{context.User.Mention} has reset Tic-Tac-Toe.", Colors.Green, "", "");
                 ResetTTT();
             }
             else if (game == "ng")
             {
-                await context.Channel.SendMessageAsync("", false, Utilities.Embed("MiniGames", $"{context.User.Mention} has reset the Number Guess game.", color, "", ""));
+                await Utilities.SendEmbed(context.Channel, "MiniGames", $"{context.User.Mention} has reset the Number Guess game.", Colors.Green, "", "");
                 NG.Reset();
             }
             else if (game == "wsi")
             {
-                await context.Channel.SendMessageAsync("", false, Utilities.Embed("MiniGames", $"{context.User.Mention} has reset the Who Said It.", color, "", ""));
+                await Utilities.SendEmbed(context.Channel, "MiniGames", $"{context.User.Mention} has reset the Who Said It.", Colors.Green, "", "");
                 WSI.Reset();
             }
             else if (game == "")

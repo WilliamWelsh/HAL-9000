@@ -400,5 +400,3 @@ C:\Users\willi\Documents\repos\GideonBot\DiscordBot\bin\Debug\System.Xml.XmlDocu
 C:\Users\willi\Documents\repos\GideonBot\DiscordBot\bin\Debug\System.Xml.XmlSerializer.dll
 C:\Users\willi\Documents\repos\GideonBot\DiscordBot\bin\Debug\System.Xml.XPath.dll
 C:\Users\willi\Documents\repos\GideonBot\DiscordBot\bin\Debug\System.Xml.XPath.XDocument.dll
-C:\Users\willi\Documents\repos\GideonBot\DiscordBot\bin\Debug\NAudio.dll
-C:\Users\willi\Documents\repos\GideonBot\DiscordBot\bin\Debug\NAudio.xml

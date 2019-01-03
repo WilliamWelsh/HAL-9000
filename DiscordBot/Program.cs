@@ -21,6 +21,7 @@ namespace Gideon
 			_client.ReactionAdded += OnReactionAdded;
 			await _client.LoginAsync(TokenType.Bot, Config.bot.DisordBotToken);
             await _client.StartAsync();
+            await _client.SetGameAsync("users", null, ActivityType.Listening);
             _handler = new EventHandler();
             await _handler.InitializeAsync(_client);
             await Task.Delay(-1);

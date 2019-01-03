@@ -11,8 +11,6 @@ namespace Gideon
         public static TriviaQuestions triviaQuestions;
         public static whoSaidItResources whoSaidItResources;
 
-        //public static AudioHandler AudioHandler = new AudioHandler();
-
         static Config()
         {
             RankHandler.Start();

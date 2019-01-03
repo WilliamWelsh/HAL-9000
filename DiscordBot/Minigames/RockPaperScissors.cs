@@ -13,11 +13,10 @@ namespace Gideon.Minigames
     {
         public ulong MessageID;
         private bool isPlaying;
-        private static readonly Color color = new Color(251, 233, 231);
         private SocketGuildUser Player;
         private List<string> Plays = new List<string>(new string[] { "Rock", "Paper", "Scissors" });
 
-        private Embed embed(string description, string footer) => Utilities.Embed("Rock-Paper-Scissors", description, color, footer, "https://i.imgur.com/VXdDjho.png");
+        private Embed embed(string description, string footer) => Utilities.Embed("Rock-Paper-Scissors", description, Colors.White, footer, "https://i.imgur.com/VXdDjho.png");
 
         public async Task StartRPS(SocketCommandContext context)
         {

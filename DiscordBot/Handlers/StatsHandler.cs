@@ -8,29 +8,8 @@ namespace Gideon.Handlers
 {
     class StatsHandler
     {
-        public static string GetCreatedDate(IUser user)
-        {
-            try
-            {
-                return user.CreatedAt.ToString("MMMM dd, yyy");
-            }
-            catch (Exception)
-            {
-                return "Error finding date.";
-            }
-        }
-
-        public static string GetJoinedDate(SocketGuildUser user)
-        {
-            try
-            {
-                return ((DateTimeOffset)user.JoinedAt).ToString("MMMM dd, yyy");
-            }
-            catch (Exception)
-            {
-                return "Error finding date.";
-            }
-        }
+        public static string GetCreatedDate(IUser user) => user.CreatedAt.ToString("MMMM dd, yyy");
+        public static string GetJoinedDate(SocketGuildUser user) => ((DateTimeOffset)user.JoinedAt).ToString("MMMM dd, yyy");
 
         private static readonly Color timeColor = new Color(127, 166, 208);
         private static string GetTime(SocketGuildUser user)
@@ -53,14 +32,14 @@ namespace Gideon.Handlers
             .Build());
 
         // Display a User's local time
-        public static async Task DisplayTime(SocketCommandContext context, SocketGuildUser user) => await context.Channel.SendMessageAsync("", false, Utilities.Embed("Time Teller", GetTime(user), timeColor, UserAccounts.GetAccount(user).country, ""));
+        //public static async Task DisplayTime(SocketCommandContext context, SocketGuildUser user) => await Utilities.SendEmbed(context.Channel, "Time Teller", GetTime(user), timeColor, UserAccounts.GetAccount(user).country, ""));
 
         // Display a User's country
         public static async Task DisplayCountry(SocketCommandContext context, SocketGuildUser user)
         {
             string country = UserAccounts.GetAccount(user).country;
             string flagEmoji = GetFlag(country);
-            await context.Channel.SendMessageAsync("", false, Utilities.Embed($"{user.Nickname ?? user.Username}'s Country", $"{flagEmoji} {country} {flagEmoji}", Utilities.DomColorFromURL(user.GetAvatarUrl()), "", user.GetAvatarUrl()));
+            await Utilities.SendEmbed(context.Channel, $"{user.Nickname ?? user.Username}'s Country", $"{flagEmoji} {country} {flagEmoji}", Utilities.DomColorFromURL(user.GetAvatarUrl()), "", user.GetAvatarUrl());
         }
 
         // Get Discord flag emoji for a country
@@ -121,7 +100,7 @@ namespace Gideon.Handlers
                 .AddField("Local Time", GetTime(user))
                 .WithColor(Utilities.DomColorFromURL(user.GetAvatarUrl()))
                 .WithThumbnailUrl(user.GetAvatarUrl());
-            await context.Channel.SendMessageAsync("", false, embed.Build());
+            await context.Channel.SendMessageAsync(null, false, embed.Build());
         }
     }
 }

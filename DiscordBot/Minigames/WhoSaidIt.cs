@@ -12,7 +12,7 @@ namespace Gideon.Minigames
     class WhoSaidIt
     {
         public bool isGameGoing = false;
-        private static readonly Color color = new Color(31, 139, 76);
+        private static readonly Color color = Colors.Green;
 
         private List<string> availableOptions = new List<string>();
         private string Speaker;
@@ -77,12 +77,12 @@ namespace Gideon.Minigames
             }
             if (availableOptions.ElementAt(number-1) == Speaker)
             {
-                await context.Channel.SendMessageAsync("", false, Utilities.Embed("Who Said It?", "Correct!", color, $"{((SocketGuildUser)context.User).Nickname ?? context.User.Username} got 1 coin.", ""));
+                await Utilities.SendEmbed(context.Channel, "Who Said It?", "Correct!", color, $"{((SocketGuildUser)context.User).Nickname ?? context.User.Username} got 1 coin.", "");
                 CoinsHandler.AdjustCoins((SocketGuildUser)context.User, 1);
             }
             else
             {
-                await context.Channel.SendMessageAsync("", false, Utilities.Embed("Who Said It?", "Incorrect.", color, $"{((SocketGuildUser)context.User).Nickname ?? context.User.Username} lost 1 coin.", ""));
+                await Utilities.SendEmbed(context.Channel, "Who Said It?", "Incorrect.", color, $"{((SocketGuildUser)context.User).Nickname ?? context.User.Username} lost 1 coin.", "");
                 CoinsHandler.AdjustCoins((SocketGuildUser)context.User, -1);
             }
             Reset();

@@ -11,7 +11,7 @@ namespace Gideon.Minigames
 {
     class Trivia
     {
-        private static readonly Color color = new Color(31, 139, 76);
+        private static readonly Color color = Colors.Green;
         private bool isTriviaBeingPlayed = false;
         private SocketGuildUser Player = null;
         private string correctAnswer, triviaMode;

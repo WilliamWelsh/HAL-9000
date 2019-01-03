@@ -1,4 +1,5 @@
 ﻿using Discord;
+using System.Text;
 using System.Linq;
 using System.Timers;
 using Discord.Commands;
@@ -59,39 +60,39 @@ namespace Gideon.Handlers
 
         private static async Task Rankup(SocketCommandContext context, SocketUser user, uint level)
         {
-            string desc = $"{user.Mention} has leveled up to {level}.";
+            StringBuilder description = new StringBuilder().Append($"{user.Mention} has leveled up to {level}.");
             if (level == 1)
             {
-                desc += $" {user.Mention} is now a Noob.";
+                description.Append($" {user.Mention} is now a Noob.");
                 await (user as IGuildUser).AddRoleAsync(context.Guild.Roles.FirstOrDefault(x => x.Name == "Noob"));
             }
             else if (level == 6)
             {
-                desc += $" {user.Mention} is now a Symbiote.";
+                description.Append($" {user.Mention} is now a Symbiote.");
                 await AddRole(context, user, "Noob", "Symbiote");
             }
             else if (level == 11)
             {
-                desc += $" {user.Mention} is now a Speedster.";
+                description.Append($" {user.Mention} is now a Speedster.");
                 await AddRole(context, user, "Symbiote", "Speedster");
             }
             else if (level == 16)
             {
-                desc += $" {user.Mention} is now a Kaiju Slayer.";
+                description.Append($" {user.Mention} is now a Kaiju Slayer.");
                 await AddRole(context, user, "Speedster", "Kaiju Slayer");
             }
             else if (level == 21)
             {
-                desc += $" {user.Mention} is now an Avenger.";
+                description.Append($" {user.Mention} is now an Avenger.");
                 await AddRole(context, user, "Kaiju Slayer", "Avenger");
             }
-            await context.Channel.SendMessageAsync("", false, Utilities.Embed("Level Up", desc, Utilities.DomColorFromURL(user.GetAvatarUrl()), "", user.GetAvatarUrl()));
+            await Utilities.SendEmbed(context.Channel, "Level Up", description.ToString(), Utilities.DomColorFromURL(user.GetAvatarUrl()), "", user.GetAvatarUrl());
         }
 
         // I stole the MEE6 bot's XP amounts for their level system because it's pretty good
         // https://mee6.github.io/Mee6-documentation/levelxp/
         static uint[] xpLevel = { 0, 100, 255, 475, 770, 1150, 1625, 2205, 2900, 3720, 4675, 5775, 7030, 8450, 10045, 11825, 13800, 15900, 18375, 20995, 23850,
-        26950, 30305, 33925, 37820, 42000, 46475, 51255, 56350, 61770, 67525};
+        26950, 30305, 33925, 37820, 42000, 46475, 51255, 56350, 61770, 67525, 73625, 80080, 86900, 94095, 101675, 109650, 118030, 126825, 136045, 145700};
 
         public static async Task CheckXP(SocketCommandContext context, SocketUser user)
         {
@@ -103,8 +104,13 @@ namespace Gideon.Handlers
         public static async Task DisplayLevelAndXP(SocketCommandContext context, SocketUser user)
         {
             UserAccount account = UserAccounts.GetAccount(user);
-            string desc = $"Rank: {LevelToRank(account.level)}\n\nLevel: {account.level}\n\nTotal XP: {account.xp.ToString("#,##0")}\n\nXP until next level: {(account.xp- xpLevel[account.level]).ToString("#,##0")}/{(xpLevel[account.level + 1]-xpLevel[account.level]).ToString("#,##0")}";
-            await context.Channel.SendMessageAsync("", false, Utilities.Embed($"{(user as SocketGuildUser).Nickname ?? user.Username}'s Level", desc, context.Guild.Roles.FirstOrDefault(x => x.Name == LevelToRank(account.level)).Color, "", user.GetAvatarUrl()));
+            StringBuilder description = new StringBuilder();
+            description.AppendLine($"Rank: {LevelToRank(account.level)}").AppendLine();
+            description.AppendLine($"Level: {account.level}").AppendLine();
+            description.AppendLine($"Total XP: {account.xp.ToString("#,##0")}").AppendLine();
+            description.AppendLine($"XP until next level: {(account.xp - xpLevel[account.level]).ToString("#,##0")}/{(xpLevel[account.level + 1] - xpLevel[account.level]).ToString("#,##0")}").AppendLine();
+            Color rankColor = context.Guild.Roles.FirstOrDefault(x => x.Name == LevelToRank(account.level)).Color;
+            await Utilities.SendEmbed(context.Channel, $"{(user as SocketGuildUser).Nickname ?? user.Username}'s Level", description.ToString(), rankColor, "", user.GetAvatarUrl());
         }
 
         public static string LevelToRank(uint level)

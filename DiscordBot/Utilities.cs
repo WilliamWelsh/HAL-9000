@@ -44,17 +44,19 @@ namespace Gideon
             .Build();
 
         // Print an error
-        public static async Task PrintError(ISocketMessageChannel channel, string description) => await channel.SendMessageAsync("", false, Embed("Error", description, new Discord.Color(227, 37, 39), "", ""));
+        public static async Task PrintError(ISocketMessageChannel channel, string description) => await SendEmbed(channel, "Error", description, Colors.Red, "", "");
 
         // Get a dominant color from an image (url)
         public static Discord.Color DomColorFromURL(string url)
         {
             byte[] bytes = webClient.DownloadData(url);
-            MemoryStream ms = new MemoryStream(bytes);
-            Bitmap bitmap = new Bitmap(System.Drawing.Image.FromStream(ms));
-
-            // Remove the '#' from the string and get the hexadecimal
-            return HexToRGB(colorThief.GetColor(bitmap).Color.ToString().Substring(1));
+            using (webClient)
+            using (MemoryStream ms = new MemoryStream(bytes))
+            using (Bitmap bitmap = new Bitmap(System.Drawing.Image.FromStream(ms)))
+            {
+                // Remove the '#' from the string and get the hexadecimal
+                return HexToRGB(colorThief.GetColor(bitmap).Color.ToString().Substring(1));
+            }
         }
 
 		// Convert a hexidecimal to an RGB value (input does not include the '#')
@@ -88,6 +90,12 @@ namespace Gideon
                 return true;
             await PrintError(context.Channel, $"Please use the {context.Guild.GetTextChannel(requiredChannel).Mention} chat for that, {user.Mention}.");
             return false;
+        }
+
+        // Send an embed to a channel
+        public static async Task SendEmbed(ISocketMessageChannel channel, string title, string description, Discord.Color color, string footer, string thumbnailURL)
+        {
+            await channel.SendMessageAsync(null, false, Embed(title, description, color, footer, thumbnailURL));
         }
     }
 }

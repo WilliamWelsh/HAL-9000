@@ -11,7 +11,6 @@ namespace Gideon.Minigames
 {
     class NumberGuess
     {
-        private static readonly Color color = new Color(0, 0, 0);
         private int number, playerSlots = 2;
         private struct Player { public SocketGuildUser user; public bool hasAnswered; public int guess; };
         private List<Player> Players = new List<Player>();
@@ -23,7 +22,7 @@ namespace Gideon.Minigames
             var embed = new EmbedBuilder()
                 .WithTitle("Number Guess")
                 .WithDescription(description)
-                .WithColor(color)
+                .WithColor(Colors.Black)
                 .WithFooter(footer);
             if (showPlayers)
             {
