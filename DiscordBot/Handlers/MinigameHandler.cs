@@ -8,7 +8,6 @@ namespace Gideon.Handlers
 {
     class MinigameHandler
     {
-        public static _8ball _8ball = new _8ball();
         public static Trivia Trivia = new Trivia();
         public static TicTacToe TTT = new TicTacToe();
         public static WhoSaidIt WSI = new WhoSaidIt();

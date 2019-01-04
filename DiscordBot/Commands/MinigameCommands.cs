@@ -72,11 +72,11 @@ namespace Gideon.Handlers
         #region 8-Ball Commands
         // Display 8-Ball instructions
         [Command("8ball")]
-        public async Task Play8Ball() => await MinigameHandler._8ball.Greet8Ball(Context);
+        public async Task Play8Ball() => await Minigames._8ball.Greet8Ball(Context);
 
         // Print 8-ball menu or play 8-Ball
         [Command("8ball")]
-        public async Task Play8Ball([Remainder]string question) => await MinigameHandler._8ball.Play8Ball(Context);
+        public async Task Play8Ball([Remainder]string question) => await Minigames._8ball.Play8Ball(Context);
         #endregion
 
     }
