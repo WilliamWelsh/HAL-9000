@@ -1,6 +1,9 @@
 # Gideon Bot
 A multi-purpose Discord bot written in C# for my Discord server. The bot is themed and tailored for this specific server. This bot has several uses such as games, moderation tools, useful tools and resources, and pointless statistical data.  
-[<img src="https://discordapp.com/api/guilds/294699220743618561/widget.png?style=shield">](https://discord.gg/qsc8YMS) <img src="https://img.shields.io/badge/discord-csharp-blue.svg">
+[<img src="https://discordapp.com/api/guilds/294699220743618561/widget.png?style=shield">](https://discord.gg/qsc8YMS)
+<img src="https://img.shields.io/badge/discord-csharp-blue.svg">
+[![DiscordDotNet](https://img.shields.io/myget/discord-net/vpre/Discord.Net.svg)](https://www.nuget.org/packages/Discord.Net) 
+[![Open Source Love svg2](https://badges.frapsoft.com/os/v2/open-source.svg?v=103)](https://github.com/ellerbrock/open-source-badges/)
 
 ## Commands
 ##### Resources
@@ -54,5 +57,6 @@ A multi-purpose Discord bot written in C# for my Discord server. The bot is them
 `!bans` View server bans.  
 `!mendesarmy` View everyone on the server that is a fan of Shawn Mendes.  
 `!version` View the latest GitHub commit details & link.  
+`!reverse (text)`  Reverse text.  
 
 and many more commands that I don't feel like writing here
