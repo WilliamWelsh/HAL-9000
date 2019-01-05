@@ -52,12 +52,6 @@ namespace Gideon.Handlers
         [Command("avatar")]
         public async Task GetAvatar(SocketGuildUser user = null) => await Context.Channel.SendMessageAsync("", false, Utilities.ImageEmbed("", "", Utilities.DomColorFromURL((user ?? Context.User).GetAvatarUrl()), "", (user ?? Context.User).GetAvatarUrl().Replace("?size=128", "?size=512")));
 
-        // Disabled !time because I use my new TimeBot so other servers can use it
-        // TimeBot: https://github.com/WilliamWelsh/TimeBot
-        // View local time for a user (if it's set up for them)
-        //[Command("time")]
-        //public async Task ViewTime(SocketGuildUser user = null) => await StatsHandler.DisplayTime(Context, user ?? (SocketGuildUser)Context.User);
-
         // View a User's country (if it's set up for them)
         [Command("country")]
 		public async Task ViewCountry(SocketGuildUser user = null) => await StatsHandler.DisplayCountry(Context, user ?? (SocketGuildUser)Context.User);
@@ -192,17 +186,17 @@ namespace Gideon.Handlers
         [Command("rgb")]
 		public async Task HexToRGB(string input)
 		{
-			input = input.Replace("#", "");
+			var hex = input.Replace("#", "");
 
-			if (!new Regex("^[a-zA-Z0-9]*$").IsMatch(input) || input.Length != 6)
+			if (!new Regex("^[a-zA-Z0-9]*$").IsMatch(hex) || hex.Length != 6)
 			{
                 await Utilities.PrintError(Context.Channel, $"Please enter a valid hexadecimal, {Context.User.Mention}.");
 				return;
 			}
 
-			var RGB = Utilities.HexToRGB(input);
+			var RGB = Utilities.HexToRGB(hex);
             StringBuilder description = new StringBuilder()
-                .AppendLine($"`#{input}` = `{RGB.R}, {RGB.G}, {RGB.B}`").AppendLine()
+                .AppendLine($"`#{hex}` = `{RGB.R}, {RGB.G}, {RGB.B}`").AppendLine()
                 .AppendLine($"`Red: {RGB.R}`")
                 .AppendLine($"`Green: {RGB.G}`")
                 .AppendLine($"`Blue: {RGB.B}`");
@@ -275,9 +269,6 @@ namespace Gideon.Handlers
                 .AppendLine("Level 21-25 Avenger");
             await Utilities.SendEmbed(Context.Channel, "Ranks", ranks.ToString(), Colors.LightBlue, "You get 15-25 xp for sending a message, but only once a minute.", "");
         }
-
-        //[Command("playing")]
-        //public async Task ViewRanks(SocketUser user) => await Context.Channel.SendMessageAsync($"{(user.Activity.Name == "" ? "Not currently playing anything." : user.Activity.Name.ToString())}");
 
         // Show everyone on the server who is a fan of Shawn Mendes
         [Command("mendesarmy")]

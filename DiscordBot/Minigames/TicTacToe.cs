@@ -128,10 +128,10 @@ namespace Gideon.Minigames
 				boardSlots[0] == letter && boardSlots[4] == letter && boardSlots[8] == letter ||
 				boardSlots[6] == letter && boardSlots[4] == letter && boardSlots[2] == letter)
 
-				await DeclareWinner(channel, letter);
+				await DeclareWinner(letter);
 		}
 
-		private async Task DeclareWinner(ISocketMessageChannel channel, string letter)
+		private async Task DeclareWinner(string letter)
 		{
 			SocketGuildUser winner = letter == ":x:" ? Player1 : Player2;
 			await m.ModifyAsync(m => { m.Content = $"{winner.Mention} has won!\n\n{writeBoard}"; });

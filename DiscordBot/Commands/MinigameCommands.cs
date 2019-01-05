@@ -58,7 +58,7 @@ namespace Gideon.Handlers
 
         // Play NG (2+ players)
         [Command("play ng")]
-        public async Task PlayNG(int input) => await MinigameHandler.NG.TryToStartGame(Utilities.GetRandomNumber(1, 100), (SocketGuildUser)Context.User, Context, input);
+        public async Task PlayNG(int input) => await MinigameHandler.NG.TryToStartGame(Utilities.GetRandomNumber(1, 100), (SocketGuildUser)Context.User, Context, input).ConfigureAwait(false);
 
         // Join NG
         [Command("join ng")]

@@ -11,7 +11,6 @@ namespace Gideon.Handlers
         public static string GetCreatedDate(IUser user) => user.CreatedAt.ToString("MMMM dd, yyy");
         public static string GetJoinedDate(SocketGuildUser user) => ((DateTimeOffset)user.JoinedAt).ToString("MMMM dd, yyy");
 
-        private static readonly Color timeColor = new Color(127, 166, 208);
         private static string GetTime(SocketGuildUser user)
         {
             if (UserAccounts.GetAccount(user).localTime == 999)
@@ -30,9 +29,6 @@ namespace Gideon.Handlers
             .WithColor(Utilities.DomColorFromURL(context.Guild.IconUrl))
             .WithThumbnailUrl(context.Guild.IconUrl)
             .Build());
-
-        // Display a User's local time
-        //public static async Task DisplayTime(SocketCommandContext context, SocketGuildUser user) => await Utilities.SendEmbed(context.Channel, "Time Teller", GetTime(user), timeColor, UserAccounts.GetAccount(user).country, ""));
 
         // Display a User's country
         public static async Task DisplayCountry(SocketCommandContext context, SocketGuildUser user)

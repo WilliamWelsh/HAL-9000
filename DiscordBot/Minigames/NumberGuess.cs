@@ -9,10 +9,21 @@ using System.Collections.Generic;
 
 namespace Gideon.Minigames
 {
+    class Player : IEquatable<Player>
+    {
+        public SocketGuildUser user { get; set; }
+        public bool hasAnswered { get; set; }
+        public int guess { get; set; }
+
+        public bool Equals(Player other)
+        {
+            throw new NotImplementedException();
+        }
+    }
     class NumberGuess
     {
         private int number, playerSlots = 2;
-        private struct Player { public SocketGuildUser user; public bool hasAnswered; public int guess; };
+        //private struct Player { public SocketGuildUser user; public bool hasAnswered; public int guess; };
         private List<Player> Players = new List<Player>();
 
         public bool isGamingGoing;

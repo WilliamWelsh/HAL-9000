@@ -1,4 +1,5 @@
 ﻿using Discord;
+using System.Text;
 using System.Linq;
 using Gideon.Handlers;
 using Discord.Commands;
@@ -27,9 +28,9 @@ namespace Gideon.Minigames
                 .WithFooter(footer);
             if (showPlayers)
             {
-                string PlayerDesc = "";
+                StringBuilder PlayerDesc = new StringBuilder();
                 for (int i = 0; i < Players.Count; i++)
-                    PlayerDesc += $"Player {i + 1}: {Players.ElementAt(i).Mention}\n";
+                    PlayerDesc.AppendLine($"Player {i + 1}: {Players.ElementAt(i).Mention}");
                 embed.AddField("Players", PlayerDesc);
             }
             return embed.Build();

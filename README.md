@@ -2,8 +2,8 @@
 A multi-purpose Discord bot written in C# for my Discord server. The bot is themed and tailored for this specific server. This bot has several uses such as games, moderation tools, useful tools and resources, and pointless statistical data.  
 [<img src="https://discordapp.com/api/guilds/294699220743618561/widget.png?style=shield">](https://discord.gg/qsc8YMS)
 <img src="https://img.shields.io/badge/discord-csharp-blue.svg">
-[![DiscordDotNet](https://img.shields.io/myget/discord-net/vpre/Discord.Net.svg)](https://www.nuget.org/packages/Discord.Net) 
-[![Open Source Love svg2](https://badges.frapsoft.com/os/v2/open-source.svg?v=103)](https://github.com/ellerbrock/open-source-badges/)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/6f301f18d76c44afa076f72d30cbf5ba)](https://www.codacy.com/app/WilliamWelsh/GideonBot?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=WilliamWelsh/GideonBot&amp;utm_campaign=Badge_Grade)
+[![Build status](https://ci.appveyor.com/api/projects/status/bddk0drfmf5sy2fk?svg=true)](https://ci.appveyor.com/project/WilliamWelsh/gideonbot)
 
 ## Commands
 ##### Resources
@@ -42,7 +42,7 @@ A multi-purpose Discord bot written in C# for my Discord server. The bot is them
 `!lb created` or `!lb old` View the oldest accounts on the server.  
 `!lb level` View the people with the highest level.  
 #### Misc and Notes
-[REMOVED FOR NEW BOT] `!time (user)` (limited) View the local time for a user.  
+DISABLED `!time (user)` (limited) View the local time for a user.  
 `!country (user)` (limited) View someone's country.  
 `!alani` Posts a random picture of Alani.  
 `lennyface` Posts a lennyface.  

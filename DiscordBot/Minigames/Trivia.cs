@@ -100,7 +100,6 @@ namespace Gideon.Minigames
         {
             if (user == Player && triviaMode == "solo")
             {
-                string name = user.Nickname != null ? user.Nickname : user.ToString();
                 if (input == correctAnswer)
                 {
                     await context.Channel.SendMessageAsync("", false, Embed("Correct.", $"{GetName(user)} has been awarded 1 coin."));

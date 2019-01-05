@@ -8,7 +8,7 @@ namespace Gideon
 {
     class Program
     {
-        public static DiscordSocketClient _client;
+        public DiscordSocketClient _client;
         EventHandler _handler;
 
         static void Main(string[] args) => new Program().StartAsync().GetAwaiter().GetResult();

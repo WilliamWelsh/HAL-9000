@@ -1,5 +1,6 @@
 ﻿using System;
 using Discord;
+using System.Text;
 using System.Linq;
 using Gideon.Handlers;
 using Discord.Commands;
@@ -12,12 +13,11 @@ namespace Gideon.Minigames
     class WhoSaidIt
     {
         public bool isGameGoing = false;
-        private static readonly Color color = Colors.Green;
 
         private List<string> availableOptions = new List<string>();
         private string Speaker;
 
-        private static SocketUser Player;
+        private SocketUser Player;
 
         public async Task TryToStartGame(SocketCommandContext context)
         {
@@ -31,7 +31,6 @@ namespace Gideon.Minigames
             isGameGoing = true;
             Player = context.User;
             int quoteIndex = Utilities.GetRandomNumber(0, Config.whoSaidItResources.Quotes.Count);
-            string options = "";
 
             Speaker = Config.whoSaidItResources.Quotes[quoteIndex].Speaker;
             availableOptions.Add(Speaker);
@@ -57,12 +56,13 @@ namespace Gideon.Minigames
             }
 
             // Write options
+            StringBuilder options = new StringBuilder();
             for (int i = 0; i < availableOptions.Count; i++)
-                options += $"`{i+1}`. {availableOptions[i]}\n";
+                options.AppendLine($"`{i+1}`. {availableOptions[i]}");
 
             await context.Channel.SendMessageAsync("", false, new EmbedBuilder()
                 .WithTitle("Who Said It?")
-                .WithColor(color)
+                .WithColor(Colors.Green)
                 .WithFooter($"Only {((SocketGuildUser)context.User).Nickname ?? context.User.Username} can answer.")
                 .AddField("Options", options)
                 .Build());
@@ -77,12 +77,12 @@ namespace Gideon.Minigames
             }
             if (availableOptions.ElementAt(number-1) == Speaker)
             {
-                await Utilities.SendEmbed(context.Channel, "Who Said It?", "Correct!", color, $"{((SocketGuildUser)context.User).Nickname ?? context.User.Username} got 1 coin.", "");
+                await Utilities.SendEmbed(context.Channel, "Who Said It?", "Correct!", Colors.Green, $"{((SocketGuildUser)context.User).Nickname ?? context.User.Username} got 1 coin.", "");
                 CoinsHandler.AdjustCoins((SocketGuildUser)context.User, 1);
             }
             else
             {
-                await Utilities.SendEmbed(context.Channel, "Who Said It?", "Incorrect.", color, $"{((SocketGuildUser)context.User).Nickname ?? context.User.Username} lost 1 coin.", "");
+                await Utilities.SendEmbed(context.Channel, "Who Said It?", "Incorrect.", Colors.Green, $"{((SocketGuildUser)context.User).Nickname ?? context.User.Username} lost 1 coin.", "");
                 CoinsHandler.AdjustCoins((SocketGuildUser)context.User, -1);
             }
             Reset();
