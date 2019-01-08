@@ -28,6 +28,10 @@ namespace Gideon.Handlers
         public async Task TryToStartTrivia(string input = null) => await MinigameHandler.Trivia.TryToStartTrivia((SocketGuildUser)Context.User, Context, input ?? "trivia");
 
         #region Tic-Tac-Toe Commands
+        // Start a game of Unbeatable Tic-Tac-Toe
+        [Command("uttt")]
+        public async Task StartUnbeatableTicTacToe() => await MinigameHandler.StartUTTT(Context);
+
         // Tic-Tac-Toe Menu/Start Game
         [Command("ttt")]
         public async Task TTTMenu() => await MinigameHandler.TTT.StartGame(Context);

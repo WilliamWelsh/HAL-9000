@@ -5,8 +5,8 @@ using System.Linq;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Net.Http;
 
 namespace Gideon.Handlers
 {
@@ -111,51 +111,6 @@ namespace Gideon.Handlers
 
 		[Command("gideon")]
 		public async Task GideonGreet() => await Context.Channel.SendMessageAsync($"Greetings. How may I be of service, {Context.User.Mention}?\n`!help`");
-
-		// View Stats for a movie
-		[Command("movie")]
-		public async Task SearchMovie([Remainder]string search)
-		{
-			MediaFetchHandler.Movie media = MediaFetchHandler.FetchMovie(search);
-
-			string RTScore = "N/A", IMDBScore;
-
-			for (int i = 0; i < media.Ratings.Length; i++)
-				if (media.Ratings[i].Source == "Rotten Tomatoes") RTScore = media.Ratings[i].Value;
-
-			IMDBScore = media.imdbRating == "N/A" ? "N/A" : $"{media.imdbRating}/10";
-
-			await Context.Channel.SendMessageAsync(null, false, new EmbedBuilder()
-                .WithTitle($":film_frames: {media.Title} ({media.Year})")
-                .WithThumbnailUrl(media.Poster)
-                .WithDescription(media.Plot)
-                .AddField("Director", media.Director)
-                .AddField("Runtime", media.Runtime)
-                .AddField("Box Office", media.BoxOffice)
-                .AddField("IMDB Score", IMDBScore)
-                .AddField("Rotten Tomatoes", RTScore)
-                .WithColor(Utilities.DomColorFromURL(media.Poster))
-                .Build());
-		}
-
-		// View stats for a TV show
-		[Command("tv")]
-		public async Task SearchShows([Remainder]string search)
-		{
-			MediaFetchHandler.Movie media = MediaFetchHandler.FetchMovie(search);
-
-			string IMDBScore = media.imdbRating == "N/A" ? "N/A" : $"{media.imdbRating}/10";
-			media.Year = media.Year.Replace("â€“", "-");
-
-			await Context.Channel.SendMessageAsync(null, false, new EmbedBuilder()
-                .WithTitle($":film_frames: {media.Title} ({media.Year})")
-                .WithThumbnailUrl(media.Poster)
-                .WithDescription(media.Plot)
-                .AddField("Runtime", media.Runtime)
-                .AddField("IMDB Score", IMDBScore)
-                .WithColor(Utilities.DomColorFromURL(media.Poster))
-                .Build());
-		}
 
 		// Print a link to Gideon's sourcecode
 		[Command("source")]
@@ -367,6 +322,17 @@ namespace Gideon.Handlers
                 .AppendLine($"    \"level\": {account.level}")
                 .AppendLine("  }```");
             await Context.Channel.SendMessageAsync(data.ToString());
+        }
+
+        [Command("create emote")]
+        public async Task MakEmote(string url, string name)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                var response = await client.GetAsync(new Uri(url));
+                var emote = await Context.Guild.CreateEmoteAsync(name, new Image(await response.Content.ReadAsStreamAsync()));
+                await Context.Channel.SendMessageAsync($"Created: {emote}");
+            }
         }
     }
 }

@@ -36,10 +36,13 @@ namespace Gideon
         // If someone adds a reaction, check to see if it's for a minigame that's being played
         private async Task OnReactionAdded(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel channel, SocketReaction reaction)
 		{
-			if (MinigameHandler.RPS.MessageID == reaction.MessageId)
-				await MinigameHandler.RPS.ViewPlay(reaction.Emote.ToString(), channel, reaction.User);
-			else
-				await MinigameHandler.TTT.Play(reaction, channel, reaction.User);
+            //if (MinigameHandler.RPS.MessageID == reaction.MessageId)
+            //    await MinigameHandler.RPS.ViewPlay(reaction.Emote.ToString(), channel, reaction.User);
+            //else if (MinigameHandler.TTT.m.Id == reaction.MessageId)
+            //    await MinigameHandler.TTT.Play(reaction, channel, reaction.User);
+            //else
+            Console.WriteLine("Reaction");
+            await MinigameHandler.UnbeatableTTT.Play(reaction, channel, reaction.User);
 		}
 	}
 }

@@ -195,12 +195,12 @@
     <Compile Include="Handlers\MinigameHandler.cs" />
     <Compile Include="Handlers\RankHandler.cs" />
     <Compile Include="Handlers\StatsHandler.cs" />
-    <Compile Include="Handlers\MediaFetchHandler.cs" />
     <Compile Include="Minigames\8ball.cs" />
     <Compile Include="Minigames\NumberGuess.cs" />
     <Compile Include="Minigames\RockPaperScissors.cs" />
     <Compile Include="Minigames\RussianRoulette.cs" />
     <Compile Include="Minigames\TicTacToe.cs" />
+    <Compile Include="Minigames\UnbeatableTicTacToe.cs" />
     <Compile Include="Minigames\WhoSaidIt.cs" />
     <Compile Include="Minigames\Trivia.cs" />
     <Compile Include="Commands\Misc.cs" />

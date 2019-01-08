@@ -1,5 +1,6 @@
 ﻿using System;
 using Discord;
+using System.Text;
 using System.Linq;
 using Gideon.Handlers;
 using Discord.Commands;
@@ -17,13 +18,12 @@ namespace Gideon.Minigames
 
         public bool Equals(Player other)
         {
-            throw new NotImplementedException();
+            return user.Id == other.user.Id;
         }
     }
     class NumberGuess
     {
         private int number, playerSlots = 2;
-        //private struct Player { public SocketGuildUser user; public bool hasAnswered; public int guess; };
         private List<Player> Players = new List<Player>();
 
         public bool isGamingGoing;
@@ -37,9 +37,9 @@ namespace Gideon.Minigames
                 .WithFooter(footer);
             if (showPlayers)
             {
-                string PlayerDesc = "";
+                StringBuilder PlayerDesc = new StringBuilder();
                 for (int i = 0; i < Players.Count; i++)
-                    PlayerDesc += $"Player {i + 1}: {(Players.ElementAt(i).user.Nickname ?? Players.ElementAt(i).user.Username)}\n";
+                    PlayerDesc.AppendLine($"Player {i + 1}: {(Players.ElementAt(i).user.Nickname ?? Players.ElementAt(i).user.Username)}");
                 embed.AddField("Players", PlayerDesc);
             }
             return embed.Build();
@@ -136,7 +136,7 @@ namespace Gideon.Minigames
                 return;
             }
 
-            string Description = $"Everyone has answered!\n\nThe answer was...{number}!\n\n";
+            StringBuilder Description = new StringBuilder().AppendLine($"Everyone has answered!\n\nThe answer was...{number}!").AppendLine();
             bool lost10 = false;
             bool didSomeoneGetIt = false;
             SocketGuildUser winner = null;
@@ -145,8 +145,8 @@ namespace Gideon.Minigames
                 if (Players.ElementAt(i).guess == number)
                 {
                     didSomeoneGetIt = true;
-                    Description += $"{Players.ElementAt(i).user.Mention} got it exactly right and won {100 + (2* playerSlots)} Coins!";
-                    Description += "\n\nEveryone else lost 10 coins!";
+                    Description.AppendLine($"{Players.ElementAt(i).user.Mention} got it exactly right and won {100 + (2* playerSlots)} Coins!").AppendLine();
+                    Description.AppendLine("Everyone else lost 10 coins!");
                     lost10 = true;
                     embed.WithFooter("100 + 2 * Players played.");
                     CoinsHandler.AdjustCoins(Players.ElementAt(i).user, 100 + (2 * playerSlots));
@@ -163,14 +163,14 @@ namespace Gideon.Minigames
                 {
                     if (Players.ElementAt(i).guess == Closest)
                     {
-                        Description += $"{Players.ElementAt(i).user.Mention} got the closest with {Players.ElementAt(i).guess}!";
-                        Description += "\n\nEveryone else lost 1 coin.";
+                        Description.AppendLine($"{Players.ElementAt(i).user.Mention} got the closest with {Players.ElementAt(i).guess}!").AppendLine();
+                        Description.AppendLine("Everyone else lost 1 coin.");
                         winner = Players.ElementAt(i).user;
                         break;
                     }
                 }
             }
-            embed.WithDescription(Description);
+            embed.WithDescription(Description.ToString());
 
             for (int i = 0; i < Players.Count; i++)
                 if (!(winner == Players.ElementAt(i).user))

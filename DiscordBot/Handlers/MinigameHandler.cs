@@ -14,6 +14,7 @@ namespace Gideon.Handlers
         public static NumberGuess NG = new NumberGuess();
         public static RussianRoulette RR = new RussianRoulette();
         public static RockPaperScissors RPS = new RockPaperScissors();
+        public static UnbeatableTicTacToe UnbeatableTTT = new UnbeatableTicTacToe();
 
         public static async Task DisplayGames(SocketCommandContext context)
         {
@@ -27,8 +28,16 @@ namespace Gideon.Handlers
                 await Trivia.TryToStartTrivia((SocketGuildUser)context.User, context, "all");
         }
 
-        // Have to call this from TicTacToe
+        // Have to call this from TicTacToe(s)
         public static void ResetTTT() => TTT = new TicTacToe();
+        public static void ResetUTTT() => UnbeatableTTT = new UnbeatableTicTacToe();
+
+        // Start Unbeatable Tic-Tac-Toe
+        public static async Task StartUTTT(SocketCommandContext Context)
+        {
+            ResetUTTT();
+            await UnbeatableTTT.StartGame(Context);
+        }
 
         // Reset a game
         public static async Task ResetGame(SocketCommandContext context, string game)

@@ -1,9 +1,9 @@
 ﻿using Discord;
 using Discord.Rest;
+using Gideon.Handlers;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
-using Gideon.Handlers;
 
 namespace Gideon.Minigames
 {
@@ -15,7 +15,7 @@ namespace Gideon.Minigames
 
 		private string writeBoard => $"{boardSlots[0]}{boardSlots[1]}{boardSlots[2]}\n{boardSlots[3]}{boardSlots[4]}{boardSlots[5]}\n{boardSlots[6]}{boardSlots[7]}{boardSlots[8]}";
 
-		private RestUserMessage m;
+		public RestUserMessage m;
 
         private SocketGuildUser Player1, Player2, currentTurnUser;
 
@@ -103,8 +103,8 @@ namespace Gideon.Minigames
 
 			if (canPlaySlot)
 			{
-				await CheckForWin(channel, ":x:");
-				await CheckForWin(channel, ":o:");
+				await CheckForWin(":x:");
+				await CheckForWin(":o:");
 				await CheckForDraw();
 				await IncrementTurn();
 			}
@@ -112,7 +112,7 @@ namespace Gideon.Minigames
 			await m.RemoveReactionAsync(reaction.Emote, reaction.User.Value);
 		}
 
-		private async Task CheckForWin(ISocketMessageChannel channel, string letter)
+		private async Task CheckForWin(string letter)
 		{
 			// Columns
 			if (boardSlots[0] == letter && boardSlots[3] == letter && boardSlots[6] == letter ||
