@@ -37,17 +37,17 @@ namespace Gideon
 		{
             if (((SocketUser)Reaction.User).IsBot) return;
 
+            // If Unbeatable TTT is being played, and the person that added the reaction is the player, then send it
+            if (MinigameHandler.UnbeatableTTT.isGameGoing && MinigameHandler.UnbeatableTTT.Player.Id == Reaction.UserId)
+                await MinigameHandler.UnbeatableTTT.Play(Reaction);
+
             // Rock-Paper-Scissors
             if (MinigameHandler.RPS.MessageID == Reaction.MessageId && MinigameHandler.RPS.Player.Id == Reaction.UserId)
                 await MinigameHandler.RPS.ViewPlay(Reaction.Emote.ToString(), Channel);
 
             // Tic-Tac-Toe
-            else if (MinigameHandler.TTT.GameMessage.Id == Reaction.MessageId)
+            if (MinigameHandler.TTT.GameMessage.Id == Reaction.MessageId)
                 await MinigameHandler.TTT.Play(Reaction, Reaction.User);
-
-            // If Unbeatable TTT is being played, and the person that added the reaction is the player, then send it
-            else if (MinigameHandler.UnbeatableTTT.isGameGoing && MinigameHandler.UnbeatableTTT.Player.Id == Reaction.UserId)
-                await MinigameHandler.UnbeatableTTT.Play(Reaction);
-		}
+        }
 	}
 }

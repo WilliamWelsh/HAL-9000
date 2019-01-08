@@ -87,7 +87,7 @@ namespace Gideon.Minigames
                     return;
             AddPlayer(user);
             if (playerSlots == Players.Count)
-                await StartGame(context);
+                await StartGame(context).ConfigureAwait(false);
             else
                 await context.Channel.SendMessageAsync("", false, embed($"{playerSlots - (Players.Count)} more player(s) needed!", "", true));
         }

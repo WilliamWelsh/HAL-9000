@@ -15,7 +15,7 @@ namespace Gideon.Minigames
         private SocketGuildUser Player;
         private string correctAnswer, triviaMode;
         private DateTime StartTime;
-        private List<SocketGuildUser> PlayersAnswered = new List<SocketGuildUser>();
+        private readonly List<SocketGuildUser> PlayersAnswered = new List<SocketGuildUser>();
         private static readonly Random rdn = new Random();
 
         private Embed Embed(string description, string footer) => Utilities.Embed("Trivia", description, Colors.Green, footer, "");

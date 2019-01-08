@@ -28,7 +28,7 @@ namespace Gideon.Minigames
 		{
 			if (!isGameGoing) return;
 			currentTurnUser = currentTurnUser == Player1 ? Player2 : Player1;
-			await ModifyMessage($"It is {currentTurnUser.Mention}'s turn.\n\n{writeBoard}");
+			await ModifyMessage($"It is {currentTurnUser.Mention}'s turn.\n\n{writeBoard}").ConfigureAwait(false);
 		}
 
         private async Task ModifyMessage (string Description)
@@ -67,7 +67,7 @@ namespace Gideon.Minigames
             foreach (string Emoji in Emojis)
                 await GameMessage.AddReactionAsync(new Emoji(Emoji));
 
-			await ModifyMessage($"It is {Player1.Mention}'s turn.\n\n{writeBoard}");
+			await ModifyMessage($"It is {Player1.Mention}'s turn.\n\n{writeBoard}").ConfigureAwait(false);
 			currentTurnUser = Player1;
 		}
 
@@ -124,13 +124,13 @@ namespace Gideon.Minigames
 				boardSlots[0] == letter && boardSlots[4] == letter && boardSlots[8] == letter ||
 				boardSlots[6] == letter && boardSlots[4] == letter && boardSlots[2] == letter)
 
-				await DeclareWinner(letter);
+				await DeclareWinner(letter).ConfigureAwait(false);
 		}
 
 		private async Task DeclareWinner(string letter)
 		{
 			SocketGuildUser winner = letter == ":x:" ? Player1 : Player2;
-			await ModifyMessage($"{winner.Mention} has won!\n\n{writeBoard}");
+			await ModifyMessage($"{winner.Mention} has won!\n\n{writeBoard}").ConfigureAwait(false);
             MinigameHandler.ResetTTT();
 		}
 
@@ -138,7 +138,7 @@ namespace Gideon.Minigames
 		{
 			foreach (var s in boardSlots)
 				if (s == ":white_large_square:") return;
-			await ModifyMessage($"It's a draw!\n\n{writeBoard}");
+			await ModifyMessage($"It's a draw!\n\n{writeBoard}").ConfigureAwait(false);
             MinigameHandler.ResetTTT();
 		}
 	}

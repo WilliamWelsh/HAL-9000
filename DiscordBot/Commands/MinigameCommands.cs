@@ -58,7 +58,7 @@ namespace Gideon.Handlers
         #region Number Guess Game Commands
         // Play NG (Solo)
         [Command("play ng")]
-        public async Task PlayNG() => await PlayNG(0);
+        public async Task PlayNG() => await PlayNG(0).ConfigureAwait(false);
 
         // Play NG (2+ players)
         [Command("play ng")]

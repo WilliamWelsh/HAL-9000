@@ -9,7 +9,7 @@ namespace Gideon
     {
         public static readonly BotConfig bot;
         public static readonly TriviaQuestions triviaQuestions;
-        public static whoSaidItResources whoSaidItResources;
+        public static readonly whoSaidItResources whoSaidItResources;
 
         static Config()
         {

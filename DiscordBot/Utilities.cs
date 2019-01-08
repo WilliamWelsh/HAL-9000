@@ -79,7 +79,7 @@ namespace Gideon
         {
             if (UserAccounts.GetAccount(user).superadmin)
                 return true;
-            await PrintError(context.Channel, $"You do not have permission to do that command, {user.Mention}.");
+            await PrintError(context.Channel, $"You do not have permission to do that command, {user.Mention}.").ConfigureAwait(false);
             return false;
         }
 
@@ -88,14 +88,14 @@ namespace Gideon
         {
             if (context.Channel.Id == requiredChannel)
                 return true;
-            await PrintError(context.Channel, $"Please use the {context.Guild.GetTextChannel(requiredChannel).Mention} chat for that, {user.Mention}.");
+            await PrintError(context.Channel, $"Please use the {context.Guild.GetTextChannel(requiredChannel).Mention} chat for that, {user.Mention}.").ConfigureAwait(false);
             return false;
         }
 
         // Send an embed to a channel
         public static async Task SendEmbed(ISocketMessageChannel channel, string title, string description, Discord.Color color, string footer, string thumbnailURL)
         {
-            await channel.SendMessageAsync(null, false, Embed(title, description, color, footer, thumbnailURL));
+            await channel.SendMessageAsync(null, false, Embed(title, description, color, footer, thumbnailURL)).ConfigureAwait(false);
         }
     }
 }

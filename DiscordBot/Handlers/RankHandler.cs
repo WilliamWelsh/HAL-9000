@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace Gideon.Handlers
 {
-    class RankHandler
+    static class RankHandler
     {
         private static List<ulong> UsersGivenXPInLastMinute = new List<ulong>();
 
@@ -98,7 +98,7 @@ namespace Gideon.Handlers
         {
             UserAccount account = UserAccounts.GetAccount(user);
             for (uint i = 0; i < xpLevel.Length; i++)
-                await CompareAndSet(context, user, account, i, xpLevel[i]);
+                await CompareAndSet(context, user, account, i, xpLevel[i]).ConfigureAwait(false);
         }
 
         public static async Task DisplayLevelAndXP(SocketCommandContext context, SocketUser user)

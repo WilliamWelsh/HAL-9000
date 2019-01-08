@@ -157,7 +157,6 @@ namespace Gideon.Minigames
         public async Task Play (SocketReaction Reaction)
         {
             if (!isGameGoing) return;
-
             string emote = Reaction.Emote.ToString();
         
             // Loop through all the available emoji reactions
@@ -172,22 +171,22 @@ namespace Gideon.Minigames
 
             if (HasValidMove)
             {
-                await ModifyMessage($"My turn.\n\n{PrintBoard}");
+                await ModifyMessage($"My turn.\n\n{PrintBoard}").ConfigureAwait(false);
 
-                await CheckForDraw();
+                await CheckForDraw().ConfigureAwait(false);
 
                 if (isGameGoing)
                 {
                     // Have Gideon make a move and set their slot move to 1 (X)
                     Board[GideonsMove(Board)] = 1;
 
-                    await Task.Delay(2000); // This is to prevent spam, and seem more friendly
-                    await ModifyMessage($"{PlayerName}'s turn.\n\n{PrintBoard}");
+                    await Task.Delay(2000).ConfigureAwait(false); // This is to prevent spam, and seem more friendly
+                    await ModifyMessage($"{PlayerName}'s turn.\n\n{PrintBoard}").ConfigureAwait(false);
 
                     // Check if Gideon won
                     if (WinningBoard(Board) != 0)
                         await DeclareWinner().ConfigureAwait(false);
-                    await CheckForDraw();
+                    await CheckForDraw().ConfigureAwait(false);
                 }
             }
         }
@@ -196,8 +195,8 @@ namespace Gideon.Minigames
         private async Task DeclareWinner()
         {
             // No point in checking if the player won (sorry, human)
-            await ModifyMessage($"I won.\n\n{PrintBoard}");
-            await GameMessage.RemoveAllReactionsAsync();
+            await ModifyMessage($"I won.\n\n{PrintBoard}").ConfigureAwait(false);
+            await GameMessage.RemoveAllReactionsAsync().ConfigureAwait(false);
             MinigameHandler.ResetUTTT();
         }
 
@@ -206,8 +205,8 @@ namespace Gideon.Minigames
         {
             foreach (var s in Board)
                 if (s == 0) return; // 0 = blank slot, if there is a single blank spot then a draw isn't possible
-            await ModifyMessage($"It's a draw!\n\n{PrintBoard}");
-            await GameMessage.RemoveAllReactionsAsync();
+            await ModifyMessage($"It's a draw!\n\n{PrintBoard}").ConfigureAwait(false);
+            await GameMessage.RemoveAllReactionsAsync().ConfigureAwait(false);
             MinigameHandler.ResetUTTT();
         }
     }

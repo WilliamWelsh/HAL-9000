@@ -11,7 +11,7 @@ namespace Gideon.Minigames
 {
     class RussianRoulette
     {
-        private int round, PlayerSlots, currentChamber, currentTurn;
+        private int round, PlayerSlots, currentTurn;
         private bool isGameGoing;
 
         private SocketGuildUser host;
@@ -82,10 +82,7 @@ namespace Gideon.Minigames
             SocketGuildUser newPlayer = (SocketGuildUser)context.User;
             Players.Add(newPlayer);
             if (Players.Count != PlayerSlots)
-            {
                 await context.Channel.SendMessageAsync("", false, embed($"{PlayerSlots - Players.Count} more player(s) needed!\n\nType `!join rr` to play!", "", true));
-                return;
-            }
             else
                 await context.Channel.SendMessageAsync("", false, gameEmbed($"Initial round.\n\nWaiting for {Players.ElementAt(0).Mention} to pull the trigger. (`!pt`)", ""));
         }
@@ -103,7 +100,7 @@ namespace Gideon.Minigames
         {
             round++;
             int badChamber = RandomChamber();
-            currentChamber = RandomChamber();
+            int currentChamber = RandomChamber();
             currentTurn = currentTurn == (Players.Count-1) ? currentTurn = 0 : currentTurn + 1;
 
             if (currentChamber == badChamber)
