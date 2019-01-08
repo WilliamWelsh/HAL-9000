@@ -11,11 +11,11 @@ namespace Gideon.Minigames
 {
     class RussianRoulette
     {
-        private int round = 0, PlayerSlots = 0, currentChamber = 0, badChamber = 0, currentTurn = 0;
-        private bool isGameGoing = false;
+        private int round, PlayerSlots, currentChamber, currentTurn;
+        private bool isGameGoing;
 
-        private SocketGuildUser host = null;
-        private List<SocketGuildUser> Players = new List<SocketGuildUser>();
+        private SocketGuildUser host;
+        private readonly List<SocketGuildUser> Players = new List<SocketGuildUser>();
 
         private int RandomChamber() => Utilities.GetRandomNumber(0, 6);
 
@@ -63,7 +63,7 @@ namespace Gideon.Minigames
                 await context.Channel.SendMessageAsync("", false, embed($"Sorry, 2 is the minimum amount of players for Russian Roulette.", "", false));
                 return;
             }
-            await StartGame(context);
+            await StartGame(context).ConfigureAwait(false);
         }
 
         public async Task StartGame(SocketCommandContext context)
@@ -96,19 +96,19 @@ namespace Gideon.Minigames
 
             SocketGuildUser player = (SocketGuildUser)context.User;
             if (Players.ElementAt(currentTurn) != player) return;
-            await DoRound(player, context);
+            await DoRound(player, context).ConfigureAwait(false);
         }
 
         private async Task DoRound(SocketGuildUser player, SocketCommandContext context)
         {
             round++;
-            badChamber = RandomChamber();
+            int badChamber = RandomChamber();
             currentChamber = RandomChamber();
             currentTurn = currentTurn == (Players.Count-1) ? currentTurn = 0 : currentTurn + 1;
 
             if (currentChamber == badChamber)
             {
-                await DieAndCheckForWin(player, context);
+                await DieAndCheckForWin(player, context).ConfigureAwait(false);
                 await context.Channel.SendMessageAsync("", false, gameEmbed($"The cylinder spins...\n\n*BANG*\n\n{player.Mention} died and lost 3 Coins!\n\nWaiting for {Players.ElementAt(currentTurn).Mention} to pull the trigger. (`!pt`)", ""));
                 CoinsHandler.AdjustCoins(player, -3);
             }
@@ -126,7 +126,6 @@ namespace Gideon.Minigames
 
                 await context.Channel.SendMessageAsync("", false, gameEmbed($"The cylinder spins...\n\n*BANG*\n\n{player.Mention} died and lost 3 Coins!\n\n{Players.ElementAt(0).Mention} won the game and got {3 + (2*PlayerSlots)} coins!", ""));
                 Reset();
-                return;
             }
         }
 

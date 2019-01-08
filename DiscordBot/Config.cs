@@ -5,10 +5,10 @@ using System.Collections.Generic;
 
 namespace Gideon
 {
-    class Config
+    static class Config
     {
-        public static BotConfig bot;
-        public static TriviaQuestions triviaQuestions;
+        public static readonly BotConfig bot;
+        public static readonly TriviaQuestions triviaQuestions;
         public static whoSaidItResources whoSaidItResources;
 
         static Config()

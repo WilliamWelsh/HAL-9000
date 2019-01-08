@@ -10,40 +10,51 @@ namespace Gideon.Minigames
 {
     class UnbeatableTicTacToe
     {
-        int[] Board = new int[9] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        readonly int[] Board = new[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-        int[][] PossibleWins = new[] {
-                new int[] { 0, 1, 2 },
-                new int[] { 3, 4, 5 },
-                new int[] { 6, 7, 8 },
-                new int[] { 0, 3, 6 },
-                new int[] { 1, 4, 7 },
-                new int[] { 2, 5, 8 },
-                new int[] { 0, 4, 8 },
-                new int[] { 2, 4, 6 } };
+        readonly int[][] PossibleWins = new[] {
+                new[] { 0, 1, 2 },
+                new[] { 3, 4, 5 },
+                new[] { 6, 7, 8 },
+                new[] { 0, 3, 6 },
+                new[] { 1, 4, 7 },
+                new[] { 2, 5, 8 },
+                new[] { 0, 4, 8 },
+                new[] { 2, 4, 6 } };
 
-        private string PrintBoard => $"{NumberToEmoji(Board[0])}{NumberToEmoji(Board[1])}{NumberToEmoji(Board[2])}\n{NumberToEmoji(Board[3])}{NumberToEmoji(Board[4])}{NumberToEmoji(Board[5])}\n{NumberToEmoji(Board[6])}{NumberToEmoji(Board[7])}{NumberToEmoji(Board[8])}";
+        string PrintBoard => $"{NumberToEmoji(Board[0])}{NumberToEmoji(Board[1])}{NumberToEmoji(Board[2])}\n{NumberToEmoji(Board[3])}{NumberToEmoji(Board[4])}{NumberToEmoji(Board[5])}\n{NumberToEmoji(Board[6])}{NumberToEmoji(Board[7])}{NumberToEmoji(Board[8])}";
 
-        private RestUserMessage GameMessage;
-        private SocketGuildUser Player;
-        private bool isGameGoing = false, canPlaySlot = true;
-        private readonly List<string> Emojis = new List<string>(new string[] { "↖", "⬆", "↗", "⬅", "⏺", "➡", "↙", "⬇", "↘" });
+        RestUserMessage GameMessage;
+        public SocketGuildUser Player;
+        public bool isGameGoing;
+        bool HasValidMove = true;
+        string PlayerName;
+        readonly List<string> Emojis = new List<string>(new[] { "↖", "⬆", "↗", "⬅", "⏺", "➡", "↙", "⬇", "↘" });
 
-        //Embed GamEmbed = new EmbedBuilder()
-        //    .WithTitle("Unbeatable Tic-Tac_Toe");
+        // Modify the game message
+        public async Task ModifyMessage (string Description)
+        {
+            await GameMessage.ModifyAsync(m => { m.Embed = new EmbedBuilder()
+                .WithTitle("Unbeatable Tic-Tac-Toe")
+                .WithColor(Colors.Red)
+                .WithDescription(Description)
+                .AddField("Resources", "[How I Win](https://www.neverstopbuilding.com/blog/minimax) | [Source Code](https://github.com/WilliamWelsh/GideonBot/blob/master/DiscordBot/Minigames/UnbeatableTicTacToe.cs)")
+                .WithFooter($"Playing with {PlayerName}.")
+                .Build(); ;});
+        }
 
+        // 0 = Blank, 1 = X, -1 = O
         string NumberToEmoji (int num)
         {
             if (num == 0)
                 return ":white_large_square:";
             else if (num == 1)
                 return ":x:";
-            else if (num == -1)
-                return ":o:";
-            return "ERROR!!!";
+            return ":o:";
         }
 
-        int win (int[] board)
+        // Returns 0 if the board input is not a winning board for the human
+        int WinningBoard (int[] board)
         {
             for (int i = 0; i < 8; ++i)
 		        if (board[PossibleWins[i][0]] != 0 && board[PossibleWins[i][0]] == board[PossibleWins[i][1]] && board[PossibleWins[i][1]] == board[PossibleWins[i][2]])
@@ -54,13 +65,12 @@ namespace Gideon.Minigames
         // https://en.wikipedia.org/wiki/Minimax
         int Minimax (int[] board, int player)
         {
-            int winner = win(board);
+            int winner = WinningBoard(board);
 
             if (winner != 0)
                 return winner * player;
 
-            int move = -1;
-            int score = -2;
+            int move = -1, score = -2;
 
             for (int i = 0; i < 9; i++)
             {
@@ -89,12 +99,10 @@ namespace Gideon.Minigames
         // The move Gideon makes (based on minimax)
         int GideonsMove (int[] board)
         {
-            int move = -1;
-            int score = -2;
+            int move = -1, score = -2;
 
             for (int i = 0; i < 9; ++i)
             {
-
                 if (board[i] == 0)
                 {
                     board[i] = 1;
@@ -116,116 +124,90 @@ namespace Gideon.Minigames
         public async Task StartGame(SocketCommandContext context)
         {
             Player = (SocketGuildUser)context.User;
+            PlayerName = Player.Nickname ?? Player.Username;
             isGameGoing = true;
 
-            GameMessage = await context.Channel.SendMessageAsync("Please wait for the game to load...");
+            GameMessage = await context.Channel.SendMessageAsync(null, false, new EmbedBuilder()
+                .WithTitle("Unbeatable Tic-Tac-Toe")
+                .WithColor(Colors.Red)
+                .WithDescription("Please wait for the game to load...")
+                .AddField("Resources", "[How I Win](https://www.neverstopbuilding.com/blog/minimax) | [Source Code](https://github.com/WilliamWelsh/GideonBot/blob/master/DiscordBot/Minigames/UnbeatableTicTacToe.cs)")
+                .WithFooter($"Playing with {PlayerName}.")
+                .Build());
 
             foreach (string Emoji in Emojis)
                 await GameMessage.AddReactionAsync(new Emoji(Emoji));
 
-            await GameMessage.ModifyAsync(m => { m.Content = $"It is {Player.Mention}'s turn.\n\n{PrintBoard}"; });
+            await ModifyMessage($"{PlayerName}'s turn.\n\n{PrintBoard}");
         }
 
         // Make sure the slot the user is trying to play is blank
         private bool IsValidSlot (int slot)
         {
-            if (Board[slot] == 0 && Board[slot] != 1 && Board[slot] != -1)
+            if (Board[slot] == 0)
             {
-                canPlaySlot = true;
+                HasValidMove = true;
                 return true;
             }
-            canPlaySlot = false;
+            HasValidMove = false;
             return false;
         }
 
         // Play a slot
-        public async Task Play (SocketReaction reaction, ISocketMessageChannel channel, Optional<IUser> user)
+        public async Task Play (SocketReaction Reaction)
         {
-            if (user.ToString() == "Gideon#8386" || !isGameGoing) return;
-            if (Player.ToString() != user.ToString()) return;
+            if (!isGameGoing) return;
 
-            string emote = reaction.Emote.ToString();
+            string emote = Reaction.Emote.ToString();
         
-            if (emote == "↖" && IsValidSlot(0))
-                Board[0] = -1;
-
-            if (emote == "⬆" && IsValidSlot(1))
-                Board[1] = -1;
-
-            if (emote == "↗" && IsValidSlot(2))
-                Board[2] = -1;
-
-            if (emote == "⬅" && IsValidSlot(3))
-                Board[3] = -1;
-
-            if (emote == "⏺" && IsValidSlot(4))
-                Board[4] = -1;
-
-            if (emote == "➡" && IsValidSlot(5))
-                Board[5] = -1;
-
-            if (emote == "↙" && IsValidSlot(6))
-                Board[6] = -1;
-
-            if (emote == "⬇" && IsValidSlot(7))
-                Board[7] = -1;
-
-            if (emote == "↘" && IsValidSlot(8))
-                Board[8] = -1;
-
-            if (canPlaySlot)
+            // Loop through all the available emoji reactions
+            for (int i = 0; i < Emojis.Count; i ++)
             {
-                await CheckForWin(-1); // Check if the human won
+                // If the slot is valid, then set the player's move to that slot on the board
+                if (emote == Emojis[i] && IsValidSlot(i))
+                    Board[i] = -1;
+            }
+
+            await GameMessage.RemoveReactionAsync(Reaction.Emote, Reaction.User.Value);
+
+            if (HasValidMove)
+            {
+                await ModifyMessage($"My turn.\n\n{PrintBoard}");
+
                 await CheckForDraw();
 
                 if (isGameGoing)
                 {
-                    int k = GideonsMove(Board);
-                    Board[k] = 1;
+                    // Have Gideon make a move and set their slot move to 1 (X)
+                    Board[GideonsMove(Board)] = 1;
 
-                    await GameMessage.ModifyAsync(m => { m.Content = $"{PrintBoard}"; });
+                    await Task.Delay(2000); // This is to prevent spam, and seem more friendly
+                    await ModifyMessage($"{PlayerName}'s turn.\n\n{PrintBoard}");
 
-                    await CheckForWin(1); // Check if Gideon won
+                    // Check if Gideon won
+                    if (WinningBoard(Board) != 0)
+                        await DeclareWinner().ConfigureAwait(false);
                     await CheckForDraw();
                 }
             }
-
-            await GameMessage.RemoveReactionAsync(reaction.Emote, reaction.User.Value);
         }
 
-        private async Task CheckForWin(int number)
+        // Declare that Gideon has won
+        private async Task DeclareWinner()
         {
-                // Columns
-            if (Board[0] == number && Board[3] == number && Board[6] == number ||
-                Board[1] == number && Board[4] == number && Board[7] == number ||
-                Board[2] == number && Board[5] == number && Board[8] == number ||
-
-                // Rows
-                Board[0] == number && Board[1] == number && Board[2] == number ||
-                Board[3] == number && Board[4] == number && Board[5] == number ||
-                Board[6] == number && Board[7] == number && Board[8] == number ||
-
-                // Diagonal
-                Board[0] == number && Board[4] == number && Board[8] == number ||
-                Board[6] == number && Board[4] == number && Board[2] == number)
-
-                await DeclareWinner(number);
-        }
-
-        private async Task DeclareWinner(int number)
-        {
-            if (number == 1)
-                await GameMessage.ModifyAsync(m => { m.Content = $"I won!!!!\n\n{PrintBoard}"; });
-            else
-                await GameMessage.ModifyAsync(m => { m.Content = $"You have won!\n\n{PrintBoard}"; });
+            // No point in checking if the player won (sorry, human)
+            await ModifyMessage($"I won.\n\n{PrintBoard}");
+            await GameMessage.RemoveAllReactionsAsync();
             MinigameHandler.ResetUTTT();
         }
 
+        // Check for a draw
         private async Task CheckForDraw()
         {
             foreach (var s in Board)
                 if (s == 0) return; // 0 = blank slot, if there is a single blank spot then a draw isn't possible
-            await GameMessage.ModifyAsync(m => { m.Content = $"It's a draw!\n\n{PrintBoard}"; });
+            await ModifyMessage($"It's a draw!\n\n{PrintBoard}");
+            await GameMessage.RemoveAllReactionsAsync();
             MinigameHandler.ResetUTTT();
         }
     }

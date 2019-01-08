@@ -20,11 +20,22 @@ namespace Gideon.Minigames
         {
             return user.Id == other.user.Id;
         }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as Player);
+        }
+
+        public override int GetHashCode()
+        {
+            return 0;
+        }
     }
+
     class NumberGuess
     {
         private int number, playerSlots = 2;
-        private List<Player> Players = new List<Player>();
+        private readonly List<Player> Players = new List<Player>();
 
         public bool isGamingGoing;
 
@@ -66,7 +77,7 @@ namespace Gideon.Minigames
             if (!await Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
             if (!isGamingGoing)
             {
-                await context.Channel.SendMessageAsync("", false, embed("There is no game currently going.\n\nType `!help ng` for Number Guess game help.", "", false));
+                await context.Channel.SendMessageAsync("", false, embed("There is no game currently going.\n\nType `!help ng` for Number Guess game help.", "", false)).ConfigureAwait(false);
                 return;
             }
             if (playerSlots == Players.Count)
@@ -173,7 +184,7 @@ namespace Gideon.Minigames
             embed.WithDescription(Description.ToString());
 
             for (int i = 0; i < Players.Count; i++)
-                if (!(winner == Players.ElementAt(i).user))
+                if (winner != Players.ElementAt(i).user)
                     CoinsHandler.AdjustCoins(Players.ElementAt(i).user, lost10 ? -10 : -1);
 
             await context.Channel.SendMessageAsync("", false, embed.Build());

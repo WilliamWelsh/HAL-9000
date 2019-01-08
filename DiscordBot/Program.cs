@@ -8,8 +8,7 @@ namespace Gideon
 {
     class Program
     {
-        public DiscordSocketClient _client;
-        EventHandler _handler;
+        DiscordSocketClient _client;
 
         static void Main(string[] args) => new Program().StartAsync().GetAwaiter().GetResult();
 
@@ -22,9 +21,9 @@ namespace Gideon
 			await _client.LoginAsync(TokenType.Bot, Config.bot.DisordBotToken);
             await _client.StartAsync();
             await _client.SetGameAsync("users", null, ActivityType.Listening);
-            _handler = new EventHandler();
+            EventHandler _handler = new EventHandler();
             await _handler.InitializeAsync(_client);
-            await Task.Delay(-1);
+            await Task.Delay(-1).ConfigureAwait(false);
         }
 
         private Task Log(LogMessage msg)
@@ -34,15 +33,21 @@ namespace Gideon
         }
 
         // If someone adds a reaction, check to see if it's for a minigame that's being played
-        private async Task OnReactionAdded(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel channel, SocketReaction reaction)
+        private async Task OnReactionAdded(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel Channel, SocketReaction Reaction)
 		{
-            //if (MinigameHandler.RPS.MessageID == reaction.MessageId)
-            //    await MinigameHandler.RPS.ViewPlay(reaction.Emote.ToString(), channel, reaction.User);
-            //else if (MinigameHandler.TTT.m.Id == reaction.MessageId)
-            //    await MinigameHandler.TTT.Play(reaction, channel, reaction.User);
-            //else
-            Console.WriteLine("Reaction");
-            await MinigameHandler.UnbeatableTTT.Play(reaction, channel, reaction.User);
+            if (((SocketUser)Reaction.User).IsBot) return;
+
+            // Rock-Paper-Scissors
+            if (MinigameHandler.RPS.MessageID == Reaction.MessageId && MinigameHandler.RPS.Player.Id == Reaction.UserId)
+                await MinigameHandler.RPS.ViewPlay(Reaction.Emote.ToString(), Channel);
+
+            // Tic-Tac-Toe
+            else if (MinigameHandler.TTT.GameMessage.Id == Reaction.MessageId)
+                await MinigameHandler.TTT.Play(Reaction, Reaction.User);
+
+            // If Unbeatable TTT is being played, and the person that added the reaction is the player, then send it
+            else if (MinigameHandler.UnbeatableTTT.isGameGoing && MinigameHandler.UnbeatableTTT.Player.Id == Reaction.UserId)
+                await MinigameHandler.UnbeatableTTT.Play(Reaction);
 		}
 	}
 }

@@ -128,7 +128,7 @@ namespace Gideon.Handlers
         {
             var emojis = input.Split('>');
             foreach (var s in emojis)
-                await PrintEmoji(s + ">");
+                await PrintEmoji(s + ">").ConfigureAwait(false);
         }
 
         private async Task PrintEmoji(string emoji)
@@ -304,9 +304,6 @@ namespace Gideon.Handlers
         [Command("ping")]
         public async Task Pong() => await Context.Channel.SendMessageAsync("pong!");
 
-        //[Command("join", RunMode = RunMode.Async)]
-        //public async Task JoinVC() => await Config.AudioHandler.Join(Context);
-
         [Command("userdata")]
         public async Task DisplayData(SocketUser user = null)
         {
@@ -333,6 +330,13 @@ namespace Gideon.Handlers
                 var emote = await Context.Guild.CreateEmoteAsync(name, new Image(await response.Content.ReadAsStreamAsync()));
                 await Context.Channel.SendMessageAsync($"Created: {emote}");
             }
+        }
+
+        [Command("uptime")]
+        public async Task DisplayUptime()
+        {
+            var time = DateTime.UtcNow - System.Diagnostics.Process.GetCurrentProcess().StartTime.ToUniversalTime();
+            await Context.Channel.SendMessageAsync($"{time.Hours} hours, {time.Minutes}m {time.Seconds}s");
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Gideon
 {
-    class Colors
+    static class Colors
     {
         public readonly static Color Blue = new Color(66, 133, 244);
         public readonly static Color LightBlue = new Color(127, 166, 208);

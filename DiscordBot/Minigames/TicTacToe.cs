@@ -4,29 +4,41 @@ using Gideon.Handlers;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Gideon.Minigames
 {
 	class TicTacToe
 	{
-		private string[] boardSlots = { ":white_large_square:", ":white_large_square:", ":white_large_square:",
+		private readonly string[] boardSlots = { ":white_large_square:", ":white_large_square:", ":white_large_square:",
 		":white_large_square:", ":white_large_square:", ":white_large_square:",
 		":white_large_square:", ":white_large_square:", ":white_large_square:" };
 
 		private string writeBoard => $"{boardSlots[0]}{boardSlots[1]}{boardSlots[2]}\n{boardSlots[3]}{boardSlots[4]}{boardSlots[5]}\n{boardSlots[6]}{boardSlots[7]}{boardSlots[8]}";
 
-		public RestUserMessage m;
+        private readonly List<string> Emojis = new List<string>(new[] { "↖", "⬆", "↗", "⬅", "⏺", "➡", "↙", "⬇", "↘" });
+
+        public RestUserMessage GameMessage;
 
         private SocketGuildUser Player1, Player2, currentTurnUser;
 
-        private bool isGameGoing = false, hasGameStarted = false, canPlaySlot = true;
+        private bool isGameGoing, hasGameStarted, canPlaySlot = true;
 
-		public async Task IncrementTurn()
+		private async Task IncrementTurn()
 		{
 			if (!isGameGoing) return;
 			currentTurnUser = currentTurnUser == Player1 ? Player2 : Player1;
-			await m.ModifyAsync(m => { m.Content = $"It is {currentTurnUser.Mention}'s turn.\n\n{writeBoard}"; });
+			await ModifyMessage($"It is {currentTurnUser.Mention}'s turn.\n\n{writeBoard}");
 		}
+
+        private async Task ModifyMessage (string Description)
+        {
+            await GameMessage.ModifyAsync(m => { m.Embed = new EmbedBuilder()
+                .WithTitle("Tic-Tac-Toe")
+                .WithColor(Colors.White)
+                .WithDescription(Description)
+                .Build(); ;});
+        }
 
 		public async Task StartGame(SocketCommandContext context)
 		{
@@ -36,7 +48,7 @@ namespace Gideon.Minigames
 				isGameGoing = true;
 			}
 			else return;
-			await context.Channel.SendMessageAsync($"{Player1.Mention} has started a game of Tic-Tac-Toe! Type `!ttt join` to play.");
+			await Utilities.SendEmbed(context.Channel, "Tic-Tac-Toe", $"{Player1.Mention} has started a game of Tic-Tac-Toe! Type `!ttt join` to play.", Colors.White, "", "");
 		}
 
 		public async Task JoinGame(SocketCommandContext context)
@@ -46,18 +58,16 @@ namespace Gideon.Minigames
 			else return;
 
             hasGameStarted = true;
-			m = await context.Channel.SendMessageAsync("Please wait for the game to load...");
-			await m.RemoveAllReactionsAsync();
-			await m.AddReactionAsync(new Emoji("↖"));
-			await m.AddReactionAsync(new Emoji("⬆"));
-			await m.AddReactionAsync(new Emoji("↗"));
-			await m.AddReactionAsync(new Emoji("⬅"));
-			await m.AddReactionAsync(new Emoji("⏺"));
-			await m.AddReactionAsync(new Emoji("➡"));
-			await m.AddReactionAsync(new Emoji("↙"));
-			await m.AddReactionAsync(new Emoji("⬇"));
-			await m.AddReactionAsync(new Emoji("↘"));
-			await m.ModifyAsync(m => { m.Content = $"It is {Player1.Mention}'s turn.\n\n{writeBoard}"; });
+            GameMessage = await context.Channel.SendMessageAsync(null, false, new EmbedBuilder()
+                .WithTitle("Tic-Tac-Toe")
+                .WithColor(Colors.Red)
+                .WithDescription("Please wait for the game to load...")
+                .Build());
+
+            foreach (string Emoji in Emojis)
+                await GameMessage.AddReactionAsync(new Emoji(Emoji));
+
+			await ModifyMessage($"It is {Player1.Mention}'s turn.\n\n{writeBoard}");
 			currentTurnUser = Player1;
 		}
 
@@ -72,44 +82,30 @@ namespace Gideon.Minigames
 			return ":white_large_square:";
 		}
 
-		public async Task Play(SocketReaction reaction, ISocketMessageChannel channel, Optional<IUser> user)
+		public async Task Play(SocketReaction reaction, Optional<IUser> user)
 		{
-			if (user.ToString() == "Gideon#8386") return;
 			if (currentTurnUser.ToString() != user.ToString())
 			{
-				await m.RemoveReactionAsync(reaction.Emote, reaction.User.Value);
+				await GameMessage.RemoveReactionAsync(reaction.Emote, reaction.User.Value);
 				return;
 			}
 
 			string emote = reaction.Emote.ToString();
-			if (emote == "↖")
-				boardSlots[0] = EmojiToPlace(0);
-			else if (emote == "⬆")
-				boardSlots[1] = EmojiToPlace(1);
-			else if (emote == "↗")
-				boardSlots[2] = EmojiToPlace(2);
-			else if (emote == "⬅")
-				boardSlots[3] = EmojiToPlace(3);
-			else if (emote == "⏺")
-				boardSlots[4] = EmojiToPlace(4);
-			else if (emote == "➡")
-				boardSlots[5] = EmojiToPlace(5);
-			else if (emote == "↙")
-				boardSlots[6] = EmojiToPlace(6);
-			else if (emote == "⬇")
-				boardSlots[7] = EmojiToPlace(7);
-			else if (emote == "↘")
-				boardSlots[8] = EmojiToPlace(8);
+
+            // Loop through all the available responses and place the emoji
+            for (int i = 0; i < Emojis.Count; i++)
+                if (emote == Emojis[i])
+                    boardSlots[i] = EmojiToPlace(0);
 
 			if (canPlaySlot)
 			{
-				await CheckForWin(":x:");
-				await CheckForWin(":o:");
-				await CheckForDraw();
-				await IncrementTurn();
+				await CheckForWin(":x:").ConfigureAwait(false);
+				await CheckForWin(":o:").ConfigureAwait(false);
+				await CheckForDraw().ConfigureAwait(false);
+				await IncrementTurn().ConfigureAwait(false);
 			}
 
-			await m.RemoveReactionAsync(reaction.Emote, reaction.User.Value);
+			await GameMessage.RemoveReactionAsync(reaction.Emote, reaction.User.Value);
 		}
 
 		private async Task CheckForWin(string letter)
@@ -134,18 +130,16 @@ namespace Gideon.Minigames
 		private async Task DeclareWinner(string letter)
 		{
 			SocketGuildUser winner = letter == ":x:" ? Player1 : Player2;
-			await m.ModifyAsync(m => { m.Content = $"{winner.Mention} has won!\n\n{writeBoard}"; });
-			Reset();
+			await ModifyMessage($"{winner.Mention} has won!\n\n{writeBoard}");
+            MinigameHandler.ResetTTT();
 		}
 
 		private async Task CheckForDraw()
 		{
 			foreach (var s in boardSlots)
 				if (s == ":white_large_square:") return;
-			await m.ModifyAsync(m => { m.Content = $"It's a draw!\n\n{writeBoard}"; });
-			Reset();
+			await ModifyMessage($"It's a draw!\n\n{writeBoard}");
+            MinigameHandler.ResetTTT();
 		}
-
-        private void Reset() => MinigameHandler.ResetTTT();
 	}
 }

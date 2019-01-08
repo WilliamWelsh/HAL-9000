@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Gideon.Handlers
 {
-    class StatsHandler
+    static class StatsHandler
     {
         public static string GetCreatedDate(IUser user) => user.CreatedAt.ToString("MMMM dd, yyy");
         public static string GetJoinedDate(SocketGuildUser user) => ((DateTimeOffset)user.JoinedAt).ToString("MMMM dd, yyy");

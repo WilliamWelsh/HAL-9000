@@ -13,8 +13,8 @@ namespace Gideon.Minigames
     {
         public ulong MessageID;
         private bool isPlaying;
-        private SocketGuildUser Player;
-        private List<string> Plays = new List<string>(new string[] { "Rock", "Paper", "Scissors" });
+        public SocketGuildUser Player;
+        private readonly List<string> Plays = new List<string>(new[] { "Rock", "Paper", "Scissors" });
 
         private Embed embed(string description, string footer) => Utilities.Embed("Rock-Paper-Scissors", description, Colors.White, footer, "https://i.imgur.com/VXdDjho.png");
 
@@ -31,9 +31,9 @@ namespace Gideon.Minigames
             Player = (SocketGuildUser)context.User;
         }
 
-        public async Task ViewPlay(string emote, ISocketMessageChannel channel, Optional<IUser> user)
+        public async Task ViewPlay(string emote, ISocketMessageChannel Channel)
         {
-            if (!isPlaying || Player != user.Value) return;
+            if (!isPlaying) return;
 
             string playOne = "";
             if (emote == "📰")
@@ -46,7 +46,7 @@ namespace Gideon.Minigames
             string playTwo = Plays.ElementAt(Utilities.GetRandomNumber(0, 3));
             string result = GetWinner(playOne[0], playTwo[0]);
 
-            await channel.SendMessageAsync("", false, embed($"{Player.Mention} chose {playOne}!\n\nI chose {playTwo}.\n\n{result}", ""));
+            await Channel.SendMessageAsync("", false, embed($"{Player.Mention} chose {playOne}!\n\nI chose {playTwo}.\n\n{result}", ""));
 
             if(result.Contains("lose 3 coins"))
                 CoinsHandler.AdjustCoins(Player, -3);

@@ -15,7 +15,7 @@ namespace Gideon.Handlers
 
         public static void Start()
         {
-            Timer timer = new Timer()
+            Timer timer = new Timer
             {
                 Interval = (1000 * 60),
                 AutoReset = true,
@@ -33,7 +33,7 @@ namespace Gideon.Handlers
             if (UsersGivenXPInLastMinute.Contains(user.Id)) return;
             GiveUserXP(user, Utilities.GetRandomNumber(15, 25));
             UsersGivenXPInLastMinute.Add(user.Id);
-            await CheckXP(context, user);
+            await CheckXP(context, user).ConfigureAwait(false);
         }
 
         public static void GiveUserXP(SocketUser user, int xp)
@@ -48,7 +48,7 @@ namespace Gideon.Handlers
             {
                 account.level = level;
                 UserAccounts.SaveAccounts();
-                await Rankup(context, user, level);
+                await Rankup(context, user, level).ConfigureAwait(false);
             }
         }
 
@@ -69,22 +69,22 @@ namespace Gideon.Handlers
             else if (level == 6)
             {
                 description.Append($" {user.Mention} is now a Symbiote.");
-                await AddRole(context, user, "Noob", "Symbiote");
+                await AddRole(context, user, "Noob", "Symbiote").ConfigureAwait(false);
             }
             else if (level == 11)
             {
                 description.Append($" {user.Mention} is now a Speedster.");
-                await AddRole(context, user, "Symbiote", "Speedster");
+                await AddRole(context, user, "Symbiote", "Speedster").ConfigureAwait(false);
             }
             else if (level == 16)
             {
                 description.Append($" {user.Mention} is now a Kaiju Slayer.");
-                await AddRole(context, user, "Speedster", "Kaiju Slayer");
+                await AddRole(context, user, "Speedster", "Kaiju Slayer").ConfigureAwait(false);
             }
             else if (level == 21)
             {
                 description.Append($" {user.Mention} is now an Avenger.");
-                await AddRole(context, user, "Kaiju Slayer", "Avenger");
+                await AddRole(context, user, "Kaiju Slayer", "Avenger").ConfigureAwait(false);
             }
             await Utilities.SendEmbed(context.Channel, "Level Up", description.ToString(), Utilities.DomColorFromURL(user.GetAvatarUrl()), "", user.GetAvatarUrl());
         }

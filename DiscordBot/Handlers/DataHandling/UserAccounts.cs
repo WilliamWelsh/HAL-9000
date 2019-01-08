@@ -37,7 +37,7 @@ namespace Gideon
 
         private static UserAccount CreateUserAccount(ulong id)
         {
-            var newAccount = new UserAccount()
+            var newAccount = new UserAccount
             {
                 userID = id,
                 superadmin = false,

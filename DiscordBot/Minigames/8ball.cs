@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Gideon.Minigames
 {
-    class _8ball
+    static class _8ball
     {
         private static string[] answers = { "https://i.imgur.com/sof0Iqn.png", "https://i.imgur.com/cRRRWM8.png", "https://i.imgur.com/3yhp7Fd.png",
             "https://i.imgur.com/PXeTy9m.png", "https://i.imgur.com/cVxDhiT.png", "https://i.imgur.com/KgGNoft.png", "https://i.imgur.com/XiXcw6H.png",

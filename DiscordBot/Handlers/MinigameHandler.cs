@@ -1,5 +1,4 @@
-﻿using Discord;
-using Gideon.Minigames;
+﻿using Gideon.Minigames;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;

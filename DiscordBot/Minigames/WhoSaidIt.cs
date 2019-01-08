@@ -14,7 +14,7 @@ namespace Gideon.Minigames
     {
         public bool isGameGoing = false;
 
-        private List<string> availableOptions = new List<string>();
+        private readonly List<string> availableOptions = new List<string>();
         private string Speaker;
 
         private SocketUser Player;

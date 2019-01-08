@@ -10,10 +10,10 @@ using System.Threading.Tasks;
 
 namespace Gideon
 {
-    class Utilities
+    static class Utilities
     {
         // Universal Web Client
-        public static WebClient webClient = new WebClient();
+        public static readonly WebClient webClient = new WebClient();
 
         // Color Thief (gets the dominant color of an image, makes my embeds look pretty)
         private static ColorThief colorThief = new ColorThief();

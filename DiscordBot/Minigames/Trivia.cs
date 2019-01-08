@@ -11,15 +11,14 @@ namespace Gideon.Minigames
 {
     class Trivia
     {
-        private static readonly Color color = Colors.Green;
-        private bool isTriviaBeingPlayed = false;
-        private SocketGuildUser Player = null;
+        private bool isTriviaBeingPlayed;
+        private SocketGuildUser Player;
         private string correctAnswer, triviaMode;
         private DateTime StartTime;
         private List<SocketGuildUser> PlayersAnswered = new List<SocketGuildUser>();
-        private static Random rdn = new Random();
+        private static readonly Random rdn = new Random();
 
-        private Embed Embed(string description, string footer) => Utilities.Embed("Trivia", description, color, footer, "");
+        private Embed Embed(string description, string footer) => Utilities.Embed("Trivia", description, Colors.Green, footer, "");
 
         private string GetName(SocketGuildUser user) => user.Nickname ?? user.Username;
 
@@ -37,8 +36,8 @@ namespace Gideon.Minigames
                 return;
             }
             if (isTriviaBeingPlayed && (DateTime.Now - StartTime).TotalSeconds > 60)
-                await CancelGame(Player, context);
-            await StartTrivia(user, context, input.Replace("trivia ", ""));
+                await CancelGame(Player, context).ConfigureAwait(false);
+            await StartTrivia(user, context, input.Replace("trivia ", "")).ConfigureAwait(false);
         }
 
         private async Task CancelGame(SocketGuildUser user, SocketCommandContext context)
@@ -68,22 +67,14 @@ namespace Gideon.Minigames
             {
                 if (RandomFakes[n] == Config.triviaQuestions.Questions.ElementAt(QuestionNum).Answer)
                 {
-                    switch (n)
-                    {
-                        case 0:
-                            correctAnswer = "a";
-                            break;
-                        case 1:
-                            correctAnswer = "b";
-                            break;
-                        case 2:
-                            correctAnswer = "c";
-                            break;
-                        case 3:
-                            correctAnswer = "d";
-                            break;
-                    }
-                    break;
+                    if (n == 0)
+                        correctAnswer = "a";
+                    else if (n == 1)
+                        correctAnswer = "b";
+                    else if (n == 2)
+                        correctAnswer = "c";
+                    else
+                        correctAnswer = "d";
                 }
             }
 
@@ -127,7 +118,6 @@ namespace Gideon.Minigames
                     await context.Channel.SendMessageAsync("", false, Embed($"Correct, {user.Mention} won!", $"{GetName(user)} has been awarded 1 coin."));
                     CoinsHandler.AdjustCoins(user, 1);
                     ResetTrivia();
-                    return;
                 }
             }
         }
