@@ -22,7 +22,7 @@ A multi-purpose Discord bot written in C# for my Discord server. The bot is them
 `!trivia` Play trivia.  
 `!play ng` Play a number guessing game.  
 `!rr 2` Start a game of Russian Roulette with two players.  
-`!ttt` Start a game of Tic-Tac-Toe.  
+`!ttt` View Tic-Tac-Toe options (2 player, play against AI/Gideon).    
 #### Extras
 `!coins @mentionedUser` View how many coins someone has.  
 `!lb coins` View the leaderboard for coins.  

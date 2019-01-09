@@ -38,8 +38,8 @@ namespace Gideon
             if (((SocketUser)Reaction.User).IsBot) return;
 
             // If Unbeatable TTT is being played, and the person that added the reaction is the player, then send it
-            if (MinigameHandler.UnbeatableTTT.isGameGoing && MinigameHandler.UnbeatableTTT.Player.Id == Reaction.UserId)
-                await MinigameHandler.UnbeatableTTT.Play(Reaction);
+            await MinigameHandler.ReactToAITicTacToe(Reaction.UserId, Reaction);
+                //await MinigameHandler.UnbeatableTTT.Play(Reaction);
 
             // Rock-Paper-Scissors
             if (MinigameHandler.RPS.MessageID == Reaction.MessageId && MinigameHandler.RPS.Player.Id == Reaction.UserId)

@@ -35,10 +35,9 @@ namespace Gideon.Minigames
         public async Task ModifyMessage (string Description)
         {
             await GameMessage.ModifyAsync(m => { m.Embed = new EmbedBuilder()
-                .WithTitle("Unbeatable Tic-Tac-Toe")
-                .WithColor(Colors.Red)
+                .WithTitle("Tic-Tac-Toe")
+                .WithColor(Colors.Blue)
                 .WithDescription(Description)
-                .AddField("Resources", "[How I Win](https://www.neverstopbuilding.com/blog/minimax) | [Source Code](https://github.com/WilliamWelsh/GideonBot/blob/master/DiscordBot/Minigames/UnbeatableTicTacToe.cs)")
                 .WithFooter($"Playing with {PlayerName}.")
                 .Build(); ;});
         }
@@ -128,10 +127,9 @@ namespace Gideon.Minigames
             isGameGoing = true;
 
             GameMessage = await context.Channel.SendMessageAsync(null, false, new EmbedBuilder()
-                .WithTitle("Unbeatable Tic-Tac-Toe")
-                .WithColor(Colors.Red)
+                .WithTitle("Tic-Tac-Toe")
+                .WithColor(Colors.Blue)
                 .WithDescription("Please wait for the game to load...")
-                .AddField("Resources", "[How I Win](https://www.neverstopbuilding.com/blog/minimax) | [Source Code](https://github.com/WilliamWelsh/GideonBot/blob/master/DiscordBot/Minigames/UnbeatableTicTacToe.cs)")
                 .WithFooter($"Playing with {PlayerName}.")
                 .Build());
 
@@ -196,8 +194,7 @@ namespace Gideon.Minigames
         {
             // No point in checking if the player won (sorry, human)
             await ModifyMessage($"I won.\n\n{PrintBoard}").ConfigureAwait(false);
-            await GameMessage.RemoveAllReactionsAsync().ConfigureAwait(false);
-            MinigameHandler.ResetUTTT();
+            await Reset().ConfigureAwait(false);
         }
 
         // Check for a draw
@@ -206,7 +203,13 @@ namespace Gideon.Minigames
             foreach (var s in Board)
                 if (s == 0) return; // 0 = blank slot, if there is a single blank spot then a draw isn't possible
             await ModifyMessage($"It's a draw!\n\n{PrintBoard}").ConfigureAwait(false);
+            await Reset().ConfigureAwait(false);
+        }
+
+        private async Task Reset()
+        {
             await GameMessage.RemoveAllReactionsAsync().ConfigureAwait(false);
+            isGameGoing = false;
             MinigameHandler.ResetUTTT();
         }
     }

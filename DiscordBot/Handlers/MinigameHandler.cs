@@ -2,6 +2,7 @@
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Gideon.Handlers
 {
@@ -14,6 +15,9 @@ namespace Gideon.Handlers
         public static RussianRoulette RR = new RussianRoulette();
         public static RockPaperScissors RPS = new RockPaperScissors();
         public static UnbeatableTicTacToe UnbeatableTTT = new UnbeatableTicTacToe();
+
+        public struct AITTTPlayer { public SocketUser User { get; set; } public UnbeatableTicTacToe Game { get; set; } }
+        public static List<AITTTPlayer> AITTTPlayers = new List<AITTTPlayer>();
 
         public static async Task DisplayGames(SocketCommandContext context)
         {
@@ -32,10 +36,48 @@ namespace Gideon.Handlers
         public static void ResetUTTT() => UnbeatableTTT = new UnbeatableTicTacToe();
 
         // Start Unbeatable Tic-Tac-Toe
-        public static async Task StartUTTT(SocketCommandContext Context)
+        public static async Task StartAITicTacToe(SocketCommandContext Context)
         {
-            ResetUTTT();
-            await UnbeatableTTT.StartGame(Context);
+            for (int i = 0; i < AITTTPlayers.Count; i++)
+            {
+                if (AITTTPlayers[i].User == Context.User)
+                {
+                    AITTTPlayers[i] = new AITTTPlayer
+                    {
+                        User = Context.User,
+                        Game = new UnbeatableTicTacToe()
+                    };
+                    await AITTTPlayers[i].Game.StartGame(Context).ConfigureAwait(false);
+                    return;
+                }
+            }
+
+            var newPlayer = new AITTTPlayer
+            {
+                User = Context.User,
+                Game = new UnbeatableTicTacToe()
+            };
+            await newPlayer.Game.StartGame(Context).ConfigureAwait(false);
+            AITTTPlayers.Add(newPlayer);
+        }
+
+        // Unbeatable TTT Reaction Handler
+        public static async Task ReactToAITicTacToe(ulong UserID, SocketReaction Reaction)
+        {
+            for (int i = 0; i < AITTTPlayers.Count; i++)
+            {
+                if (AITTTPlayers[i].User.Id == UserID)
+                {
+                    await AITTTPlayers[i].Game.Play(Reaction).ConfigureAwait(false);
+                    return;
+                }
+            }
+        }
+        
+        // Print TTT option
+        public static async Task PrintTTTOptions(ISocketMessageChannel Channel)
+        {
+            await Utilities.SendEmbed(Channel, "Tic-Tac-Toe Options", "`!ttt 2` - 2 Player\n\n`!join ttt` - Join 2 player TTT\n\n`!ttt ai` - Play with Gideon", Colors.Blue, "", "");
         }
 
         // Reset a game
