@@ -3,6 +3,7 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
+using System.Text;
 
 namespace Gideon.Handlers
 {
@@ -83,10 +84,13 @@ namespace Gideon.Handlers
                 .AddField("Joined", GetJoinedDate(user))
                 .AddField("Nickname", user.Nickname ?? "none");
 
-            string roles = string.Join(", ", user.Roles);
+            StringBuilder roles = new StringBuilder();
+            foreach (var role in user.Roles)
+                roles.Append($", {role.Mention}");
 
             // If the user's role description is just "@everyone, " then they have no role, otherwise replace @everyone because that's not a role
-            embed.AddField($"{(user.Roles.Count <= 2 ? "Role" : "Roles")}", roles == "@everyone, " ? "none" : roles.Substring(0, roles.Length - 2).Replace("@everyone, ", ""));
+            string r = roles.ToString();
+            embed.AddField($"{(user.Roles.Count <= 2 ? "Role" : "Roles")}", r == ", @everyone" ? "none" : r.Substring(2, r.Length - 2).Replace("@everyone, ", ""));
 
             var account = UserAccounts.GetAccount(user);
             embed.AddField("Coins", account.coins.ToString("#,##0"))

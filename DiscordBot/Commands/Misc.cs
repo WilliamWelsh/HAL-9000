@@ -7,6 +7,7 @@ using Discord.WebSocket;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.Net.Http;
+using System.IO;
 
 namespace Gideon.Handlers
 {
