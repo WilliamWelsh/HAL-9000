@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace Gideon.Minigames
 {
-    class UnbeatableTicTacToe
+    public class UnbeatableTicTacToe
     {
         readonly int[] Board = new[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
@@ -136,7 +136,7 @@ namespace Gideon.Minigames
             foreach (string Emoji in Emojis)
                 await GameMessage.AddReactionAsync(new Emoji(Emoji));
 
-            await ModifyMessage($"{PlayerName}'s turn.\n\n{PrintBoard}");
+            await ModifyMessage($"{PlayerName}'s turn.\n\n{PrintBoard}").ConfigureAwait(false);
         }
 
         // Make sure the slot the user is trying to play is blank

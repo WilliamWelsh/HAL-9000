@@ -2,12 +2,11 @@
 using Discord;
 using System.Text;
 using System.Linq;
+using System.Net.Http;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-using System.Net.Http;
-using System.IO;
 
 namespace Gideon.Handlers
 {
@@ -41,15 +40,23 @@ namespace Gideon.Handlers
 			await target.SendMessageAsync(message);
 		}
 
-		[Command("onlinecount")]
-		public async Task CountUsersOnline() => await Context.Channel.SendMessageAsync($"There are currently {Context.Guild.Users.ToArray().Length} members online.");
+        // Show when a user joined the server
+		[Command("joined")]
+        public async Task JoinedAt(SocketGuildUser user = null)
+        {
+            var target = user ?? (SocketGuildUser)Context.User;
+            await Utilities.SendDomColorEmbed(Context.Channel, "Joined Date", $"{target.Mention} joined the server on {StatsHandler.GetJoinedDate(target)}.", target.GetAvatarUrl());
+        }
 
-        [Command("joined")]
-        public async Task JoinedAt(SocketGuildUser user = null) => await Context.Channel.SendMessageAsync(StatsHandler.GetJoinedDate((user ?? (SocketGuildUser)Context.User)));
-
+        // Show when a user's account was created
         [Command("created")]
-		public async Task Created(SocketGuildUser user = null) => await Context.Channel.SendMessageAsync(StatsHandler.GetCreatedDate(user ?? Context.User));
+        public async Task Created(SocketGuildUser user = null)
+        {
+            var target = user ?? Context.User;
+            await Utilities.SendDomColorEmbed(Context.Channel, "Creation Date", $"{target.Mention} created their account on {StatsHandler.GetCreatedDate(target)}.", target.GetAvatarUrl());
+        }
 
+        // Show a user's avatar
         [Command("avatar")]
         public async Task GetAvatar(SocketGuildUser user = null) => await Context.Channel.SendMessageAsync("", false, Utilities.ImageEmbed("", "", Utilities.DomColorFromURL((user ?? Context.User).GetAvatarUrl()), "", (user ?? Context.User).GetAvatarUrl().Replace("?size=128", "?size=512")));
 
@@ -62,7 +69,6 @@ namespace Gideon.Handlers
 		public async Task DisplayUserStats(SocketGuildUser user = null) => await StatsHandler.DisplayUserStats(Context, user ?? (SocketGuildUser)Context.User);
 
         // View custom server emotes
-        // broken
         [Command("emotes")]
         [Alias("emojis")]
         public async Task ViewServerEmotes() => await Utilities.SendEmbed(Context.Channel, $"Server Emotes ({Context.Guild.Emotes.Count})", string.Join("", Context.Guild.Emotes), Colors.LightBlue, "", "");
@@ -88,6 +94,7 @@ namespace Gideon.Handlers
             if (!await Utilities.CheckForSuperadmin(Context, Context.User)) return;
             UserAccounts.GetAccount(target).country = name;
 			UserAccounts.SaveAccounts();
+            await Utilities.PrintSuccess(Context.Channel, $"Set {target.Mention}'s country to {name}.");
 			await Context.Channel.SendMessageAsync("User updated.");
 		}
 
@@ -107,7 +114,7 @@ namespace Gideon.Handlers
 		{
             if (!await Utilities.CheckForSuperadmin(Context, Context.User)) return;
             await user.ModifyAsync(x => { x.Nickname = input; });
-			await Context.Channel.SendMessageAsync("User updated.");
+            await Utilities.PrintSuccess(Context.Channel, $"Set {user.Mention}'s nickname to `{input}`.");
 		}
 
 		[Command("gideon")]
@@ -206,7 +213,7 @@ namespace Gideon.Handlers
             if (!await Utilities.CheckForSuperadmin(Context, Context.User)) return;
             RankHandler.GiveUserXP(user, xp);
             await RankHandler.CheckXP(Context, user);
-            await Context.Channel.SendMessageAsync("Updated user.");
+            await Utilities.PrintSuccess(Context.Channel, $"Gave {user.Mention} {xp} xp.");
         }
 
         [Command("xp")]
@@ -226,7 +233,7 @@ namespace Gideon.Handlers
             await Utilities.SendEmbed(Context.Channel, "Ranks", ranks.ToString(), Colors.LightBlue, "You get 15-25 xp for sending a message, but only once a minute.", "");
         }
 
-        // Show everyone on the server who is a fan of Shawn Mendes
+        // Show everyone on the server who are fans of Shawn Mendes
         [Command("mendesarmy")]
         public async Task ShowMendesArmy()
         {
@@ -263,37 +270,6 @@ namespace Gideon.Handlers
         [Command("roles")]
         public async Task FindPeopleInRoles([Remainder]string role) => await Utilities.SendEmbed(Context.Channel, "", FindPeopleWithRoles(role), Context.Guild.Roles.FirstOrDefault(x => x.Name == role).Color, "", "");
 
-        // Show the current version of the bot, the changelog, and a link to the commit
-        [Command("version")]
-        public async Task GetCurrentVersion()
-        {
-            string html = Utilities.webClient.DownloadString("https://github.com/WilliamWelsh/GideonBot");
-            html = html.Substring(html.IndexOf("commit-tease-sha"));
-            html = html.Substring(html.IndexOf("href=\"") + 6);
-
-            string link = "https://github.com" + html.Substring(0, html.IndexOf("\""));
-            html = Utilities.webClient.DownloadString(link);
-
-            string title = html, description = html, time = html;
-
-            title = title.Substring(title.IndexOf("commit-title\">") + 14);
-            title = title.Substring(0, title.IndexOf("</p>")).Replace(" ", "");
-
-            if (description.Contains("<pre"))
-            {
-                description = description.Substring(description.IndexOf("<pre>") + 5);
-                description = description.Substring(0, description.IndexOf("</pre>"));
-            }
-            else
-                description = "No description.";
-            
-            time = time.Substring(time.IndexOf("datetime"));
-            time = time.Substring(time.IndexOf(">") + 1);
-            time = time.Substring(0, time.IndexOf("</"));
-
-            await Utilities.SendEmbed(Context.Channel, "Current Version", $"Version Name: {title}\nUpdate Description:\n{description}\n\nTo view the changed files and code, visit {link}", Colors.LightBlue, $"Last updated {time}", "https://cdn.discordapp.com/avatars/437458514906972180/2d44b9b229fe91b5bff8d13799a1bcf9.png?size=128");
-        }
-
         // Get the dominant color of an image
         [Command("color")]
         public async Task GetDomColor(string url)
@@ -329,7 +305,7 @@ namespace Gideon.Handlers
             {
                 var response = await client.GetAsync(new Uri(url));
                 var emote = await Context.Guild.CreateEmoteAsync(name, new Image(await response.Content.ReadAsStreamAsync()));
-                await Context.Channel.SendMessageAsync($"Created: {emote}");
+                await Utilities.PrintSuccess(Context.Channel, $"Created: {emote}");
             }
         }
 
@@ -337,7 +313,8 @@ namespace Gideon.Handlers
         public async Task DisplayUptime()
         {
             var time = DateTime.UtcNow - System.Diagnostics.Process.GetCurrentProcess().StartTime.ToUniversalTime();
-            await Context.Channel.SendMessageAsync($"{time.Hours} hours, {time.Minutes}m {time.Seconds}s");
+            string uptime = $"{time.Hours} hours, {time.Minutes}m {time.Seconds}s";
+            await Utilities.SendEmbed(Context.Channel, "", uptime, Colors.Blue, "", "");
         }
     }
 }

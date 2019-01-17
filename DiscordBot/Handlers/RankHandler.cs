@@ -11,13 +11,15 @@ namespace Gideon.Handlers
 {
     static class RankHandler
     {
+        // A list of user IDs that have received xp within the last minute
         private static List<ulong> UsersGivenXPInLastMinute = new List<ulong>();
 
+        // Set up the timer
         public static void Start()
         {
             Timer timer = new Timer
             {
-                Interval = (1000 * 60),
+                Interval = 6000, // 1 minute (6000 milliseconds)
                 AutoReset = true,
                 Enabled = true,
             };
@@ -36,12 +38,14 @@ namespace Gideon.Handlers
             await CheckXP(context, user).ConfigureAwait(false);
         }
 
+        // Give a user XP
         public static void GiveUserXP(SocketUser user, int xp)
         {
             UserAccounts.GetAccount(user).xp += xp;
             UserAccounts.SaveAccounts();
         }
 
+        // Try to level up a user
         private static async Task CompareAndSet(SocketCommandContext context, SocketUser user, UserAccount account, uint level, uint targetXP)
         {
             if (account.xp >= targetXP && account.level < level)
@@ -52,12 +56,14 @@ namespace Gideon.Handlers
             }
         }
 
+        // Give a user a role, and take away their old role
         private static async Task AddRole(SocketCommandContext context, SocketUser user, string oldRole, string newRole)
         {
             await (user as IGuildUser).AddRoleAsync(context.Guild.Roles.FirstOrDefault(x => x.Name == newRole));
             await (user as IGuildUser).RemoveRoleAsync(context.Guild.Roles.FirstOrDefault(x => x.Name == oldRole));
         }
 
+        // Rank up a user
         private static async Task Rankup(SocketCommandContext context, SocketUser user, uint level)
         {
             StringBuilder description = new StringBuilder().Append($"{user.Mention} has leveled up to {level}.");
@@ -94,6 +100,7 @@ namespace Gideon.Handlers
         static uint[] xpLevel = { 0, 100, 255, 475, 770, 1150, 1625, 2205, 2900, 3720, 4675, 5775, 7030, 8450, 10045, 11825, 13800, 15900, 18375, 20995, 23850,
         26950, 30305, 33925, 37820, 42000, 46475, 51255, 56350, 61770, 67525, 73625, 80080, 86900, 94095, 101675, 109650, 118030, 126825, 136045, 145700};
 
+        // Check how much xp a user has
         public static async Task CheckXP(SocketCommandContext context, SocketUser user)
         {
             UserAccount account = UserAccounts.GetAccount(user);
@@ -101,6 +108,7 @@ namespace Gideon.Handlers
                 await CompareAndSet(context, user, account, i, xpLevel[i]).ConfigureAwait(false);
         }
 
+        // Show a user's level, xp, and how much xp they need to go to the next level
         public static async Task DisplayLevelAndXP(SocketCommandContext context, SocketUser user)
         {
             UserAccount account = UserAccounts.GetAccount(user);
@@ -113,6 +121,7 @@ namespace Gideon.Handlers
             await Utilities.SendEmbed(context.Channel, $"{(user as SocketGuildUser).Nickname ?? user.Username}'s Level", description.ToString(), rankColor, "", user.GetAvatarUrl());
         }
 
+        // Convert a level to a rank name
         public static string LevelToRank(uint level)
         {
             if (level <= 5)

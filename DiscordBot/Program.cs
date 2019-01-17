@@ -8,14 +8,12 @@ namespace Gideon
 {
     class Program
     {
-        DiscordSocketClient _client;
-
         static void Main(string[] args) => new Program().StartAsync().GetAwaiter().GetResult();
 
         public async Task StartAsync()
         {
             if (Config.bot.DisordBotToken == "" || Config.bot.DisordBotToken == null) return;
-            _client = new DiscordSocketClient(new DiscordSocketConfig { LogLevel = LogSeverity.Verbose });
+            DiscordSocketClient _client = new DiscordSocketClient(new DiscordSocketConfig { LogLevel = LogSeverity.Verbose });
             _client.Log += Log;
 			_client.ReactionAdded += OnReactionAdded;
 			await _client.LoginAsync(TokenType.Bot, Config.bot.DisordBotToken);
@@ -39,7 +37,6 @@ namespace Gideon
 
             // If Unbeatable TTT is being played, and the person that added the reaction is the player, then send it
             await MinigameHandler.ReactToAITicTacToe(Reaction.UserId, Reaction);
-                //await MinigameHandler.UnbeatableTTT.Play(Reaction);
 
             // Rock-Paper-Scissors
             if (MinigameHandler.RPS.MessageID == Reaction.MessageId && MinigameHandler.RPS.Player.Id == Reaction.UserId)

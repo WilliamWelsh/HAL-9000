@@ -12,7 +12,7 @@ namespace Gideon.Minigames
 {
     class WhoSaidIt
     {
-        public bool isGameGoing = false;
+        public bool isGameGoing;
 
         private readonly List<string> availableOptions = new List<string>();
         private string Speaker;

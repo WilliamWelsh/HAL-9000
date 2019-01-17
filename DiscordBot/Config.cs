@@ -56,6 +56,7 @@ namespace Gideon
         public string Answer;
         public List<string> IncorrectAnswers;
     }
+
     public struct TriviaQuestions
     {
         public List<TriviaQuestion> Questions;

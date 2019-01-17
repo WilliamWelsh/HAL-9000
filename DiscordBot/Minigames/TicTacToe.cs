@@ -14,7 +14,7 @@ namespace Gideon.Minigames
 		":white_large_square:", ":white_large_square:", ":white_large_square:",
 		":white_large_square:", ":white_large_square:", ":white_large_square:" };
 
-		private string writeBoard => $"{boardSlots[0]}{boardSlots[1]}{boardSlots[2]}\n{boardSlots[3]}{boardSlots[4]}{boardSlots[5]}\n{boardSlots[6]}{boardSlots[7]}{boardSlots[8]}";
+		private string WriteBoard => $"{boardSlots[0]}{boardSlots[1]}{boardSlots[2]}\n{boardSlots[3]}{boardSlots[4]}{boardSlots[5]}\n{boardSlots[6]}{boardSlots[7]}{boardSlots[8]}";
 
         private readonly List<string> Emojis = new List<string>(new[] { "↖", "⬆", "↗", "⬅", "⏺", "➡", "↙", "⬇", "↘" });
 
@@ -28,7 +28,7 @@ namespace Gideon.Minigames
 		{
 			if (!isGameGoing) return;
 			currentTurnUser = currentTurnUser == Player1 ? Player2 : Player1;
-			await ModifyMessage($"It is {currentTurnUser.Mention}'s turn.\n\n{writeBoard}").ConfigureAwait(false);
+			await ModifyMessage($"It is {currentTurnUser.Mention}'s turn.\n\n{WriteBoard}").ConfigureAwait(false);
 		}
 
         private async Task ModifyMessage (string Description)
@@ -67,7 +67,7 @@ namespace Gideon.Minigames
             foreach (string Emoji in Emojis)
                 await GameMessage.AddReactionAsync(new Emoji(Emoji));
 
-			await ModifyMessage($"It is {Player1.Mention}'s turn.\n\n{writeBoard}").ConfigureAwait(false);
+			await ModifyMessage($"It is {Player1.Mention}'s turn.\n\n{WriteBoard}").ConfigureAwait(false);
 			currentTurnUser = Player1;
 		}
 
@@ -130,7 +130,7 @@ namespace Gideon.Minigames
 		private async Task DeclareWinner(string letter)
 		{
 			SocketGuildUser winner = letter == ":x:" ? Player1 : Player2;
-			await ModifyMessage($"{winner.Mention} has won!\n\n{writeBoard}").ConfigureAwait(false);
+			await ModifyMessage($"{winner.Mention} has won!\n\n{WriteBoard}").ConfigureAwait(false);
             MinigameHandler.ResetTTT();
 		}
 
@@ -138,7 +138,7 @@ namespace Gideon.Minigames
 		{
 			foreach (var s in boardSlots)
 				if (s == ":white_large_square:") return;
-			await ModifyMessage($"It's a draw!\n\n{writeBoard}").ConfigureAwait(false);
+			await ModifyMessage($"It's a draw!\n\n{WriteBoard}").ConfigureAwait(false);
             MinigameHandler.ResetTTT();
 		}
 	}

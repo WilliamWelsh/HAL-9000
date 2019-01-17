@@ -43,6 +43,9 @@ namespace Gideon
             .WithImageUrl(imageURL)
             .Build();
 
+        // Print a success message
+        public static async Task PrintSuccess(ISocketMessageChannel channel, string description) => await SendEmbed(channel, "Success", description, Colors.Green, "", "").ConfigureAwait(false);
+
         // Print an error
         public static async Task PrintError(ISocketMessageChannel channel, string description) => await SendEmbed(channel, "Error", description, Colors.Red, "", "").ConfigureAwait(false);
 
@@ -96,6 +99,12 @@ namespace Gideon
         public static async Task SendEmbed(ISocketMessageChannel channel, string title, string description, Discord.Color color, string footer, string thumbnailURL)
         {
             await channel.SendMessageAsync(null, false, Embed(title, description, color, footer, thumbnailURL)).ConfigureAwait(false);
+        }
+
+        // Send an embed to a channel
+        public static async Task SendDomColorEmbed(ISocketMessageChannel channel, string title, string description, string imageURL, string footer = null)
+        {
+            await channel.SendMessageAsync(null, false, Embed(title, description, DomColorFromURL(imageURL), footer, imageURL)).ConfigureAwait(false);
         }
     }
 }

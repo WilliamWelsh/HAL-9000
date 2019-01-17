@@ -1,4 +1,5 @@
-﻿using Gideon.Minigames;
+﻿using System;
+using Gideon.Minigames;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
@@ -16,8 +17,7 @@ namespace Gideon.Handlers
         public static RockPaperScissors RPS = new RockPaperScissors();
         public static UnbeatableTicTacToe UnbeatableTTT = new UnbeatableTicTacToe();
 
-        public struct AITTTPlayer { public SocketUser User { get; set; } public UnbeatableTicTacToe Game { get; set; } }
-        public static List<AITTTPlayer> AITTTPlayers = new List<AITTTPlayer>();
+        public static readonly List<AITTTPlayer> AITTTPlayers = new List<AITTTPlayer>();
 
         public static async Task DisplayGames(SocketCommandContext context)
         {
@@ -42,21 +42,13 @@ namespace Gideon.Handlers
             {
                 if (AITTTPlayers[i].User == Context.User)
                 {
-                    AITTTPlayers[i] = new AITTTPlayer
-                    {
-                        User = Context.User,
-                        Game = new UnbeatableTicTacToe()
-                    };
+                    AITTTPlayers[i] = new AITTTPlayer(Context.User, new UnbeatableTicTacToe());
                     await AITTTPlayers[i].Game.StartGame(Context).ConfigureAwait(false);
                     return;
                 }
             }
 
-            var newPlayer = new AITTTPlayer
-            {
-                User = Context.User,
-                Game = new UnbeatableTicTacToe()
-            };
+            var newPlayer = new AITTTPlayer(Context.User, new UnbeatableTicTacToe());
             await newPlayer.Game.StartGame(Context).ConfigureAwait(false);
             AITTTPlayers.Add(newPlayer);
         }
@@ -113,6 +105,34 @@ namespace Gideon.Handlers
                 await Utilities.PrintError(context.Channel, "Please specify a game to reset.");
             else
                 await Utilities.PrintError(context.Channel, $"I was unable to find the `{game}` game.\n\nAvailable games to reset:\nTrivia\n`!trivia`\n\nTic-Tac-Toe\n`!ttt`\n\nNumber Guess\n`!play ng`\n\nRussian Roulette\n`!rr`");
+        }
+    }
+
+    //public struct AITTTPlayer { public SocketUser User { get; set; } public UnbeatableTicTacToe Game { get; set; } }
+    public class AITTTPlayer : IEquatable<AITTTPlayer>
+    {
+        public SocketUser User { get; }
+        public UnbeatableTicTacToe Game { get; }
+
+        public AITTTPlayer(SocketUser user, UnbeatableTicTacToe game)
+        {
+            User = user;
+            Game = game;
+        }
+
+        public bool Equals(AITTTPlayer other)
+        {
+            return User.Id == other.User.Id;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as AITTTPlayer);
+        }
+
+        public override int GetHashCode()
+        {
+            return 0; // Sorry
         }
     }
 }

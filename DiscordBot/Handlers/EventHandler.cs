@@ -37,12 +37,13 @@ namespace Gideon
             return Task.CompletedTask;
         }
 
-        // Send a message in #general saying a user has been banned
+        // Send a message in #general saying a user has been unbanned
         private async Task HandleUserUnbanned(SocketUser arg1, SocketGuild arg2)
         {
             await Utilities.SendEmbed(arg2.GetTextChannel(294699220743618561), "Pardon", $"{arg1} has been unbanned.", Colors.Green, "", arg1.GetAvatarUrl());
         }
 
+        // Send a message in #general saying a user has been banned
         private async Task HandleUserBanned(SocketUser arg1, SocketGuild arg2)
         {
             var bans = arg2.GetBansAsync().Result.ToList();
@@ -56,6 +57,7 @@ namespace Gideon
                 await Utilities.SendEmbed(arg2.GetTextChannel(294699220743618561), "Ban", $"{arg1} has been banned for {reason}.", Colors.Red, "", arg1.GetAvatarUrl());
         }
 
+        // Send a message in #general saying a user as joined
         private async Task HandleUserJoining(SocketGuildUser arg)
         {
             if (arg.IsBot)
@@ -74,6 +76,7 @@ namespace Gideon
             await Utilities.SendEmbed(arg.Guild.GetTextChannel(294699220743618561), "New User", desc, Colors.Green, "", arg.GetAvatarUrl());
         }
 
+        // Send a message in #general saying a user as left
         private async Task HandleUserLeaving(SocketGuildUser arg)
         {
             if (arg.IsBot)
@@ -82,6 +85,7 @@ namespace Gideon
                 await Utilities.SendEmbed(arg.Guild.GetTextChannel(294699220743618561), "User Left", $"{arg} has left the server.", Colors.Red, "", arg.GetAvatarUrl());
         }
 
+        // Spelling mistakes and corresponding fixes
         readonly string[] spellingMistakes = { "should of", "would of", "wouldnt of", "wouldn't of", "would not of", "couldnt of", "couldn't of", "could not of", "better of", "shouldnt of", "shouldn't of", "should not of", "alot", "could of" };
         readonly string[] spellingFix = { "should have", "would have", "wouldn't have", "wouldn't have", "would not have", "couldn't have", "couldn't have", "could not have", "better have", "shouldn't have", "shouldn't have", "should not have", "a lot", "could have" };
 
