@@ -59,4 +59,4 @@ DISABLED `!time (user)` (limited) View the local time for a user.
 `!version` View the latest GitHub commit details & link.  
 `!reverse (text)`  Reverse text.  
 
-and many more commands that I don't feel like writing here
+and many more commands that I don't feel like writing here.
