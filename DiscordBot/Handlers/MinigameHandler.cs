@@ -4,12 +4,16 @@ using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Gideon.Handlers
 {
     class MinigameHandler
     {
         public static Trivia Trivia = new Trivia();
+        public static TriviaQuestions TriviaQuestions;
+
+
         public static TicTacToe TTT = new TicTacToe();
         public static WhoSaidIt WSI = new WhoSaidIt();
         public static NumberGuess NG = new NumberGuess();
@@ -19,6 +23,13 @@ namespace Gideon.Handlers
 
         public static readonly List<AITTTPlayer> AITTTPlayers = new List<AITTTPlayer>();
 
+        // Set up Trivia Questions
+        public static void InitialTriviaSetup()
+        {
+            TriviaQuestions = JsonConvert.DeserializeObject<TriviaQuestions>(System.IO.File.ReadAllText("Minigames/Trivia/trivia_questions.json"));
+        }
+
+        // Display available minigames
         public static async Task DisplayGames(SocketCommandContext context)
         {
             if (!await Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
@@ -108,7 +119,7 @@ namespace Gideon.Handlers
         }
     }
 
-    //public struct AITTTPlayer { public SocketUser User { get; set; } public UnbeatableTicTacToe Game { get; set; } }
+    //  Player data for an instance of Unbeatable Tic Tac Toe
     public class AITTTPlayer : IEquatable<AITTTPlayer>
     {
         public SocketUser User { get; }
@@ -120,19 +131,29 @@ namespace Gideon.Handlers
             Game = game;
         }
 
-        public bool Equals(AITTTPlayer other)
-        {
-            return User.Id == other.User.Id;
-        }
+        public bool Equals(AITTTPlayer other) => User.Id == other.User.Id;
 
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as AITTTPlayer);
-        }
+        public override bool Equals(object obj) => Equals(obj as AITTTPlayer);
 
-        public override int GetHashCode()
-        {
-            return 0; // Sorry
-        }
+        public override int GetHashCode() => 0; // Sorry
+    }
+
+    // Trivia Questions
+    public partial class TriviaQuestions
+    {
+        [JsonProperty("Questions")]
+        public TriviaQuestion[] Questions { get; set; }
+    }
+
+    public partial class TriviaQuestion
+    {
+        [JsonProperty("Question")]
+        public string QuestionQuestion { get; set; }
+
+        [JsonProperty("Answer")]
+        public string Answer { get; set; }
+
+        [JsonProperty("IncorrectAnswers")]
+        public string[] IncorrectAnswers { get; set; }
     }
 }

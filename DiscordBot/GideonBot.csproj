@@ -202,7 +202,7 @@
     <Compile Include="Minigames\TicTacToe.cs" />
     <Compile Include="Minigames\UnbeatableTicTacToe.cs" />
     <Compile Include="Minigames\WhoSaidIt.cs" />
-    <Compile Include="Minigames\Trivia.cs" />
+    <Compile Include="Minigames\Trivia\Trivia.cs" />
     <Compile Include="Commands\Misc.cs" />
     <Compile Include="Handlers\CoinsHandler.cs" />
     <Compile Include="Program.cs" />
@@ -214,6 +214,9 @@
   <ItemGroup>
     <None Include="App.config">
       <SubType>Designer</SubType>
+    </None>
+    <None Include="Minigames\Trivia\trivia_questions.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config">
       <SubType>Designer</SubType>

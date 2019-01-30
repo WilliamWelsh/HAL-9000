@@ -1,6 +1,7 @@
 ﻿using System;
 using Discord;
 using System.Linq;
+using System.Text;
 using Gideon.Handlers;
 using Discord.Commands;
 using Discord.WebSocket;
@@ -40,32 +41,32 @@ namespace Gideon.Minigames
             await StartTrivia(user, context, input.Replace("trivia ", "")).ConfigureAwait(false);
         }
 
-        private async Task CancelGame(SocketGuildUser user, SocketCommandContext context)
+        private async Task CancelGame(SocketGuildUser user, SocketCommandContext Context)
         {
             CoinsHandler.AdjustCoins(user, -1);
-            await context.Channel.SendMessageAsync("", false, Embed($"{user.Mention} took too long to answer and lost 1 coin.", ""));
+            await Context.Channel.SendMessageAsync("", false, Embed($"{user.Mention} took too long to answer and lost 1 coin.", ""));
         }
 
-        private async Task StartTrivia(SocketGuildUser user, SocketCommandContext context, string mode)
+        private async Task StartTrivia(SocketGuildUser user, SocketCommandContext Context, string mode)
         {
             Player = user;
             triviaMode = mode;
             isTriviaBeingPlayed = true;
             StartTime = DateTime.Now;
-            int QuestionNum = Utilities.GetRandomNumber(0, Config.triviaQuestions.Questions.Count);
+            var Question = MinigameHandler.TriviaQuestions.Questions[Utilities.GetRandomNumber(0, MinigameHandler.TriviaQuestions.Questions.Count())];
+            
+            string[] Answers = {"","","",""};
 
-            string[] Fakes = {"","","",""};
+            Answers[0] = Question.IncorrectAnswers[0];
+            Answers[1] = Question.IncorrectAnswers[1];
+            Answers[2] = Question.IncorrectAnswers[2];
+            Answers[3] = Question.Answer;
 
-            Fakes[0] = Config.triviaQuestions.Questions.ElementAt(QuestionNum).IncorrectAnswers.ElementAt(0);
-            Fakes[1] = Config.triviaQuestions.Questions.ElementAt(QuestionNum).IncorrectAnswers.ElementAt(1);
-            Fakes[2] = Config.triviaQuestions.Questions.ElementAt(QuestionNum).IncorrectAnswers.ElementAt(2);
-            Fakes[3] = Config.triviaQuestions.Questions.ElementAt(QuestionNum).Answer;
-
-            string[] RandomFakes = Fakes.OrderBy(x => rdn.Next()).ToArray();
+            Answers = Answers.OrderBy(x => rdn.Next()).ToArray();
 
             for (int n = 0; n < 4; n++)
             {
-                if (RandomFakes[n] == Config.triviaQuestions.Questions.ElementAt(QuestionNum).Answer)
+                if (Answers[n] == Question.Answer)
                 {
                     if (n == 0)
                         correctAnswer = "a";
@@ -78,17 +79,19 @@ namespace Gideon.Minigames
                 }
             }
 
-            string Description = $"\n{Config.triviaQuestions.Questions.ElementAt(QuestionNum).Question}?\n" +
-                $"a) {RandomFakes[0]}\n" +
-                $"b) {RandomFakes[1]}\n" +
-                $"c) {RandomFakes[2]}\n" +
-                $"d) {RandomFakes[3]}";
+            StringBuilder Description = new StringBuilder()
+                .AppendLine($"{Question.QuestionQuestion}?\n")
+                .AppendLine($"a) {Answers[0]}\n")
+                .AppendLine($"b) {Answers[1]}\n")
+                .AppendLine($"c) {Answers[2]}\n")
+                .AppendLine($"d) {Answers[3]}");
             string Footer = mode == "solo" ? $"Only {GetName(user)} can answer." : "First to answer wins!";
-            await context.Channel.SendMessageAsync("", false, Embed(Description, Footer));
+            await Context.Channel.SendMessageAsync("", false, Embed(Description.ToString(), Footer));
         }
 
         public async Task AnswerTrivia(SocketGuildUser user, SocketCommandContext context, string input)
         {
+            // Solo Mode Answer
             if (user == Player && triviaMode == "solo")
             {
                 if (input == correctAnswer)
@@ -103,6 +106,8 @@ namespace Gideon.Minigames
                 ResetTrivia();
                 return;
             }
+
+            // All Mode answer
             if (triviaMode == "all" && isTriviaBeingPlayed)
             {
                 for (int i = 0; i < PlayersAnswered.Count; i++)
