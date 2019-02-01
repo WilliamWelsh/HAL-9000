@@ -233,18 +233,6 @@ namespace Gideon.Handlers
             await Utilities.SendEmbed(Context.Channel, "Ranks", ranks.ToString(), Colors.LightBlue, "You get 15-25 xp for sending a message, but only once a minute.", "");
         }
 
-        // Show everyone on the server who are fans of Shawn Mendes
-        [Command("mendesarmy")]
-        public async Task ShowMendesArmy()
-        {
-            StringBuilder users = new StringBuilder();
-            var role = Context.Guild.Roles.FirstOrDefault(x => x.Name == "Shawn Mendes Fan");
-            foreach (var user in Context.Guild.Users)
-                if (user.Roles.Contains(role))
-                    users.AppendLine(user.Mention);
-            await Utilities.SendEmbed(Context.Channel, $"Mendes Army ({users.ToString().Split('\n').Length - 1})", users.ToString(), new Color(208, 185, 179), "Shawn Mendes Fans", "https://cdn.discordapp.com/avatars/519261973737635842/55e95c3bd26751828c96802292897a41.png?size=128");
-        }
-
         // Display All Bans
         [Command("bans")]
         public async Task ShowBans()

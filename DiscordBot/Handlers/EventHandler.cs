@@ -40,7 +40,7 @@ namespace Gideon
         // Send a message in #general saying a user has been unbanned
         private async Task HandleUserUnbanned(SocketUser arg1, SocketGuild arg2)
         {
-            await Utilities.SendEmbed(arg2.GetTextChannel(294699220743618561), "Pardon", $"{arg1} has been unbanned.", Colors.Green, "", arg1.GetAvatarUrl());
+            await Utilities.SendEmbed(arg2.GetTextChannel(294699220743618561), "Pardon", $"{arg1} has been unbanned.", Colors.Green, arg1.Id.ToString(), arg1.GetAvatarUrl());
         }
 
         // Send a message in #general saying a user has been banned
@@ -52,9 +52,9 @@ namespace Gideon
                 if (ban.User.Id == arg1.Id)
                     reason = ban.Reason;
             if (reason == "")
-                await Utilities.SendEmbed(arg2.GetTextChannel(294699220743618561), "Ban", $"{arg1} has been banned.", Colors.Red, "", arg1.GetAvatarUrl());
+                await Utilities.SendEmbed(arg2.GetTextChannel(294699220743618561), "Ban", $"{arg1} has been banned.", Colors.Red, arg1.Id.ToString(), arg1.GetAvatarUrl());
             else
-                await Utilities.SendEmbed(arg2.GetTextChannel(294699220743618561), "Ban", $"{arg1} has been banned for {reason}.", Colors.Red, "", arg1.GetAvatarUrl());
+                await Utilities.SendEmbed(arg2.GetTextChannel(294699220743618561), "Ban", $"{arg1} has been banned for {reason}.", Colors.Red, arg1.Id.ToString(), arg1.GetAvatarUrl());
         }
 
         // Send a message in #general saying a user as joined
@@ -63,7 +63,7 @@ namespace Gideon
             if (arg.IsBot)
             {
                 await (arg as IGuildUser).AddRoleAsync(arg.Guild.Roles.FirstOrDefault(x => x.Name == "Bot"));
-                await Utilities.SendEmbed(arg.Guild.GetTextChannel(294699220743618561), "New Bot", $"The {arg.Username} bot has been added to the server.", Colors.Green, "", arg.GetAvatarUrl());
+                await Utilities.SendEmbed(arg.Guild.GetTextChannel(294699220743618561), "New Bot", $"The {arg.Username} bot has been added to the server.", Colors.Green, arg.Id.ToString(), arg.GetAvatarUrl());
                 return;
             }
             string desc = $"{arg} has joined the server.";
@@ -73,16 +73,22 @@ namespace Gideon
                 await (arg as IGuildUser).AddRoleAsync(arg.Guild.Roles.FirstOrDefault(x => x.Name == rank));
                 desc += $" Their rank has been restored to {rank}.";
             }
-            await Utilities.SendEmbed(arg.Guild.GetTextChannel(294699220743618561), "New User", desc, Colors.Green, "", arg.GetAvatarUrl());
+            await Utilities.SendEmbed(arg.Guild.GetTextChannel(294699220743618561), "New User", desc, Colors.Green, arg.Id.ToString(), arg.GetAvatarUrl());
         }
 
         // Send a message in #general saying a user as left
         private async Task HandleUserLeaving(SocketGuildUser arg)
         {
+            // If they're banned, don't show that they're leaving
+            var bans = arg.Guild.GetBansAsync().Result.ToList();
+            foreach (var ban in bans)
+                if (ban.User.Id == arg.Id)
+                    return;
+
             if (arg.IsBot)
-                await Utilities.SendEmbed(arg.Guild.GetTextChannel(294699220743618561), "Bot Removed", $"The {arg.Username} bot has been removed from the server.", Colors.Red, "", arg.GetAvatarUrl());
+                await Utilities.SendEmbed(arg.Guild.GetTextChannel(294699220743618561), "Bot Removed", $"The {arg.Username} bot has been removed from the server.", Colors.Red, arg.Id.ToString(), arg.GetAvatarUrl());
             else
-                await Utilities.SendEmbed(arg.Guild.GetTextChannel(294699220743618561), "User Left", $"{arg} has left the server.", Colors.Red, "", arg.GetAvatarUrl());
+                await Utilities.SendEmbed(arg.Guild.GetTextChannel(294699220743618561), "User Left", $"{arg} has left the server.", Colors.Red, arg.Id.ToString(), arg.GetAvatarUrl());
         }
 
         // Spelling mistakes and corresponding fixes
