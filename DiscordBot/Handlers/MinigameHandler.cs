@@ -15,9 +15,10 @@ namespace Gideon.Handlers
         public static Trivia Trivia = new Trivia();
         public static TriviaQuestions TriviaQuestions;
 
+        public static WhoSaidIt WSI = new WhoSaidIt();
+        public static WhoSaidItResources WhoSaidItResources;
 
         public static TicTacToe TTT = new TicTacToe();
-        public static WhoSaidIt WSI = new WhoSaidIt();
         public static NumberGuess NG = new NumberGuess();
         public static RussianRoulette RR = new RussianRoulette();
         public static RockPaperScissors RPS = new RockPaperScissors();
@@ -30,6 +31,9 @@ namespace Gideon.Handlers
         {
             using (StreamReader sr = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Gideon.Minigames.Resources.trivia_questions.json")))
                 TriviaQuestions = JsonConvert.DeserializeObject<TriviaQuestions>(sr.ReadToEnd());
+
+            using (StreamReader sr = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Gideon.Minigames.Resources.wsi_quotes.json")))
+                WhoSaidItResources = JsonConvert.DeserializeObject<WhoSaidItResources>(sr.ReadToEnd());
         }
 
         // Display available minigames
@@ -142,13 +146,13 @@ namespace Gideon.Handlers
     }
 
     // Trivia Questions
-    public partial class TriviaQuestions
+    public class TriviaQuestions
     {
         [JsonProperty("Questions")]
         public TriviaQuestion[] Questions { get; set; }
     }
 
-    public partial class TriviaQuestion
+    public class TriviaQuestion
     {
         [JsonProperty("Question")]
         public string QuestionQuestion { get; set; }
@@ -158,5 +162,24 @@ namespace Gideon.Handlers
 
         [JsonProperty("IncorrectAnswers")]
         public string[] IncorrectAnswers { get; set; }
+    }
+
+    // Who Said It? Resources
+    public class WhoSaidItResources
+    {
+        [JsonProperty("Quotes")]
+        public WSIQuote[] Quotes { get; set; }
+
+        [JsonProperty("Options")]
+        public string[] Options { get; set; }
+    }
+
+    public class WSIQuote
+    {
+        [JsonProperty("Quote")]
+        public string QuoteQuote { get; set; }
+
+        [JsonProperty("Speaker")]
+        public string Speaker { get; set; }
     }
 }

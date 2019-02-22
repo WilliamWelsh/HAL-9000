@@ -240,6 +240,7 @@
       <SubType>Designer</SubType>
     </None>
     <EmbeddedResource Include="Minigames\Resources\trivia_questions.json" />
+    <EmbeddedResource Include="Minigames\Resources\wsi_quotes.json" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

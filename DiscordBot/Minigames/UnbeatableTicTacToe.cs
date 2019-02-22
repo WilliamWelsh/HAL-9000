@@ -25,8 +25,8 @@ namespace Gideon.Minigames
         string PrintBoard => $"{NumberToEmoji(Board[0])}{NumberToEmoji(Board[1])}{NumberToEmoji(Board[2])}\n{NumberToEmoji(Board[3])}{NumberToEmoji(Board[4])}{NumberToEmoji(Board[5])}\n{NumberToEmoji(Board[6])}{NumberToEmoji(Board[7])}{NumberToEmoji(Board[8])}";
 
         RestUserMessage GameMessage;
-        public SocketGuildUser Player;
-        public bool isGameGoing;
+        private SocketGuildUser Player;
+        private bool isGameGoing;
         bool HasValidMove = true;
         string PlayerName;
         readonly List<string> Emojis = new List<string>(new[] { "↖", "⬆", "↗", "⬅", "⏺", "➡", "↙", "⬇", "↘" });

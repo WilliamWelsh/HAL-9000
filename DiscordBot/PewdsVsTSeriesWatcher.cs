@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.IO;
+using System.Text;
 using Discord.Rest;
 using System.Timers;
 using System.Threading.Tasks;
@@ -7,18 +8,24 @@ namespace Gideon
 {
     class PewdsVsTSeriesWatcher
     {
-        private Timer statusTimer;
         private RestUserMessage StatusMessage;
 
         private const string URL = "https://realtimeyoutube.com/tseries-overtakes-pewdiepie";
 
+        private int lowestRecorded;
+
+        private bool hasGoneUnderOnce;
+
         public async Task SetUp(RestUserMessage statusMessage)
         {
             StatusMessage = statusMessage;
+
+            lowestRecorded = int.Parse(File.ReadAllText("count.txt"));
+
             // Set up the timer
-            statusTimer = new Timer()
+            Timer statusTimer = new Timer
             {
-                Interval = 20000,
+                Interval = 15000,
                 AutoReset = true,
                 Enabled = true
             };
@@ -43,16 +50,26 @@ namespace Gideon
             int tseriesCount = int.Parse(tseries);
             int difference = pewdCount - tseriesCount;
 
+            if (difference < lowestRecorded)
+            {
+                File.WriteAllText("count.txt", difference.ToString());
+                lowestRecorded = difference;
+            }
+
             StringBuilder description = new StringBuilder()
                 .AppendLine($"PewDiePie: `{pewdCount.ToString("#,##0")}`")
-                .AppendLine($"TSeries: `{tseriesCount.ToString("#,##0")}`").AppendLine()
-                .AppendLine($"Subscriber Difference: `{difference.ToString("#,##0")}`");
+                .AppendLine($"T-Series: `{tseriesCount.ToString("#,##0")}`")
+                .AppendLine()
+                .AppendLine($"Subscriber Difference: `{difference.ToString("#,##0")}`")
+                .AppendLine()
+                .AppendLine($"Lowest Recorded: `{lowestRecorded.ToString("#,##0")}`");
 
             await StatusMessage.ModifyAsync(m => { m.Embed = Utilities.Embed("PewDiePie vs TSeries", description.ToString(), Colors.Blue, "", ""); });
 
-            if (difference <= 0)
+            if (difference <= 0 && !hasGoneUnderOnce)
             {
-                await StatusMessage.Channel.SendMessageAsync(null, false, Utilities.Embed("PewDiePie vs TSeries", $"@everyone PEWDIEPIE WENT BEHIND TSERIES AT {difference} SUBSCRIBERS", Colors.Blue, "", ""));
+                hasGoneUnderOnce = true;
+                await StatusMessage.Channel.SendMessageAsync(null, false, Utilities.Embed("PewDiePie vs T-Series", $"@everyone PEWDIEPIE WENT BEHIND TSERIES AT {difference} SUBSCRIBERS", Colors.Blue, "", ""));
             }
         }
     }

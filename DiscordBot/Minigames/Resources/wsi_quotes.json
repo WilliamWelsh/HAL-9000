@@ -1,0 +1,109 @@
+﻿{
+  "Quotes": [
+    {
+      "Quote": "Perfectly balanced, as all things should be.",
+      "Speaker": "Thanos"
+    },
+    {
+      "Quote": "I am a God, you dull creature.",
+      "Speaker": "Loki"
+    },
+    {
+      "Quote": "Our powers don't decide who we are. We do.",
+      "Speaker": "Barry Allen"
+    },
+    {
+      "Quote": "There's an Ant-Man *and* a Spider-Man?",
+      "Speaker": "The Hulk"
+    },
+    {
+      "Quote": "Thank you, sweet rabbit.",
+      "Speaker": "Thor"
+    },
+    {
+      "Quote": "Hear me, and rejoice. You are about to die at the hand of the children of Thanos. Be thankful, that your meaningless lives are now contributed to the balance...",
+      "Speaker": "Ebony Maw"
+    },
+    {
+      "Quote": "Stonekeeper, does this chattering animal speak for you?",
+      "Speaker": "Ebony Maw"
+    },
+    {
+      "Quote": "That means get lost, Squidward!",
+      "Speaker": "Tony Stark"
+    },
+    {
+      "Quote": "What master do I serve? What am I supposed to say? Jesus?",
+      "Speaker": "Star-Lord"
+    },
+    {
+      "Quote": "Yeah, I'll do you one better - WHO is Gamora?",
+      "Speaker": "Tony Stark"
+    },
+    {
+      "Quote": "I'm gonna ask you this one time, where is Gamora?",
+      "Speaker": "Star-Lord"
+    },
+    {
+      "Quote": "I'll do YOU one better! WHY is Gamora?",
+      "Speaker": "Drax"
+    },
+    {
+      "Quote": "You're embarrassing me in front of the wizards.",
+      "Speaker": "Tony Stark"
+    },
+    {
+      "Quote": "Madness, as you know, is a lot like gravity. All it takes is a little push.",
+      "Speaker": "The Joker"
+    },
+    {
+      "Quote": "What doesn't kill you makes you stranger.",
+      "Speaker": "The Joker"
+    },
+    {
+      "Quote": "Only together, can we bring about my return.",
+      "Speaker": "Savitar"
+    },
+    {
+      "Quote": "Vengeance has confusmed you. It's consuming them. I am done letting it consume me.",
+      "Speaker": "T'Challa"
+    }
+  ],
+  "Options": [
+    "Thanos",
+    "Red Skull",
+    "Ultron",
+    "Loki",
+    "Barry Allen",
+    "Iron Man",
+    "Captain America",
+    "The Hulk",
+    "Black Widow",
+    "Hawkeye",
+    "Nick Fury",
+    "Eobard Thawne",
+    "Proxima Midnight",
+    "Ebony Maw",
+    "Cull Obsidian",
+    "Doctor Strange",
+    "Wong",
+    "Hela",
+    "Thor",
+    "Batman",
+    "Superman",
+    "Wonder Woman",
+    "Zoom",
+    "Cisco Ramone",
+    "Supergirl",
+    "Star-Lord",
+    "Groot",
+    "Drax",
+    "Ronin",
+    "Captain Marvel",
+    "Gamora",
+    "Nebula",
+    "Phil Coulson",
+    "Yondu",
+    "The Joker"
+  ]
+}

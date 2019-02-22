@@ -30,15 +30,16 @@ namespace Gideon.Minigames
 
             isGameGoing = true;
             Player = context.User;
-            int quoteIndex = Utilities.GetRandomNumber(0, Config.whoSaidItResources.Quotes.Count);
+            WSIQuote Quote = MinigameHandler.WhoSaidItResources.Quotes[Utilities.GetRandomNumber(0, MinigameHandler.WhoSaidItResources.Quotes.Length)];
+            //int quoteIndex = Utilities.GetRandomNumber(0, Config.whoSaidItResources.Quotes.Count);
 
-            Speaker = Config.whoSaidItResources.Quotes[quoteIndex].Speaker;
+            Speaker = Quote.Speaker;
             availableOptions.Add(Speaker);
 
             // Add 3 other random options
             do
             {
-                string option = Config.whoSaidItResources.Options[Utilities.GetRandomNumber(1, Config.whoSaidItResources.Options.Count)];
+                string option = MinigameHandler.WhoSaidItResources.Options[Utilities.GetRandomNumber(1, 4)];
                 if (!availableOptions.Contains(option))
                     availableOptions.Add(option);
             } while (availableOptions.Count != 4);
@@ -62,6 +63,7 @@ namespace Gideon.Minigames
 
             await context.Channel.SendMessageAsync("", false, new EmbedBuilder()
                 .WithTitle("Who Said It?")
+                .WithDescription(Quote.QuoteQuote)
                 .WithColor(Colors.Green)
                 .WithFooter($"Only {((SocketGuildUser)context.User).Nickname ?? context.User.Username} can answer.")
                 .AddField("Options", options)

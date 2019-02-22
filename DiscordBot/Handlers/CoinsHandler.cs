@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace Gideon.Handlers
 {
-    class CoinsHandler
+    static class CoinsHandler
     {
         private const string icon = "https://i.imgur.com/w09rWQg.png";
 

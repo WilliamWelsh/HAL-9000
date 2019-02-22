@@ -23,7 +23,7 @@ namespace Gideon
             EventHandler _handler = new EventHandler();
             await _handler.InitializeAsync(_client);
 
-            await Task.Delay(3000);
+            await Task.Delay(3000).ConfigureAwait(false);
             await new PewdsVsTSeriesWatcher().SetUp(await _client.GetGuild(294699220743618561).GetTextChannel(548356800995524618).GetMessageAsync(548356888996216832) as RestUserMessage);
 
             await Task.Delay(-1).ConfigureAwait(false);
