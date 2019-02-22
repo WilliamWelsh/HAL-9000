@@ -1,10 +1,12 @@
 ﻿using System;
+using System.IO;
+using Newtonsoft.Json;
 using Gideon.Minigames;
 using Discord.Commands;
 using Discord.WebSocket;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 
 namespace Gideon.Handlers
 {
@@ -26,7 +28,8 @@ namespace Gideon.Handlers
         // Set up Trivia Questions
         public static void InitialTriviaSetup()
         {
-            TriviaQuestions = JsonConvert.DeserializeObject<TriviaQuestions>(System.IO.File.ReadAllText("Minigames/Trivia/trivia_questions.json"));
+            using (StreamReader sr = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Gideon.Minigames.Resources.trivia_questions.json")))
+                TriviaQuestions = JsonConvert.DeserializeObject<TriviaQuestions>(sr.ReadToEnd());
         }
 
         // Display available minigames

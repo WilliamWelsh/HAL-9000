@@ -28,13 +28,12 @@ A multi-purpose Discord bot written in C# for my Discord server. The bot is them
 `!lb coins` View the leaderboard for coins.  
 `!lb joined` View the earliest people who joined the server.  
 `!lb creatd` View the people on the server with the oldest accounts.  
-`!movie (movie name)` Get stats for a movie.  
-`!tv (tv show name)` Get stats for a TV show.  
 `!mock (text to mock)` Mock some text like that one Spongebob meme.  
 `!someone` Mention a random user.  
 `!someone @mentionedUser` See how many times it takes to find the user randomly.  
 `!australia (text)` Turn text upside down.  
 `!source` or `!sourcecode` View Gideon's source code.  
+
 #### Leaderboard Commands
 `!lb` View available leaderboards.  
 `!lb joined` View the people who joined the server first.  
@@ -42,8 +41,6 @@ A multi-purpose Discord bot written in C# for my Discord server. The bot is them
 `!lb created` or `!lb old` View the oldest accounts on the server.  
 `!lb level` View the people with the highest level.  
 #### Misc and Notes
-DISABLED `!time (user)` (limited) View the local time for a user.  
-`!country (user)` (limited) View someone's country.  
 `!alani` Posts a random picture of Alani.  
 `lennyface` Posts a lennyface.  
 `!hex (red) (green) (blue)` Convert an RGB value a hexadecimal.  
@@ -55,7 +52,6 @@ DISABLED `!time (user)` (limited) View the local time for a user.
 `!emotes` View the server emotes.  
 `!serverstats` View the server stats.  
 `!bans` View server bans.  
-`!mendesarmy` View everyone on the server that is a fan of Shawn Mendes.  
 `!version` View the latest GitHub commit details & link.  
 `!reverse (text)`  Reverse text.  
 
