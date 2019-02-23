@@ -1,6 +1,6 @@
 ﻿using System.IO;
-using Gideon.Handlers;
 using Newtonsoft.Json;
+using Gideon.Handlers;
 using System.Collections.Generic;
 
 namespace Gideon
@@ -8,6 +8,12 @@ namespace Gideon
     static class Config
     {
         public static readonly BotConfig bot;
+
+        public static readonly List<ulong> MyBots = new List<ulong>() {
+            436780808745910282, // Alani
+            477287091798278145, // Rotten Tomatoes
+            529569000028373002 // Time Bot
+        };
 
         static Config()
         {

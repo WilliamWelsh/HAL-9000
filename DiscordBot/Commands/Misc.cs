@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using Discord.Commands;
 using Discord.WebSocket;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 
@@ -240,7 +241,12 @@ namespace Gideon.Handlers
             StringBuilder bans = new StringBuilder();
             var banArray = Context.Guild.GetBansAsync().Result.ToArray();
             foreach (var ban in banArray)
-                bans.AppendLine($"{ban.User} for `{ban.Reason}`").AppendLine();
+            {
+                if (string.IsNullOrEmpty(ban.Reason))
+                    bans.AppendLine($"{ban.User} for `No reason specified`.").AppendLine();
+                else
+                    bans.AppendLine($"{ban.User} for `{ban.Reason}`.").AppendLine();
+            }
             await Utilities.SendEmbed(Context.Channel, $"Server Bans ({banArray.Length})", bans.ToString(), Colors.Red, "", "");
         }
 
@@ -300,7 +306,7 @@ namespace Gideon.Handlers
         [Command("uptime")]
         public async Task DisplayUptime()
         {
-            var time = DateTime.UtcNow - System.Diagnostics.Process.GetCurrentProcess().StartTime.ToUniversalTime();
+            var time = DateTime.UtcNow - Process.GetCurrentProcess().StartTime.ToUniversalTime();
             string uptime = $"{time.Hours} hours, {time.Minutes}m {time.Seconds}s";
             await Utilities.SendEmbed(Context.Channel, "", uptime, Colors.Blue, "", "");
         }

@@ -64,7 +64,7 @@ namespace Gideon
                 .AppendLine()
                 .AppendLine($"Lowest Recorded: `{lowestRecorded.ToString("#,##0")}`");
 
-            await StatusMessage.ModifyAsync(m => { m.Embed = Utilities.Embed("PewDiePie vs TSeries", description.ToString(), Colors.Blue, "", ""); });
+            await StatusMessage.ModifyAsync(m => { m.Embed = Utilities.Embed("PewDiePie vs T-Series", description.ToString(), Colors.Blue, "", ""); });
 
             if (difference <= 0 && !hasGoneUnderOnce)
             {

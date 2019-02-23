@@ -14,10 +14,16 @@ namespace Gideon
         DiscordSocketClient _client;
         CommandService _service;
 
+        SocketTextChannel GeneralChat;
+
         public async Task InitializeAsync(DiscordSocketClient client)
         {
             _client = client;
             _service = new CommandService();
+
+            await Task.Delay(3000).ConfigureAwait(false); // Allow time to log in
+            GeneralChat = client.GetGuild(294699220743618561).GetTextChannel(294699220743618561);
+
             await _service.AddModulesAsync(Assembly.GetEntryAssembly(), null);
 
             _client.MessageReceived += HandleCommandAsync;
@@ -28,7 +34,24 @@ namespace Gideon
             _client.UserJoined += HandleUserJoining;
             _client.UserLeft += HandleUserLeaving;
 
+            _client.GuildMemberUpdated += HandleGuildMemberUpdate;
+
             _service.Log += Log;
+        }
+
+        // Notify me when one of MY bots goes offline
+        private async Task HandleGuildMemberUpdate(SocketGuildUser arg1, SocketGuildUser arg2)
+        {
+            if (arg1.IsBot && arg1.Status == UserStatus.Online && arg2.Status == UserStatus.Offline && Config.MyBots.Contains(arg1.Id))
+            {
+                await GeneralChat.SendMessageAsync("@Reverse#0666 ");
+                await Utilities.SendEmbed(GeneralChat, "Bot Error", $"{arg1.Mention} has gone offline!", Colors.Red, "", arg1.GetAvatarUrl());
+            }
+        }
+
+        private async Task HandleUserUpdate(SocketUser arg1, SocketUser arg2)
+        {
+            //Console.WriteLine("X");
         }
 
         private Task Log(LogMessage arg)

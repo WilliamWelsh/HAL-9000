@@ -25,7 +25,6 @@ namespace Gideon.Minigames
         string PrintBoard => $"{NumberToEmoji(Board[0])}{NumberToEmoji(Board[1])}{NumberToEmoji(Board[2])}\n{NumberToEmoji(Board[3])}{NumberToEmoji(Board[4])}{NumberToEmoji(Board[5])}\n{NumberToEmoji(Board[6])}{NumberToEmoji(Board[7])}{NumberToEmoji(Board[8])}";
 
         RestUserMessage GameMessage;
-        private SocketGuildUser Player;
         private bool isGameGoing;
         bool HasValidMove = true;
         string PlayerName;
@@ -122,7 +121,7 @@ namespace Gideon.Minigames
         // Start the game (!uttt)
         public async Task StartGame(SocketCommandContext context)
         {
-            Player = (SocketGuildUser)context.User;
+            var Player = (SocketGuildUser)context.User;
             PlayerName = Player.Nickname ?? Player.Username;
             isGameGoing = true;
 

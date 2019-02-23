@@ -31,7 +31,6 @@ namespace Gideon.Minigames
             isGameGoing = true;
             Player = context.User;
             WSIQuote Quote = MinigameHandler.WhoSaidItResources.Quotes[Utilities.GetRandomNumber(0, MinigameHandler.WhoSaidItResources.Quotes.Length)];
-            //int quoteIndex = Utilities.GetRandomNumber(0, Config.whoSaidItResources.Quotes.Count);
 
             Speaker = Quote.Speaker;
             availableOptions.Add(Speaker);
@@ -39,7 +38,7 @@ namespace Gideon.Minigames
             // Add 3 other random options
             do
             {
-                string option = MinigameHandler.WhoSaidItResources.Options[Utilities.GetRandomNumber(1, 4)];
+                string option = MinigameHandler.WhoSaidItResources.Options[Utilities.GetRandomNumber(1, MinigameHandler.WhoSaidItResources.Options.Length)];
                 if (!availableOptions.Contains(option))
                     availableOptions.Add(option);
             } while (availableOptions.Count != 4);
