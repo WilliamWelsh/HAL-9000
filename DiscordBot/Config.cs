@@ -9,7 +9,7 @@ namespace Gideon
     {
         public static readonly BotConfig bot;
 
-        public static readonly List<ulong> MyBots = new List<ulong>() {
+        public static readonly List<ulong> MyBots = new List<ulong> {
             436780808745910282, // Alani
             477287091798278145, // Rotten Tomatoes
             529569000028373002 // Time Bot

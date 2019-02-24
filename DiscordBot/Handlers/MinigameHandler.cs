@@ -24,7 +24,7 @@ namespace Gideon.Handlers
         public static RockPaperScissors RPS = new RockPaperScissors();
         public static UnbeatableTicTacToe UnbeatableTTT = new UnbeatableTicTacToe();
 
-        public static readonly List<AITTTPlayer> AITTTPlayers = new List<AITTTPlayer>();
+        private static readonly List<AITTTPlayer> AITTTPlayers = new List<AITTTPlayer>();
 
         // Set up Trivia Questions
         public static void InitialTriviaSetup()
