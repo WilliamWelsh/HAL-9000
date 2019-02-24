@@ -310,5 +310,9 @@ namespace Gideon.Handlers
             string uptime = $"{time.Hours} hours, {time.Minutes}m {time.Seconds}s";
             await Utilities.SendEmbed(Context.Channel, "", uptime, Colors.Blue, "", "");
         }
+
+        [Command("showerthought")]
+        [Alias("shower thought", "st", "showerthoughts", "shower thoughts")]
+        public async Task DisplayShowerThought() => await ShowerThoughts.PrintRandomThought(Context.Channel);
     }
 }

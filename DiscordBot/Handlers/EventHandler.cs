@@ -164,7 +164,8 @@ namespace Gideon
                     await MinigameHandler.Trivia.AnswerTrivia((SocketGuildUser)msg.Author, context, m);
 
                 // Answer "Who Said It?"
-                if (int.TryParse(m, out int x))
+                int x;
+                if (int.TryParse(m, out x))
                     if (x <= 4 && x >= 1 && MinigameHandler.WSI.isGameGoing)
                         await MinigameHandler.WSI.TryToGuess(context, x);
             }
