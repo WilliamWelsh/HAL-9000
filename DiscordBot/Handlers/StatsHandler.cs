@@ -12,14 +12,6 @@ namespace Gideon.Handlers
         public static string GetCreatedDate(IUser user) => user.CreatedAt.ToString("MMMM dd, yyy");
         public static string GetJoinedDate(SocketGuildUser user) => ((DateTimeOffset)user.JoinedAt).ToString("MMMM dd, yyy");
 
-        private static string GetTime(SocketGuildUser user)
-        {
-            if (UserAccounts.GetAccount(user).localTime == 999)
-                return $"Not set.\nContact Reverse to set it up.";
-            DateTime localTime = DateTime.Now.AddHours(UserAccounts.GetAccount(user).localTime);
-            return $"It's {localTime.ToString("h:mm tt")} for {user.Nickname ?? user.Username}.\n{localTime.ToString("dddd, MMMM d.")}";
-        }
-
         // Print server stats
         public static async Task DisplayServerStats(SocketCommandContext context) => await context.Channel.SendMessageAsync("", false, new EmbedBuilder()
             .WithTitle(context.Guild.Name)
@@ -97,7 +89,6 @@ namespace Gideon.Handlers
                 .AddField("Country", $"{GetFlag(account.country)} {account.country}")
                 .AddField("Level", account.level.ToString())
                 .AddField("XP", account.xp.ToString("#,##0"))
-                .AddField("Local Time", GetTime(user))
                 .WithColor(Utilities.DomColorFromURL(user.GetAvatarUrl()))
                 .WithThumbnailUrl(user.GetAvatarUrl());
             await context.Channel.SendMessageAsync(null, false, embed.Build());

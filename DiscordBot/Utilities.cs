@@ -52,9 +52,8 @@ namespace Gideon
         // Get a dominant color from an image (url)
         public static Discord.Color DomColorFromURL(string url)
         {
-            byte[] bytes = webClient.DownloadData(url);
-            using (webClient)
-            using (MemoryStream ms = new MemoryStream(bytes))
+            using (WebClient client = new WebClient())
+            using (MemoryStream ms = new MemoryStream(client.DownloadData(url)))
             using (Bitmap bitmap = new Bitmap(System.Drawing.Image.FromStream(ms)))
             {
                 // Remove the '#' from the string and get the hexadecimal
@@ -78,9 +77,20 @@ namespace Gideon
 		}
 
         // Checks if a user is a superadmin, this is to see if they can do a certain command
+        // 0 - No Access
+        // 50 - Moderator Commands
+        // 101 - Me Only
+        public static async Task<bool> CheckForAdmin(SocketCommandContext context, SocketUser user)
+        {
+            if (UserAccounts.GetAccount(user).accessLevel >= 50)
+                return true;
+            await PrintError(context.Channel, $"You do not have permission to do that command, {user.Mention}.").ConfigureAwait(false);
+            return false;
+        }
+
         public static async Task<bool> CheckForSuperadmin(SocketCommandContext context, SocketUser user)
         {
-            if (UserAccounts.GetAccount(user).superadmin)
+            if (UserAccounts.GetAccount(user).accessLevel >= 101)
                 return true;
             await PrintError(context.Channel, $"You do not have permission to do that command, {user.Mention}.").ConfigureAwait(false);
             return false;

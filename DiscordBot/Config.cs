@@ -1,13 +1,13 @@
 ﻿using System.IO;
-using Newtonsoft.Json;
 using Gideon.Handlers;
+using System.Reflection;
 using System.Collections.Generic;
 
 namespace Gideon
 {
     static class Config
     {
-        public static readonly BotConfig bot;
+        public static List<string> AlaniPictures;
 
         public static readonly List<ulong> MyBots = new List<ulong> {
             436780808745910282, // Alani
@@ -15,29 +15,23 @@ namespace Gideon
             529569000028373002 // Time Bot
         };
 
-        static Config()
+        public static void Setup()
         {
+            // Start giving people xp for their messages
             RankHandler.Start();
-            MinigameHandler.InitialTriviaSetup();
 
+            // Set up trivia questions & who said it? questions
+            MinigameHandler.SetUpMinigames();
+
+            // Create my resources folder if it doesn't exist
             if (!Directory.Exists("Resources"))
                 Directory.CreateDirectory("Resources");
 
-            // If the file doesn't exist, WriteAllText with the json
-            // If it exists, deserialize the json into the corresponding object
-
-            // config.json
-            if (!File.Exists("Resources/config.json"))
-                File.WriteAllText("Resources/config.json", JsonConvert.SerializeObject(bot, Formatting.Indented));
-            else
-                bot = JsonConvert.DeserializeObject<BotConfig>(File.ReadAllText("Resources/config.json"));
+            // Set the AlaniPictures list up
+            AlaniPictures = new List<string>();
+            using (StreamReader sr = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Gideon.AlaniPictures.txt")))
+                while (sr.Peek() >= 0)
+                    AlaniPictures.Add(sr.ReadLine());
         }
-    }
-
-    public struct BotConfig
-    {
-        public string DisordBotToken;
-        public List<string> Rs;
-        public List<string> alaniPics;
     }
 }

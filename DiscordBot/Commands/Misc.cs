@@ -78,16 +78,6 @@ namespace Gideon.Handlers
         [Command("serverstats")]
 		public async Task ServerStats() => await StatsHandler.DisplayServerStats(Context);
 
-		// Set the time for a user
-		[Command("time set")]
-		public async Task UserTimeSet(SocketGuildUser target, int offset)
-		{
-            if (!await Utilities.CheckForSuperadmin(Context, Context.User)) return;
-            UserAccounts.GetAccount(target).localTime = offset;
-			UserAccounts.SaveAccounts();
-			await Context.Channel.SendMessageAsync("User updated.");
-		}
-
 		// Set the nationality for a user
 		[Command("country set")]
 		public async Task UserSetCountry(SocketGuildUser target, [Remainder]string name)
@@ -113,7 +103,7 @@ namespace Gideon.Handlers
         [Command("nick")]
 		public async Task NicknameUser(SocketGuildUser user, [Remainder]string input)
 		{
-            if (!await Utilities.CheckForSuperadmin(Context, Context.User)) return;
+            if (!await Utilities.CheckForAdmin(Context, Context.User)) return;
             await user.ModifyAsync(x => { x.Nickname = input; });
             await Utilities.PrintSuccess(Context.Channel, $"Set {user.Mention}'s nickname to `{input}`.");
 		}
@@ -195,15 +185,7 @@ namespace Gideon.Handlers
         [Command("alani")]
         public async Task RandomAlaniPic()
         {
-            string pic = Config.bot.alaniPics[Utilities.GetRandomNumber(0, Config.bot.alaniPics.Count)];
-            await Context.Channel.SendMessageAsync("", false, Utilities.ImageEmbed("", "", Utilities.DomColorFromURL(pic), "", pic));
-        }
-
-        // Send a random picture of R
-        [Command("r")]
-        public async Task DisplayRandomR()
-        {
-            string pic = Config.bot.Rs[Utilities.GetRandomNumber(0, Config.bot.Rs.Count)];
+            string pic = Config.AlaniPictures[Utilities.GetRandomNumber(0, Config.AlaniPictures.Count)];
             await Context.Channel.SendMessageAsync("", false, Utilities.ImageEmbed("", "", Utilities.DomColorFromURL(pic), "", pic));
         }
 
@@ -283,8 +265,7 @@ namespace Gideon.Handlers
                 .AppendLine("```json\n  {")
                 .AppendLine($"    \"userID\": {(user == null ? Context.User.Id : user.Id)},")
                 .AppendLine($"    \"coins\": {account.coins},")
-                .AppendLine($"    \"superadmin\": {account.superadmin.ToString().ToLower()},")
-                .AppendLine($"    \"localTime\": {account.localTime},")
+                .AppendLine($"    \"accessLevel\": {account.accessLevel},")
                 .AppendLine($"    \"country\": {account.country},")
                 .AppendLine($"    \"xp\": {account.xp},")
                 .AppendLine($"    \"level\": {account.level}")
@@ -314,5 +295,57 @@ namespace Gideon.Handlers
         [Command("showerthought")]
         [Alias("shower thought", "st", "showerthoughts", "shower thoughts")]
         public async Task DisplayShowerThought() => await ShowerThoughts.PrintRandomThought(Context.Channel);
+
+        [Command("restart")]
+        public async Task RestartBot(SocketGuildUser Bot)
+        {
+            if (!await Utilities.CheckForAdmin(Context, Context.User)) return;
+            if (!Bot.IsBot)
+            {
+                await Utilities.PrintError(Context.Channel, "That user is not a bot.");
+                return;
+            }
+            else if (!Config.MyBots.Contains(Bot.Id))
+            {
+                await Utilities.PrintError(Context.Channel, "That bot cannot be restarted.");
+                return;
+            }
+
+            string path = "";
+            string fileName = "";
+
+            if (Bot.Id == 436780808745910282) // Alani
+            {
+                path = @"C:\Users\Administrator\Desktop\AlaniBot";
+                fileName = @"C:\Users\Administrator\Desktop\AlaniBot\AlaniBot.exe";
+            }
+            else if (Bot.Id == 477287091798278145) // Rotten Tomatoes
+            {
+                path = @"C:\Users\Administrator\Desktop\RTBot";
+                fileName = @"C:\Users\Administrator\Desktop\RTBot\RottenTomatoes.exe";
+            }
+            else if (Bot.Id == 529569000028373002) // Time Bot
+            {
+                path = @"C:\Users\Administrator\Desktop\TimeBot";
+                fileName = @"C:\Users\Administrator\Desktop\TimeBot\TimeBot.exe";
+            }
+
+            var procceses = Process.GetProcessesByName(fileName.Substring(fileName.LastIndexOf("\\") + 1).Replace(".exe", "")); // one less variable ok??
+            if (procceses != null)
+                foreach (var process in procceses)
+                    process.Kill();
+
+            Process.Start(new ProcessStartInfo { FileName = fileName, WorkingDirectory = path });
+            await Utilities.SendEmbed(Context.Channel, "Back Online", $"{Bot.Mention} has been restarted by {Context.User.Mention}.", Colors.Green, "", Bot.GetAvatarUrl());
+        }
+
+        [Command("set access")]
+        public async Task SetAccessLevel(SocketGuildUser user, int level)
+        {
+            if (!await Utilities.CheckForSuperadmin(Context, Context.User)) return;
+            UserAccounts.GetAccount(user).accessLevel = level;
+            UserAccounts.SaveAccounts();
+            await Utilities.PrintSuccess(Context.Channel, $"{Context.User.Mention} set {user.Mention}'s access level to {level}.");
+        }
     }
 }

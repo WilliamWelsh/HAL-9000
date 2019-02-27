@@ -1,5 +1,6 @@
 ﻿using System;
 using Discord;
+using System.IO;
 using Discord.Rest;
 using Gideon.Handlers;
 using Discord.WebSocket;
@@ -13,11 +14,14 @@ namespace Gideon
 
         public async Task StartAsync()
         {
-            if (Config.bot.DisordBotToken == "" || Config.bot.DisordBotToken == null) return;
+            if (string.IsNullOrEmpty(File.ReadAllText("Resources/token.txt"))) return;
+
+            Config.Setup();
+
             DiscordSocketClient _client = new DiscordSocketClient(new DiscordSocketConfig { LogLevel = LogSeverity.Verbose });
             _client.Log += Log;
 			_client.ReactionAdded += OnReactionAdded;
-			await _client.LoginAsync(TokenType.Bot, Config.bot.DisordBotToken);
+			await _client.LoginAsync(TokenType.Bot, File.ReadAllText("Resources/token.txt"));
             await _client.StartAsync();
             await _client.SetGameAsync("users", null, ActivityType.Listening);
             EventHandler _handler = new EventHandler();

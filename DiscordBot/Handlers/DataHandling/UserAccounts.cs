@@ -40,8 +40,7 @@ namespace Gideon
             var newAccount = new UserAccount
             {
                 userID = id,
-                superadmin = false,
-                localTime = 999,
+                accessLevel = 0,
                 country = "Not set.",
                 coins = 0,
                 xp = 0,

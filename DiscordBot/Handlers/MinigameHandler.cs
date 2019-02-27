@@ -27,7 +27,7 @@ namespace Gideon.Handlers
         private static readonly List<AITTTPlayer> AITTTPlayers = new List<AITTTPlayer>();
 
         // Set up Trivia Questions
-        public static void InitialTriviaSetup()
+        public static void SetUpMinigames()
         {
             using (StreamReader sr = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Gideon.Minigames.Resources.trivia_questions.json")))
                 TriviaQuestions = JsonConvert.DeserializeObject<TriviaQuestions>(sr.ReadToEnd());
@@ -93,7 +93,7 @@ namespace Gideon.Handlers
         // Reset a game
         public static async Task ResetGame(SocketCommandContext context, string game)
         {
-            if (!await Utilities.CheckForSuperadmin(context, context.User)) return;
+            if (!await Utilities.CheckForAdmin(context, context.User)) return;
             else if (game == "trivia")
             {
                 await Utilities.SendEmbed(context.Channel, "MiniGames", $"{context.User.Mention} has reset Trivia.", Colors.Green, "", "");
