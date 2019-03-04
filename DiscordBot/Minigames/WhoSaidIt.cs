@@ -21,8 +21,7 @@ namespace Gideon.Minigames
 
         public async Task TryToStartGame(SocketCommandContext context)
         {
-            if (!await Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
-            else if (isGameGoing)
+            if (isGameGoing)
             {
                 await Utilities.PrintError(context.Channel, $"Sorry, {context.User.Mention} a game is currently ongoing.\nYou can ask an admin to `!reset wsi` if there is an issue.");
                 return;

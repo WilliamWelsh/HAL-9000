@@ -8,6 +8,7 @@ namespace Gideon
     static class Config
     {
         public static List<string> AlaniPictures;
+        public const ulong MiniGamesChannel = 518846214603669537;
 
         public static readonly List<ulong> MyBots = new List<ulong> {
             436780808745910282, // Alani

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 namespace Gideon.Handlers
 {
     [RequireContext(ContextType.Guild)]
+    [RequireChannel(Config.MiniGamesChannel)]
     public class MinigameCommands : ModuleBase<SocketCommandContext>
     {
         // Display a list of MiniGames
@@ -13,6 +14,7 @@ namespace Gideon.Handlers
 
         // Reset a game
         [Command("reset")]
+        [RequireRole("Administrator")]
         public async Task ResetAGame([Remainder]string game = "") => await MinigameHandler.ResetGame(Context, game);
 
         // Start a "Who Said It?" game
@@ -77,15 +79,14 @@ namespace Gideon.Handlers
         public async Task GuessNG(int input) => await MinigameHandler.NG.TryToGuess((SocketGuildUser)Context.User, Context, input);
         #endregion
 
-        #region 8-Ball Commands
-        // Display 8-Ball instructions
-        [Command("8ball")]
-        public async Task Play8Ball() => await Minigames._8ball.Greet8Ball(Context);
-
         // Print 8-ball menu or play 8-Ball
         [Command("8ball")]
-        public async Task Play8Ball([Remainder]string question) => await Minigames._8ball.Play8Ball(Context);
-        #endregion
-
+        public async Task Play8Ball([Remainder]string question = null)
+        {
+            if (string.IsNullOrEmpty(question))
+                await Minigames._8ball.Play8Ball(Context);
+            else
+                await Minigames._8ball.Greet8Ball(Context);
+        }
     }
 }

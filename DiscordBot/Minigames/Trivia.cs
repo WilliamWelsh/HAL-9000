@@ -25,7 +25,6 @@ namespace Gideon.Minigames
 
         public async Task TryToStartTrivia(SocketGuildUser user, SocketCommandContext context, string input)
         {
-            if (!await Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
             if (isTriviaBeingPlayed && (DateTime.Now - StartTime).TotalSeconds < 60)
             {
                 await Utilities.PrintError(context.Channel, $"Sorry, {Player.Mention} is currently playing.\nYou can ask an admin to `!reset trivia` if there is an issue.");

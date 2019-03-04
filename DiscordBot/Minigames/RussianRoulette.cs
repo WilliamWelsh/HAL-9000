@@ -40,7 +40,6 @@ namespace Gideon.Minigames
 
         public async Task TryToStartGame(SocketCommandContext context, string input)
         {
-            if (!await Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
             if (isGameGoing)
             {
                 await context.Channel.SendMessageAsync("", false, embed($"Sorry, {host.Mention} is currently hosting a game.", "", false));
@@ -76,7 +75,6 @@ namespace Gideon.Minigames
 
         public async Task TryToJoin(SocketCommandContext context)
         {
-            if (!await Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
             if (!isGameGoing || Players.Count == PlayerSlots) return;
 
             SocketGuildUser newPlayer = (SocketGuildUser)context.User;
@@ -89,8 +87,6 @@ namespace Gideon.Minigames
 
         public async Task PullTrigger(SocketCommandContext context)
         {
-            if (!await Utilities.CheckForChannel(context, 518846214603669537, context.User) || !isGameGoing) return;
-
             SocketGuildUser player = (SocketGuildUser)context.User;
             if (Players.ElementAt(currentTurn) != player) return;
             await DoRound(player, context).ConfigureAwait(false);

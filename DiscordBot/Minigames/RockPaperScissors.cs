@@ -20,7 +20,6 @@ namespace Gideon.Minigames
 
         public async Task StartRPS(SocketCommandContext context)
         {
-            if (!await Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
             string name = ((SocketGuildUser)context.User).Nickname ?? context.User.Username;
             RestUserMessage m = await context.Channel.SendMessageAsync("", false, embed("Pick your play and see if you can beat me!", $"{name} is playing."));
             await m.AddReactionAsync(new Emoji("📰"));

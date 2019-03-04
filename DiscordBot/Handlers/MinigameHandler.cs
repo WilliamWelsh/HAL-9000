@@ -39,7 +39,6 @@ namespace Gideon.Handlers
         // Display available minigames
         public static async Task DisplayGames(SocketCommandContext context)
         {
-            if (!await Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
             await Utilities.SendEmbed(context.Channel, "MiniGames", "Trivia\n`!trivia`\n\nTic-Tac-Toe\n`!ttt`\n\nNumber Guess\n`!play ng`\n\nRussian Roulette\n`!rr`\n\n8-Ball\n`!8ball`", Colors.Green, "", "");
         }
 
@@ -93,8 +92,7 @@ namespace Gideon.Handlers
         // Reset a game
         public static async Task ResetGame(SocketCommandContext context, string game)
         {
-            if (!await Utilities.CheckForAdmin(context, context.User)) return;
-            else if (game == "trivia")
+            if (game == "trivia")
             {
                 await Utilities.SendEmbed(context.Channel, "MiniGames", $"{context.User.Mention} has reset Trivia.", Colors.Green, "", "");
                 Trivia.ResetTrivia();

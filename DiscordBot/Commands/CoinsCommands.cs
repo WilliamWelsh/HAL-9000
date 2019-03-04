@@ -12,7 +12,9 @@ namespace Gideon.Handlers
         public async Task PickPocketCoins(SocketGuildUser user = null) => await CoinsHandler.PickPocket(Context, user);
 
         // Start a Coins Lottery
+        [IsOwner]
         [Command("coins lottery start")]
+        [RequireChannel(Config.MiniGamesChannel)]
         public async Task StartCoinsLottery(int amount, int cost) => await CoinsHandler.StartCoinsLottery(Context, amount, cost);
 
         // Join the Coins Lottery
@@ -20,28 +22,25 @@ namespace Gideon.Handlers
         public async Task JoinCoinsLottery() => await CoinsHandler.JoinCoinsLottery(Context);
 
         // Draw the Coins Lottery
+        [IsOwner]
         [Command("coins lottery draw")]
+        [RequireChannel(Config.MiniGamesChannel)]
         public async Task DrawCoinsLottery() => await CoinsHandler.DrawLottery(Context);
 
         // Reset Coins Lottery
+        [IsOwner]
         [Command("coins lottery reset")]
         public async Task ResetCoinsLottery() => await CoinsHandler.ResetCoinsLottery(Context, true);
 
         // Spawn Coins for a user
+        [IsOwner]
         [Command("coins spawn")]
-        public async Task SpawnCoins(SocketGuildUser user, [Remainder]int amount)
-        {
-            if (!await Utilities.CheckForSuperadmin(Context, Context.User)) return;
-            await CoinsHandler.SpawnCoins(Context, user, amount);
-        }
+        public async Task SpawnCoins(SocketGuildUser user, [Remainder]int amount) => await CoinsHandler.SpawnCoins(Context, user, amount);
 
         // Remove Coins for a user
+        [IsOwner]
         [Command("coins remove")]
-        public async Task RemoveCoins(SocketGuildUser user, [Remainder]int amount)
-        {
-            if (!await Utilities.CheckForSuperadmin(Context, Context.User)) return;
-            await CoinsHandler.RemoveCoins(Context, user, amount);
-        }
+        public async Task RemoveCoins(SocketGuildUser user, [Remainder]int amount) => await CoinsHandler.RemoveCoins(Context, user, amount);
 
         // See how many Coins another user has
         [Command("coins")]
@@ -53,6 +52,12 @@ namespace Gideon.Handlers
 
         // Coins Store
         [Command("coins store")]
+        [Alias("store")]
         public async Task CoinsStore() => await CoinsHandler.DisplayCoinsStore(Context, (SocketGuildUser)Context.User, Context.Channel);
+
+        // Coins Store
+        [Command("coins buy 1")]
+        [Alias("store buy 1")]
+        public async Task BuyItemInStore() => await CoinsHandler.BuySpaceStone(Context, Context.Channel);
     }
 }

@@ -60,7 +60,6 @@ namespace Gideon.Minigames
 
         public async Task TryToStartGame(int RandomNumber, SocketGuildUser user, SocketCommandContext context, int players)
         {
-            if (!await Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
             if (isGamingGoing) return;
             isGamingGoing = true;
             number = RandomNumber;
@@ -74,7 +73,6 @@ namespace Gideon.Minigames
 
         public async Task JoinGame(SocketGuildUser user, SocketCommandContext context)
         {
-            if (!await Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
             if (!isGamingGoing)
             {
                 await context.Channel.SendMessageAsync("", false, Embed("There is no game currently going.\n\nType `!help ng` for Number Guess game help.", "", false)).ConfigureAwait(false);
@@ -96,10 +94,9 @@ namespace Gideon.Minigames
 
         public async Task TryToGuess(SocketGuildUser user, SocketCommandContext context, int input)
         {
-            if (!await Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
             if (!isGamingGoing) return;
-            if (playerSlots != Players.Count && playerSlots != 0)
-                return;
+            else if (playerSlots != Players.Count && playerSlots != 0) return;
+
             bool isPlaying = false;
             foreach(Player p in Players)
             {

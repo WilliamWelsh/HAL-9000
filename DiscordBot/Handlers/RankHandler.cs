@@ -89,8 +89,13 @@ namespace Gideon.Handlers
             }
             else if (level == 21)
             {
+                description.Append($" {user.Mention} is now part of the Watchmen.");
+                await AddRole(context, user, "Kaiju Slayer", "Watchmen").ConfigureAwait(false);
+            }
+            else if (level == 26)
+            {
                 description.Append($" {user.Mention} is now an Avenger.");
-                await AddRole(context, user, "Kaiju Slayer", "Avenger").ConfigureAwait(false);
+                await AddRole(context, user, "Watchmen", "Avenger").ConfigureAwait(false);
             }
             await Utilities.SendEmbed(context.Channel, "Level Up", description.ToString(), Utilities.DomColorFromURL(user.GetAvatarUrl()), "", user.GetAvatarUrl());
         }
@@ -132,8 +137,23 @@ namespace Gideon.Handlers
                 return "Speedster";
             else if (level > 15 && level <= 20)
                 return "Kaiju Slayer";
+            else if (level > 20 && level <= 25)
+                return "Watchmen";
             else
                 return "Avenger";
         }
+
+        /*
+            if (level <= 5)
+                return "Noob";
+            else if (level > 5 && level <= 10)
+                return "Symbiote";
+            else if (level > 10 && level <= 15)
+                return "Speedster";
+            else if (level > 15 && level <= 20)
+                return "Kaiju Slayer";
+            else
+                return "Avenger";
+        */
     }
 }

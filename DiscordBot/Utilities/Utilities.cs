@@ -76,35 +76,6 @@ namespace Gideon
 			return new Discord.Color(r, g, b);
 		}
 
-        // Checks if a user is a superadmin, this is to see if they can do a certain command
-        // 0 - No Access
-        // 50 - Moderator Commands
-        // 101 - Me Only
-        public static async Task<bool> CheckForAdmin(SocketCommandContext context, SocketUser user)
-        {
-            if (UserAccounts.GetAccount(user).accessLevel >= 50)
-                return true;
-            await PrintError(context.Channel, $"You do not have permission to do that command, {user.Mention}.").ConfigureAwait(false);
-            return false;
-        }
-
-        public static async Task<bool> CheckForSuperadmin(SocketCommandContext context, SocketUser user)
-        {
-            if (UserAccounts.GetAccount(user).accessLevel >= 101)
-                return true;
-            await PrintError(context.Channel, $"You do not have permission to do that command, {user.Mention}.").ConfigureAwait(false);
-            return false;
-        }
-
-        // Checks if the current channel is the required channel (like minigames)
-        public static async Task<bool> CheckForChannel(SocketCommandContext context, ulong requiredChannel, SocketUser user)
-        {
-            if (context.Channel.Id == requiredChannel)
-                return true;
-            await PrintError(context.Channel, $"Please use the {context.Guild.GetTextChannel(requiredChannel).Mention} chat for that, {user.Mention}.").ConfigureAwait(false);
-            return false;
-        }
-
         // Send an embed to a channel
         public static async Task SendEmbed(ISocketMessageChannel channel, string title, string description, Discord.Color color, string footer, string thumbnailURL)
         {

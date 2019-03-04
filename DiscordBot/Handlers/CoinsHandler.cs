@@ -1,5 +1,6 @@
 ﻿// Handles the currency system: giving, adding, spawning, pickpocketing, and a lottery
 using System;
+using Discord;
 using System.Linq;
 using System.Text;
 using Discord.Commands;
@@ -68,10 +69,25 @@ namespace Gideon.Handlers
             await Utilities.SendEmbed(channel, user.Nickname ?? user.Username, $"{UserAccounts.GetAccount(user).coins.ToString("#,##0")} Coins", Colors.Gold, "", icon);
         }
 
-        // Still in development
+        // Display coin store
         public static async Task DisplayCoinsStore(SocketCommandContext context, SocketGuildUser user, ISocketMessageChannel channel)
         {
-            await Utilities.SendEmbed(channel, "Coins Store", $"500 XP - ??? Coins\n1000 XP - ???", Colors.Gold, $"You have {UserAccounts.GetAccount(user).coins} Coins.", icon);
+            await Utilities.SendEmbed(channel, "Coins Store", $"1000 - Space Stone\n\nType !store buy <number> to buy an item.", Colors.Gold, $"You have {UserAccounts.GetAccount(user).coins} Coins.", icon);
+        }
+
+        // Buy an item from the coin store
+        public static async Task BuySpaceStone(SocketCommandContext context, ISocketMessageChannel channel)
+        {
+            var account = UserAccounts.GetAccount(context.User);
+            if (account.coins < 1000)
+            {
+                await Utilities.PrintError(context.Channel, "You do not jave enough coins for that.");
+                return;
+            }
+            account.coins -= 1000;
+            UserAccounts.SaveAccounts();
+            await (context.User as IGuildUser).AddRoleAsync(context.Guild.Roles.FirstOrDefault(x => x.Name == "Space"));
+            await Utilities.SendEmbed(channel, "Coins Store", "You have purchased the Space Stone.", Colors.Gold, $"You have {account.coins} Coins.", icon);
         }
 
         #region Pickpocket Related
@@ -163,8 +179,6 @@ namespace Gideon.Handlers
 
         public static async Task StartCoinsLottery(SocketCommandContext context, int amount, int cost)
         {
-            if (!await Utilities.CheckForSuperadmin(context, context.User)) return;
-            if (!await Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
             if (isLotteryGoing)
             {
                 await Utilities.PrintError(context.Channel, $"A lottery is already active, {context.User.Mention}.");
@@ -198,8 +212,6 @@ namespace Gideon.Handlers
 
         public static async Task DrawLottery(SocketCommandContext context)
         {
-            if (!await Utilities.CheckForSuperadmin(context, context.User)) return;
-            if (!await Utilities.CheckForChannel(context, 518846214603669537, context.User)) return;
             if (!isLotteryGoing)
             {
                 await Utilities.PrintError(context.Channel, $"There is no active Lottery, {context.User.Mention}.");
@@ -216,10 +228,7 @@ namespace Gideon.Handlers
         public static async Task ResetCoinsLottery(SocketCommandContext context, bool isFromUser)
         {
             if (isFromUser)
-            {
-                if (!await Utilities.CheckForSuperadmin(context, context.User)) return;
                 await PrintEmbed(context.Channel, $"{context.User.Mention} has reset the Lottery.").ConfigureAwait(false);
-            }
             isLotteryGoing = false;
             LotteryFee = 0;
             LotteryPrize = 0;

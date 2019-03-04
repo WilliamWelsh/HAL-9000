@@ -1,7 +1,6 @@
 ﻿using System;
 using Discord;
 using System.IO;
-using Discord.Rest;
 using Gideon.Handlers;
 using Discord.WebSocket;
 using System.Threading.Tasks;
@@ -26,9 +25,6 @@ namespace Gideon
             await _client.SetGameAsync("users", null, ActivityType.Listening);
             EventHandler _handler = new EventHandler();
             await _handler.InitializeAsync(_client);
-
-            await Task.Delay(3000).ConfigureAwait(false); // Allowing time to log in
-            await new PewdsVsTSeriesWatcher().SetUp(await _client.GetGuild(294699220743618561).GetTextChannel(548356800995524618).GetMessageAsync(548356888996216832) as RestUserMessage);
 
             await Task.Delay(-1).ConfigureAwait(false);
         }

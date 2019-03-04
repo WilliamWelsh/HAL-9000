@@ -24,19 +24,19 @@ namespace Gideon.Handlers
 		}
 
         // Make Gideon say something
+        [IsOwner]
         [Command("say")]
-		public async Task Say([Remainder]string message)
+        public async Task Say([Remainder]string message)
 		{
-            if (!await Utilities.CheckForSuperadmin(Context, Context.User)) return;
             await Context.Channel.DeleteMessageAsync(Context.Message.Id);
 			await Context.Channel.SendMessageAsync(message);
 		}
 
-		// Make Gideon DM someone something
-		[Command("dm")]
+        // Make Gideon DM someone something
+        [IsOwner]
+        [Command("dm")]
 		public async Task DM(SocketGuildUser target, [Remainder]string message)
 		{
-            if (!await Utilities.CheckForSuperadmin(Context, Context.User)) return;
             await Context.Channel.DeleteMessageAsync(Context.Message.Id);
 			await target.SendMessageAsync(message);
 		}
@@ -61,11 +61,7 @@ namespace Gideon.Handlers
         [Command("avatar")]
         public async Task GetAvatar(SocketGuildUser user = null) => await Context.Channel.SendMessageAsync("", false, Utilities.ImageEmbed("", "", Utilities.DomColorFromURL((user ?? Context.User).GetAvatarUrl()), "", (user ?? Context.User).GetAvatarUrl().Replace("?size=128", "?size=512")));
 
-        // View a User's country (if it's set up for them)
-        [Command("country")]
-		public async Task ViewCountry(SocketGuildUser user = null) => await StatsHandler.DisplayCountry(Context, user ?? (SocketGuildUser)Context.User);
-
-		// See stats for a certain user
+        // See stats for a certain user
 		[Command("stats")]
 		public async Task DisplayUserStats(SocketGuildUser user = null) => await StatsHandler.DisplayUserStats(Context, user ?? (SocketGuildUser)Context.User);
 
@@ -78,22 +74,11 @@ namespace Gideon.Handlers
         [Command("serverstats")]
 		public async Task ServerStats() => await StatsHandler.DisplayServerStats(Context);
 
-		// Set the nationality for a user
-		[Command("country set")]
-		public async Task UserSetCountry(SocketGuildUser target, [Remainder]string name)
-		{
-            if (!await Utilities.CheckForSuperadmin(Context, Context.User)) return;
-            UserAccounts.GetAccount(target).country = name;
-			UserAccounts.SaveAccounts();
-            await Utilities.PrintSuccess(Context.Channel, $"Set {target.Mention}'s country to {name}.");
-			await Context.Channel.SendMessageAsync("User updated.");
-		}
-
 		// Delete a certain amount of messages
+        [IsOwner]
 		[Command("delete")]
 		public async Task DeleteMessage(int amount)
 		{
-            if (!await Utilities.CheckForSuperadmin(Context, Context.User)) return;
             var channel = (ITextChannel)Context.Channel;
             var messages = await channel.GetMessagesAsync(++amount).Flatten().ToList();
             await channel.DeleteMessagesAsync(messages);
@@ -101,9 +86,9 @@ namespace Gideon.Handlers
 
         // Nickname a user
         [Command("nick")]
+        [RequireRole("Administrator")]
 		public async Task NicknameUser(SocketGuildUser user, [Remainder]string input)
 		{
-            if (!await Utilities.CheckForAdmin(Context, Context.User)) return;
             await user.ModifyAsync(x => { x.Nickname = input; });
             await Utilities.PrintSuccess(Context.Channel, $"Set {user.Mention}'s nickname to `{input}`.");
 		}
@@ -190,10 +175,10 @@ namespace Gideon.Handlers
         }
 
         // Give xp to a user
+        [IsOwner]
         [Command("xp add")]
         public async Task AddXP(SocketUser user, int xp)
         {
-            if (!await Utilities.CheckForSuperadmin(Context, Context.User)) return;
             RankHandler.GiveUserXP(user, xp);
             await RankHandler.CheckXP(Context, user);
             await Utilities.PrintSuccess(Context.Channel, $"Gave {user.Mention} {xp} xp.");
@@ -212,24 +197,9 @@ namespace Gideon.Handlers
                 .AppendLine("Level 6-10 Symbiote")
                 .AppendLine("Level 11-15 Speedster")
                 .AppendLine("Level 16-20 Kaiju Slayer")
-                .AppendLine("Level 21-25 Avenger");
+                .AppendLine("Level 21-25 Watchmen")
+                .AppendLine("Level 26+ Avenger");
             await Utilities.SendEmbed(Context.Channel, "Ranks", ranks.ToString(), Colors.LightBlue, "You get 15-25 xp for sending a message, but only once a minute.", "");
-        }
-
-        // Display All Bans
-        [Command("bans")]
-        public async Task ShowBans()
-        {
-            StringBuilder bans = new StringBuilder();
-            var banArray = Context.Guild.GetBansAsync().Result.ToArray();
-            foreach (var ban in banArray)
-            {
-                if (string.IsNullOrEmpty(ban.Reason))
-                    bans.AppendLine($"{ban.User} for `No reason specified`.").AppendLine();
-                else
-                    bans.AppendLine($"{ban.User} for `{ban.Reason}`.").AppendLine();
-            }
-            await Utilities.SendEmbed(Context.Channel, $"Server Bans ({banArray.Length})", bans.ToString(), Colors.Red, "", "");
         }
 
         private string FindPeopleWithRoles(string targetRole)
@@ -265,8 +235,6 @@ namespace Gideon.Handlers
                 .AppendLine("```json\n  {")
                 .AppendLine($"    \"userID\": {(user == null ? Context.User.Id : user.Id)},")
                 .AppendLine($"    \"coins\": {account.coins},")
-                .AppendLine($"    \"accessLevel\": {account.accessLevel},")
-                .AppendLine($"    \"country\": {account.country},")
                 .AppendLine($"    \"xp\": {account.xp},")
                 .AppendLine($"    \"level\": {account.level}")
                 .AppendLine("  }```");
@@ -284,6 +252,7 @@ namespace Gideon.Handlers
             }
         }
 
+        // Display how long the bot has been online
         [Command("uptime")]
         public async Task DisplayUptime()
         {
@@ -292,14 +261,16 @@ namespace Gideon.Handlers
             await Utilities.SendEmbed(Context.Channel, "", uptime, Colors.Blue, "", "");
         }
 
+        // Display a random shower thought from the subreddit
         [Command("showerthought")]
         [Alias("shower thought", "st", "showerthoughts", "shower thoughts")]
         public async Task DisplayShowerThought() => await ShowerThoughts.PrintRandomThought(Context.Channel);
 
+        // Restart one of my bots (in case of an error or crash)
         [Command("restart")]
+        [RequireRole("Administrator")]
         public async Task RestartBot(SocketGuildUser Bot)
         {
-            if (!await Utilities.CheckForAdmin(Context, Context.User)) return;
             if (!Bot.IsBot)
             {
                 await Utilities.PrintError(Context.Channel, "That user is not a bot.");
@@ -337,15 +308,6 @@ namespace Gideon.Handlers
 
             Process.Start(new ProcessStartInfo { FileName = fileName, WorkingDirectory = path });
             await Utilities.SendEmbed(Context.Channel, "Back Online", $"{Bot.Mention} has been restarted by {Context.User.Mention}.", Colors.Green, "", Bot.GetAvatarUrl());
-        }
-
-        [Command("set access")]
-        public async Task SetAccessLevel(SocketGuildUser user, int level)
-        {
-            if (!await Utilities.CheckForSuperadmin(Context, Context.User)) return;
-            UserAccounts.GetAccount(user).accessLevel = level;
-            UserAccounts.SaveAccounts();
-            await Utilities.PrintSuccess(Context.Channel, $"{Context.User.Mention} set {user.Mention}'s access level to {level}.");
         }
     }
 }
