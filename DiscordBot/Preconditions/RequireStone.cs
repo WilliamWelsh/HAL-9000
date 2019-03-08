@@ -12,10 +12,10 @@ namespace Gideon
     public class RequireStone : PreconditionAttribute
     {
         // The required role's name
-        private readonly string roleName;
+        private readonly string stoneName;
 
         // Constructor
-        public RequireStone(string name) => roleName = name;
+        public RequireStone(string name) => stoneName = name;
 
         // Override the CheckPermissions method
         public override async Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context, CommandInfo command, IServiceProvider services)
@@ -24,12 +24,12 @@ namespace Gideon
             if (context.User is SocketGuildUser gUser)
             {
                 // If this command was executed by a user with the appropriate role, return a success
-                if (gUser.Roles.Any(r => r.Name == roleName))
+                if (gUser.Roles.Any(r => r.Name == stoneName))
                     return await Task.FromResult(PreconditionResult.FromSuccess());
                 else
                 {
-                    await Utilities.PrintError((ISocketMessageChannel)context.Channel, $"You must have the {roleName} role to run this command.");
-                    return await Task.FromResult(PreconditionResult.FromError($"You must have the {roleName} role to run this command."));
+                    await Utilities.PrintError((ISocketMessageChannel)context.Channel, $"You must have the {stoneName} stone to run this command.");
+                    return await Task.FromResult(PreconditionResult.FromError(""));
                 }
             }
             else

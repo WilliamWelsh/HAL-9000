@@ -82,7 +82,7 @@ namespace Gideon.Handlers
                 }
             }
         }
-        
+
         // Print TTT option
         public static async Task PrintTTTOptions(ISocketMessageChannel Channel)
         {

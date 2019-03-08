@@ -22,7 +22,7 @@ namespace Gideon.Handlers
             .WithColor(Utilities.DomColorFromURL(context.Guild.IconUrl))
             .WithThumbnailUrl(context.Guild.IconUrl)
             .Build());
-        
+
         // Display Stats for a user
         public static async Task DisplayUserStats(SocketCommandContext context, SocketGuildUser user)
         {

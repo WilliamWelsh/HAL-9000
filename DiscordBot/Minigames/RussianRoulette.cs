@@ -14,12 +14,12 @@ namespace Gideon.Minigames
         private int round, PlayerSlots, currentTurn;
         private bool isGameGoing;
 
-        private SocketGuildUser host;
-        private readonly List<SocketGuildUser> Players = new List<SocketGuildUser>();
+        private SocketUser host;
+        private readonly List<SocketUser> Players = new List<SocketUser>();
 
         private int RandomChamber() => Utilities.GetRandomNumber(0, 6);
 
-        private Embed embed(string description, string footer, bool showPlayers)
+        private Embed Embed(string description, string footer, bool showPlayers)
         {
             var embed = new EmbedBuilder()
                 .WithTitle($":gun: Russian Roulette")
@@ -42,24 +42,24 @@ namespace Gideon.Minigames
         {
             if (isGameGoing)
             {
-                await context.Channel.SendMessageAsync("", false, embed($"Sorry, {host.Mention} is currently hosting a game.", "", false));
+                await context.Channel.SendMessageAsync("", false, Embed($"Sorry, {host.Mention} is currently hosting a game.", "", false));
                 return;
             }
             if (input == "!rr")
             {
-                await context.Channel.SendMessageAsync("", false, embed("Please enter an amount of players.\n\n`!rr #` - # = Players\n\nExample: \n`!rr 5` will start a game with 5 players.", "", false));
+                await context.Channel.SendMessageAsync("", false, Embed("Please enter an amount of players.\n\n`!rr #` - # = Players\n\nExample: \n`!rr 5` will start a game with 5 players.", "", false));
                 return;
             }
             input = input.Replace("!rr ", "");
             int.TryParse(input, out PlayerSlots);
             if (PlayerSlots > 6)
             {
-                await context.Channel.SendMessageAsync("", false, embed($"Sorry, 6 is the max amount of players for Russian Roulette.", "", false));
+                await context.Channel.SendMessageAsync("", false, Embed($"Sorry, 6 is the max amount of players for Russian Roulette.", "", false));
                 return;
             }
             else if (PlayerSlots < 2)
             {
-                await context.Channel.SendMessageAsync("", false, embed($"Sorry, 2 is the minimum amount of players for Russian Roulette.", "", false));
+                await context.Channel.SendMessageAsync("", false, Embed($"Sorry, 2 is the minimum amount of players for Russian Roulette.", "", false));
                 return;
             }
             await StartGame(context).ConfigureAwait(false);
@@ -68,19 +68,19 @@ namespace Gideon.Minigames
         public async Task StartGame(SocketCommandContext context)
         {
             host = (SocketGuildUser)context.User;
-            await context.Channel.SendMessageAsync("", false, embed($"{host.Mention} has started a game of Russian Roulette with {PlayerSlots} players!\n\nType `!join rr` to play!", "", false));
+            await context.Channel.SendMessageAsync("", false, Embed($"{host.Mention} has started a game of Russian Roulette with {PlayerSlots} players!\n\nType `!join rr` to play!", "", false));
             Players.Add(host);
             isGameGoing = true;
         }
 
         public async Task TryToJoin(SocketCommandContext context)
         {
-            if (!isGameGoing || Players.Count == PlayerSlots) return;
+            if (!isGameGoing || Players.Count == PlayerSlots || Players.Contains(context.User)) return;
 
-            SocketGuildUser newPlayer = (SocketGuildUser)context.User;
+            SocketUser newPlayer = context.User;
             Players.Add(newPlayer);
             if (Players.Count != PlayerSlots)
-                await context.Channel.SendMessageAsync("", false, embed($"{PlayerSlots - Players.Count} more player(s) needed!\n\nType `!join rr` to play!", "", true));
+                await context.Channel.SendMessageAsync("", false, Embed($"{PlayerSlots - Players.Count} more player(s) needed!\n\nType `!join rr` to play!", "", true));
             else
                 await context.Channel.SendMessageAsync("", false, gameEmbed($"Initial round.\n\nWaiting for {Players.ElementAt(0).Mention} to pull the trigger. (`!pt`)", ""));
         }

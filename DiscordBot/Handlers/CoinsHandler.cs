@@ -54,6 +54,7 @@ namespace Gideon.Handlers
         }
 
         // Give or take coins from a user
+        public static void AdjustCoins(SocketUser user, int amount) => AdjustCoins((SocketGuildUser)user, amount);
         public static void AdjustCoins(SocketGuildUser user, int amount)
         {
             var account = UserAccounts.GetAccount(user);

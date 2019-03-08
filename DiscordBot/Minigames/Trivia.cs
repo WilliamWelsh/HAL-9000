@@ -53,7 +53,7 @@ namespace Gideon.Minigames
             isTriviaBeingPlayed = true;
             StartTime = DateTime.Now;
             var Question = MinigameHandler.TriviaQuestions.Questions[Utilities.GetRandomNumber(0, MinigameHandler.TriviaQuestions.Questions.Count())];
-            
+
             string[] Answers = {"","","",""};
 
             Answers[0] = Question.IncorrectAnswers[0];

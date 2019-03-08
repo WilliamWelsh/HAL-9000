@@ -155,7 +155,7 @@ namespace Gideon.Minigames
         {
             if (!isGameGoing) return;
             string emote = Reaction.Emote.ToString();
-        
+
             // Loop through all the available emoji reactions
             for (int i = 0; i < Emojis.Count; i ++)
             {

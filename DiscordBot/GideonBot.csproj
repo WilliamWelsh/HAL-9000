@@ -210,6 +210,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\StoneCommands.cs" />
     <Compile Include="Preconditions\IsOwner.cs" />
     <Compile Include="Preconditions\RequireChannel.cs" />
     <Compile Include="Preconditions\RequireStone.cs" />

@@ -16,20 +16,11 @@ namespace Gideon.Minigames
         public bool HasAnswered { get; set; }
         public int Guess { get; set; }
 
-        public bool Equals(Player other)
-        {
-            return User.Id == other.User.Id;
-        }
+        public bool Equals(Player other) => User.Id == other.User.Id;
 
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as Player);
-        }
+        public override bool Equals(object obj) => Equals(obj as Player);
 
-        public override int GetHashCode()
-        {
-            return 0;
-        }
+        public override int GetHashCode() => 0;
     }
 
     class NumberGuess
@@ -135,7 +126,7 @@ namespace Gideon.Minigames
                 }
                 else
                 {
-                    embed.WithDescription($"Sorry, {Players.ElementAt(0).User.Mention}. You did not get it right.");
+                    embed.WithDescription($"Sorry, {Players.ElementAt(0).User.Mention}. You did not get it right.\n\nThe number was {number}.");
                     embed.WithFooter("Lost 1 Coin.");
                     CoinsHandler.AdjustCoins(Players.ElementAt(0).User, -1);
                 }
