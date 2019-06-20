@@ -1,6 +1,5 @@
 # Gideon Bot
 A multi-purpose Discord bot written in C# for my Discord server. The bot is themed and tailored for this specific server. This bot has several uses such as games, moderation tools, useful tools and resources, and pointless statistical data.  
-[<img src="https://discordapp.com/api/guilds/294699220743618561/widget.png?style=shield">](https://discord.gg/qsc8YMS)
 <img src="https://img.shields.io/badge/discord-csharp-blue.svg">
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6f301f18d76c44afa076f72d30cbf5ba)](https://www.codacy.com/app/WilliamWelsh/GideonBot?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=WilliamWelsh/GideonBot&amp;utm_campaign=Badge_Grade)
 [![Build status](https://ci.appveyor.com/api/projects/status/bddk0drfmf5sy2fk?svg=true)](https://ci.appveyor.com/project/WilliamWelsh/gideonbot)
