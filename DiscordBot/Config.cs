@@ -9,7 +9,7 @@ namespace DiscordBot
     static class Config
     {
         public static List<string> AlaniPictures;
-        public const ulong MiniGamesChannel = 518846214603669537;
+        public const ulong MiniGamesChannel = 618549807623045132;
 
         public static readonly List<ulong> MyBots = new List<ulong> {
             477287091798278145, // Rotten Tomatoes
@@ -48,11 +48,13 @@ namespace DiscordBot
                 fileName = @"C:\Users\Administrator\Desktop\TimeBot\TimeBot.exe";
             }
 
+            // Find the existing bot process and kill it
             var procceses = Process.GetProcessesByName(fileName.Substring(fileName.LastIndexOf("\\") + 1).Replace(".exe", ""));
             if (procceses != null)
                 foreach (var process in procceses)
                     process.Kill();
 
+            // Start the bot
             Process.Start(new ProcessStartInfo { FileName = fileName, WorkingDirectory = path });
         }
     }

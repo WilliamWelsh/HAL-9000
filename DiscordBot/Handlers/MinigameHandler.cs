@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
 using Newtonsoft.Json;
-using DiscordBot.Minigames;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Reflection;
+using DiscordBot.Minigames;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
@@ -14,9 +14,6 @@ namespace DiscordBot.Handlers
     {
         public static Trivia Trivia = new Trivia();
         public static TriviaQuestions TriviaQuestions;
-
-        public static WhoSaidIt WSI = new WhoSaidIt();
-        public static WhoSaidItResources WhoSaidItResources;
 
         public static TicTacToe TTT = new TicTacToe();
         public static NumberGuess NG = new NumberGuess();
@@ -31,15 +28,12 @@ namespace DiscordBot.Handlers
         {
             using (StreamReader sr = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Gideon.Minigames.Resources.trivia_questions.json")))
                 TriviaQuestions = JsonConvert.DeserializeObject<TriviaQuestions>(sr.ReadToEnd());
-
-            using (StreamReader sr = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Gideon.Minigames.Resources.wsi_quotes.json")))
-                WhoSaidItResources = JsonConvert.DeserializeObject<WhoSaidItResources>(sr.ReadToEnd());
         }
 
         // Display available minigames
         public static async Task DisplayGames(SocketCommandContext context)
         {
-            await Utilities.SendEmbed(context.Channel, "MiniGames", "Trivia\n`!trivia`\n\nTic-Tac-Toe\n`!ttt`\n\nNumber Guess\n`!play ng`\n\nRussian Roulette\n`!rr`\n\n8-Ball\n`!8ball`", Utilities.ClearColor, "", "");
+            await Utilities.SendEmbed(context.Channel, "MiniGames", "Trivia\n`!trivia`\n\nTic-Tac-Toe\n`!ttt`\n\nNumber Guess\n`!play ng`\n\nRussian Roulette\n`!rr`\n\n8-Ball\n`!8ball`\n\nRock-Paper-Scissors\n`!rps`", Utilities.Green, "", "");
         }
 
         public async Task TryToStartTrivia(SocketCommandContext context, string input)
@@ -112,11 +106,6 @@ namespace DiscordBot.Handlers
                 await Utilities.SendEmbed(context.Channel, "MiniGames", $"{context.User.Mention} has reset the Number Guess game.", Utilities.ClearColor, "", "");
                 NG.Reset();
             }
-            else if (game == "wsi")
-            {
-                await Utilities.SendEmbed(context.Channel, "MiniGames", $"{context.User.Mention} has reset the Who Said It.", Utilities.ClearColor, "", "");
-                WSI.Reset();
-            }
             else if (game == "")
                 await Utilities.PrintError(context.Channel, "Please specify a game to reset.");
             else
@@ -160,24 +149,5 @@ namespace DiscordBot.Handlers
 
         [JsonProperty("IncorrectAnswers")]
         public string[] IncorrectAnswers { get; set; }
-    }
-
-    // Who Said It? Resources
-    public class WhoSaidItResources
-    {
-        [JsonProperty("Quotes")]
-        public WSIQuote[] Quotes { get; set; }
-
-        [JsonProperty("Options")]
-        public string[] Options { get; set; }
-    }
-
-    public class WSIQuote
-    {
-        [JsonProperty("Quote")]
-        public string QuoteQuote { get; set; }
-
-        [JsonProperty("Speaker")]
-        public string Speaker { get; set; }
     }
 }

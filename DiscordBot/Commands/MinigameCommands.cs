@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 namespace DiscordBot.Handlers
 {
+    [RequireChannel(Config.MiniGamesChannel)]
     [RequireContext(ContextType.Guild)]
     public class MinigameCommands : ModuleBase<SocketCommandContext>
     {
@@ -15,10 +16,6 @@ namespace DiscordBot.Handlers
         [Command("reset")]
         [RequireRole("root")]
         public async Task ResetAGame([Remainder]string game = "") => await MinigameHandler.ResetGame(Context, game);
-
-        // Start a "Who Said It?" game
-        [Command("wsi")]
-        public async Task PlayWSI() => await MinigameHandler.WSI.TryToStartGame(Context);
 
         // Start Rock, Paper, Scissors
         [Command("rps")]

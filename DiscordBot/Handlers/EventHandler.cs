@@ -1,9 +1,9 @@
 ﻿using System;
 using Discord;
-using DiscordBot.Handlers;
 using Discord.Commands;
 using System.Reflection;
 using Discord.WebSocket;
+using DiscordBot.Handlers;
 using System.Threading.Tasks;
 
 namespace DiscordBot
@@ -15,7 +15,6 @@ namespace DiscordBot
 
         SocketGuild Guild;
         SocketGuildUser Owner;
-        SocketTextChannel LogChat;
 
         public async Task InitializeAsync(DiscordSocketClient client)
         {
@@ -25,30 +24,28 @@ namespace DiscordBot
             await Task.Delay(3000).ConfigureAwait(false); // Allow time to log in
 
             Guild = client.GetGuild(294699220743618561); // My server
-            Owner = Guild.GetUser(354458973572956160); // Me (the owner, bot master or whatever)
-            LogChat = Guild.GetTextChannel(575737318904823808); // General channel
+            Owner = Guild.GetUser(354458973572956160); // Me
 
             await _service.AddModulesAsync(Assembly.GetEntryAssembly(), null);
 
             _client.MessageReceived += HandleCommandAsync;
 
-            _client.GuildMemberUpdated += HandleGuildMemberUpdate;
+            _client.GuildMemberUpdated += CheckBotStatus;
 
             _service.Log += Log;
         }
 
-        // Notify me when one of MY bots goes offline
-        private async Task HandleGuildMemberUpdate(SocketGuildUser before, SocketGuildUser after)
+        // If one of my bots suddenly goes offline, restart it
+        private Task CheckBotStatus(SocketGuildUser before, SocketGuildUser after)
         {
             // If the SocketGuildUser isn't my bot, then we don't care
-            if (!Config.MyBots.Contains(before.Id)) return;
+            if (!Config.MyBots.Contains(before.Id)) return Task.CompletedTask;
 
-            // One of my bots has gone offline
+            // If one of my bots went offline, restart it
             if (before.Status == UserStatus.Online && after.Status == UserStatus.Offline)
-            {
-                await Utilities.SendEmbed(LogChat, "", $"Restarted {before.Mention}.", Utilities.ClearColor, "", before.GetAvatarUrl());
                 Config.RestartBot(before.Id);
-            }
+
+            return Task.CompletedTask;
         }
 
         // Log command-related logs
@@ -75,17 +72,11 @@ namespace DiscordBot
                 await _service.ExecuteAsync(context, argPos, null, MultiMatchHandling.Exception);
 
             // Answer minigames
-            if (context.Channel.Id == 518846214603669537)
+            if (context.Channel.Id == Config.MiniGamesChannel)
             {
                 // Answer Trivia
                 if (m == "a" || m == "b" || m == "c" || m == "d")
                     await MinigameHandler.Trivia.AnswerTrivia((SocketGuildUser)msg.Author, context, m);
-
-                // Answer "Who Said It?"
-                int x;
-                if (int.TryParse(m, out x))
-                    if (x <= 4 && x >= 1 && MinigameHandler.WSI.isGameGoing)
-                        await MinigameHandler.WSI.TryToGuess(context, x);
             }
 
             // Print a lennyface
@@ -97,9 +88,9 @@ namespace DiscordBot
                 if (m.Contains(spellingMistakes[i]))
                     await msg.Channel.SendMessageAsync($"{spellingFix[i]}*");
 
-            // Print a DM message to console
+            // If someone DMs the bot, send it to me
             if (s.Channel.Name.StartsWith("@"))
-                if (s.Author.Id != 354458973572956160) // Me
+                if (s.Author.Id != Owner.Id) // If it's not me, print to conisole
                     await Owner.SendMessageAsync($"FROM: `{s.Author}`\n\n{s}");
         }
     }

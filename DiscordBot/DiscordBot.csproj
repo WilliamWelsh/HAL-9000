@@ -228,7 +228,6 @@
     <Compile Include="Minigames\RussianRoulette.cs" />
     <Compile Include="Minigames\TicTacToe.cs" />
     <Compile Include="Minigames\UnbeatableTicTacToe.cs" />
-    <Compile Include="Minigames\WhoSaidIt.cs" />
     <Compile Include="Minigames\Trivia.cs" />
     <Compile Include="Commands\Misc.cs" />
     <Compile Include="Handlers\CoinsHandler.cs" />
@@ -245,7 +244,6 @@
       <SubType>Designer</SubType>
     </None>
     <EmbeddedResource Include="Minigames\Resources\trivia_questions.json" />
-    <EmbeddedResource Include="Minigames\Resources\wsi_quotes.json" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

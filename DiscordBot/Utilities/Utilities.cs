@@ -11,6 +11,8 @@ namespace DiscordBot
 {
     static class Utilities
     {
+        public readonly static Discord.Color Red = new Discord.Color(231, 76, 60);
+        public readonly static Discord.Color Green = new Discord.Color(31, 139, 76);
         public readonly static Discord.Color ClearColor = new Discord.Color(54, 57, 63);
 
         // Universal Web Client
@@ -45,10 +47,10 @@ namespace DiscordBot
             .Build();
 
         // Print a success message
-        public static async Task PrintSuccess(ISocketMessageChannel channel, string description) => await SendEmbed(channel, "Success", description, ClearColor, "", "").ConfigureAwait(false);
+        public static async Task PrintSuccess(ISocketMessageChannel channel, string description) => await SendEmbed(channel, "Success", description, Green, "", "").ConfigureAwait(false);
 
         // Print an error
-        public static async Task PrintError(ISocketMessageChannel channel, string description) => await SendEmbed(channel, "Error", description, ClearColor, "", "").ConfigureAwait(false);
+        public static async Task PrintError(ISocketMessageChannel channel, string description) => await SendEmbed(channel, "Error", description, Red, "", "").ConfigureAwait(false);
 
         // Get a dominant color from an image (url)
         public static Discord.Color DomColorFromURL(string url)
