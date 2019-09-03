@@ -35,7 +35,7 @@ namespace Gideon.Minigames
         {
             await GameMessage.ModifyAsync(m => { m.Embed = new EmbedBuilder()
                 .WithTitle("Tic-Tac-Toe")
-                .WithColor(Colors.Blue)
+                .WithColor(Utilities.ClearColor)
                 .WithDescription(Description)
                 .WithFooter($"Playing with {PlayerName}.")
                 .Build(); ;});
@@ -127,7 +127,7 @@ namespace Gideon.Minigames
 
             GameMessage = await context.Channel.SendMessageAsync(null, false, new EmbedBuilder()
                 .WithTitle("Tic-Tac-Toe")
-                .WithColor(Colors.Blue)
+                .WithColor(Utilities.ClearColor)
                 .WithDescription("Please wait for the game to load...")
                 .WithFooter($"Playing with {PlayerName}.")
                 .Build());

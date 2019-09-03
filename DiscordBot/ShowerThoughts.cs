@@ -22,7 +22,7 @@ namespace Gideon
                     .WithIconUrl("https://styles.redditmedia.com/t5_2szyo/styles/communityIcon_z7dkyeif8kzz.png")
                     .WithName("r/Showerthoughts")
                     .WithUrl($"https://www.reddit.com{stuff.permalink}"))
-                .WithColor(Colors.Blue)
+                .WithColor(Utilities.ClearColor)
                 .WithDescription(stuff.title.ToString())
                 .Build());
         }

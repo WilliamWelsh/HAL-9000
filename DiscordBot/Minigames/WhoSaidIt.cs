@@ -62,7 +62,7 @@ namespace Gideon.Minigames
             await context.Channel.SendMessageAsync("", false, new EmbedBuilder()
                 .WithTitle("Who Said It?")
                 .WithDescription(Quote.QuoteQuote)
-                .WithColor(Colors.Green)
+                .WithColor(Utilities.ClearColor)
                 .WithFooter($"Only {((SocketGuildUser)context.User).Nickname ?? context.User.Username} can answer.")
                 .AddField("Options", options)
                 .Build());
@@ -77,12 +77,12 @@ namespace Gideon.Minigames
             }
             if (availableOptions.ElementAt(number-1) == Speaker)
             {
-                await Utilities.SendEmbed(context.Channel, "Who Said It?", "Correct!", Colors.Green, $"{((SocketGuildUser)context.User).Nickname ?? context.User.Username} got 1 coin.", "");
+                await Utilities.SendEmbed(context.Channel, "Who Said It?", "Correct!", Utilities.ClearColor, $"{((SocketGuildUser)context.User).Nickname ?? context.User.Username} got 1 coin.", "");
                 CoinsHandler.AdjustCoins((SocketGuildUser)context.User, 1);
             }
             else
             {
-                await Utilities.SendEmbed(context.Channel, "Who Said It?", "Incorrect.", Colors.Green, $"{((SocketGuildUser)context.User).Nickname ?? context.User.Username} lost 1 coin.", "");
+                await Utilities.SendEmbed(context.Channel, "Who Said It?", "Incorrect.", Utilities.ClearColor, $"{((SocketGuildUser)context.User).Nickname ?? context.User.Username} lost 1 coin.", "");
                 CoinsHandler.AdjustCoins((SocketGuildUser)context.User, -1);
             }
             Reset();

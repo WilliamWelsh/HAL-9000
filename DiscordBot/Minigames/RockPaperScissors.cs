@@ -16,7 +16,7 @@ namespace Gideon.Minigames
         public SocketGuildUser Player;
         private readonly List<string> Plays = new List<string>(new[] { "Rock", "Paper", "Scissors" });
 
-        private Embed embed(string description, string footer) => Utilities.Embed("Rock-Paper-Scissors", description, Colors.White, footer, "https://i.imgur.com/VXdDjho.png");
+        private Embed embed(string description, string footer) => Utilities.Embed("Rock-Paper-Scissors", description, Utilities.ClearColor, footer, "https://i.imgur.com/VXdDjho.png");
 
         public async Task StartRPS(SocketCommandContext context)
         {

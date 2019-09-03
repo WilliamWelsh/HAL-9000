@@ -35,7 +35,7 @@ namespace Gideon.Minigames
             var embed = new EmbedBuilder()
                 .WithTitle("Number Guess")
                 .WithDescription(description)
-                .WithColor(Colors.Black)
+                .WithColor(Utilities.ClearColor)
                 .WithFooter(footer);
             if (showPlayers)
             {

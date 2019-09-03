@@ -19,7 +19,7 @@ namespace Gideon.Minigames
         private readonly List<SocketGuildUser> PlayersAnswered = new List<SocketGuildUser>();
         private static readonly Random rdn = new Random();
 
-        private Embed Embed(string description, string footer) => Utilities.Embed("Trivia", description, Colors.Green, footer, "");
+        private Embed Embed(string description, string footer) => Utilities.Embed("Trivia", description, Utilities.ClearColor, footer, "");
 
         private string GetName(SocketGuildUser user) => user.Nickname ?? user.Username;
 

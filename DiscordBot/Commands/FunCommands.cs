@@ -14,7 +14,7 @@ namespace Gideon.Handlers
     {
         // Used to turn text upside down
         [Command("australia")]
-        [Alias("aussie")]
+        [Alias("aussie", "aus")]
         public async Task AussieText([Remainder]string message)
         {
             char[] X = @"¿/˙'\‾¡zʎxʍʌnʇsɹbdouɯlʞɾıɥƃɟǝpɔqɐ".ToCharArray();
@@ -36,7 +36,7 @@ namespace Gideon.Handlers
                 chars[len] ^= chars[i];
                 chars[i] ^= chars[len];
             }
-            await Utilities.SendEmbed(Context.Channel, "Reversed Text", new string(chars), Colors.Blue, "", "");
+            await Utilities.SendEmbed(Context.Channel, "Reversed Text", new string(chars), Utilities.ClearColor, "", "");
         }
 
         // Spongebob Mock Meme
@@ -47,7 +47,7 @@ namespace Gideon.Handlers
             for (int n = 0; n < letters.Length; n += 2)
                 letters[n] = char.ToUpper(letters[n]);
             string name = ((SocketGuildUser)Context.User).Nickname ?? Context.User.Username;
-            await Utilities.SendEmbed(Context.Channel, "", new string(letters), Colors.Yellow, $"Mocked by {name}", "http://i0.kym-cdn.com/photos/images/masonry/001/255/479/85b.png");
+            await Utilities.SendEmbed(Context.Channel, "", new string(letters), Utilities.ClearColor, $"Mocked by {name}", "http://i0.kym-cdn.com/photos/images/masonry/001/255/479/85b.png");
         }
 
         // Display a random person on the server
@@ -88,10 +88,10 @@ namespace Gideon.Handlers
                 binary.Append(Convert.ToString(c, 2).PadLeft(8, '0'));
             if (binary.Length > 2000)
             {
-                await Utilities.SendEmbed(Context.Channel, "ASCII to Binary Converter", "The resulting binary is too long (over 2000 characters).\nDue to Discord's character count limitation, I am unable to send the message.", Colors.Green, "", "");
+                await Utilities.SendEmbed(Context.Channel, "ASCII to Binary Converter", "The resulting binary is too long (over 2000 characters).\nDue to Discord's character count limitation, I am unable to send the message.", Utilities.ClearColor, "", "");
                 return;
             }
-            await Utilities.SendEmbed(Context.Channel, "ASCII to Binary Converter", binary.ToString(), Colors.Green, "", "");
+            await Utilities.SendEmbed(Context.Channel, "ASCII to Binary Converter", binary.ToString(), Utilities.ClearColor, "", "");
         }
 
         // Convert Binary to ASCII
@@ -100,7 +100,7 @@ namespace Gideon.Handlers
         {
             if (input.Length % 8 != 0)
             {
-                await Utilities.SendEmbed(Context.Channel, "Binary to ASCII Converter", "Sorry, that cannot be converted to text.\nThe length of the binary must be a multiple of 8.", Colors.Green, "", "");
+                await Utilities.SendEmbed(Context.Channel, "Binary to ASCII Converter", "Sorry, that cannot be converted to text.\nThe length of the binary must be a multiple of 8.", Utilities.ClearColor, "", "");
                 return;
             }
             var list = new List<byte>();
@@ -110,7 +110,7 @@ namespace Gideon.Handlers
                 list.Add(Convert.ToByte(bit, 2));
             }
 
-            await Utilities.SendEmbed(Context.Channel, "Binary to ASCII Converter", Encoding.ASCII.GetString(list.ToArray()), Colors.Green, "", "");
+            await Utilities.SendEmbed(Context.Channel, "Binary to ASCII Converter", Encoding.ASCII.GetString(list.ToArray()), Utilities.ClearColor, "", "");
         }
     }
 }

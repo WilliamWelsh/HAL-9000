@@ -2,28 +2,23 @@
 using Discord;
 using System.Text;
 using System.Linq;
-using System.Net.Http;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using System.Collections.Specialized;
+using System.Net;
+using System.Drawing;
+using System.IO;
+using System.Collections.Generic;
 
 namespace Gideon.Handlers
 {
     [RequireContext(ContextType.Guild)]
 	public class Misc : ModuleBase<SocketCommandContext>
 	{
-        [Command("rolecolors")]
-		public async Task DisplayRoleColors()
-		{
-            StringBuilder text = new StringBuilder();
-			foreach (var x in Context.Guild.Roles)
-				text.AppendLine($"{x.Name}, {x.Color}");
-			await Context.Channel.SendMessageAsync(text.ToString());
-		}
-
-        // Make Gideon say something
+        // Say something
         [IsOwner]
         [Command("say")]
         public async Task Say([Remainder]string message)
@@ -68,7 +63,7 @@ namespace Gideon.Handlers
         // View custom server emotes
         [Command("emotes")]
         [Alias("emojis")]
-        public async Task ViewServerEmotes() => await Utilities.SendEmbed(Context.Channel, $"Server Emotes ({Context.Guild.Emotes.Count})", string.Join("", Context.Guild.Emotes), Colors.LightBlue, "", "");
+        public async Task ViewServerEmotes() => await Utilities.SendEmbed(Context.Channel, $"Server Emotes ({Context.Guild.Emotes.Count})", string.Join("", Context.Guild.Emotes), Utilities.ClearColor, "", "");
 
         // View server stats
         [Command("serverstats")]
@@ -86,15 +81,12 @@ namespace Gideon.Handlers
 
         // Nickname a user
         [Command("nick")]
-        [RequireRole("Administrator")]
+        [RequireRole("root")]
 		public async Task NicknameUser(SocketGuildUser user, [Remainder]string input)
 		{
             await user.ModifyAsync(x => { x.Nickname = input; });
             await Utilities.PrintSuccess(Context.Channel, $"Set {user.Mention}'s nickname to `{input}`.");
 		}
-
-		[Command("gideon")]
-		public async Task GideonGreet() => await Context.Channel.SendMessageAsync($"Greetings. How may I be of service, {Context.User.Mention}?\n`!help`");
 
 		// Print a link to Gideon's sourcecode
 		[Command("source")]
@@ -105,20 +97,135 @@ namespace Gideon.Handlers
 		[Command("help")]
 		public async Task Help() => await Context.Channel.SendMessageAsync($"View available commands here:\nhttps://github.com/WilliamWelsh/GideonBot/blob/master/README.md");
 
-        // Makes an emoji big, @Elias WE FINALLY DID IT
+        // Makes an emoji big
+        [Command("image")]
+        public async Task EmojisToImage([Remainder]string input)
+        {
+            // Split emojis into an array
+            var rows = input.Split('\n');
+            var allEmojis = new List<string[]>(rows.Length);
+            foreach (var row in rows)
+            {
+                var emojis = row.Split('>');
+                allEmojis.Add(emojis);
+            }
+
+            int imageRows = rows.Length;
+            int imageColumns = 1;
+
+            // Get the max amount of columns
+            foreach (var row in allEmojis)
+                if (row.Length > imageColumns)
+                    imageColumns = row.Length;
+            imageColumns--;
+
+            int imageWidth = 128 * imageColumns;
+            int imageHeight = 128 * imageRows;
+
+            Bitmap image = new Bitmap(imageWidth, imageHeight, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            using (Graphics graphics = Graphics.FromImage(image))
+            {
+                // Some settings to help with resizing
+                graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+
+                for (int row = 0; row < allEmojis.Count; row++)
+                {
+                    for (int emoji = 0; emoji < allEmojis[row].Length; emoji++)
+                    {
+                        if (allEmojis[row][emoji].Length > 1)
+                        {
+                            System.Drawing.Image emojiImage = Utilities.DownloadImage(GetEmojiImageURL(allEmojis[row][emoji] + ">"));
+                            graphics.DrawImage(emojiImage,
+                                new Rectangle(new Point(emoji * 128, row * 128), new Size(128, 128)),
+                                new Rectangle(new Point(), emojiImage.Size),
+                                GraphicsUnit.Pixel);
+                        }
+                    }
+                }
+            }
+
+            image.Save("hi.png");
+
+            await Context.Channel.SendFileAsync("hi.png");
+        }
+
+        // Makes an emoji big
         [Command("url")]
         [Alias("jumbo")]
         public async Task PrintEmojis([Remainder]string input)
         {
+            // Split emojis into an array
             var emojis = input.Split('>');
-            foreach (var s in emojis)
-                await PrintEmoji(s + ">").ConfigureAwait(false);
+
+            // If there's just one emoji then print it
+            if (emojis.Length == 2) // 2 because there's a leftover ">"
+                await PrintEmoji(emojis[0] + ">").ConfigureAwait(false);
+            else // Print the emojis in one big picture
+                await PrintBigEmojiPicture(emojis, Context);
         }
 
         private async Task PrintEmoji(string emoji)
         {
-            string url = $"https://cdn.discordapp.com/emojis/{Regex.Replace(emoji, "[^0-9.]", "")}.{(emoji.StartsWith("<a:") ? "gif" : "png")}";
+            string url = GetEmojiImageURL(emoji);
             await Context.Channel.SendMessageAsync("", false, Utilities.ImageEmbed("", "", Utilities.DomColorFromURL(url), "", url));
+        }
+
+        private string GetEmojiImageURL(string emoji) => $"https://cdn.discordapp.com/emojis/{Regex.Replace(emoji, "[^0-9.]", "")}.{(emoji.StartsWith("<a:") ? "gif" : "png")}";
+
+        private async Task PrintBigEmojiPicture(string[] emojis, SocketCommandContext Context)
+        {
+            // The rows and columns is the square root of the amount of emojis rounded up
+            int rows = Convert.ToInt32(Math.Ceiling(Math.Sqrt(emojis.Length - 1)));
+            int columns = rows;
+
+            var emojiImages = new List<System.Drawing.Image>();
+
+            foreach (var emoji in emojis)
+            {
+                if (emoji.Length > 1)
+                {
+                    // Add ">" to the emoji cause it got removed when we split the emojis into an array
+                    // Download the image and add it to the list
+                    emojiImages.Add(Utilities.DownloadImage(GetEmojiImageURL($"{emoji}>")));
+                }
+                
+            }
+
+            int imageWidth = 128 * rows;
+            int imageHeight = 128 * columns;
+
+            Bitmap image = new Bitmap(imageWidth, imageHeight, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            using (Graphics graphics = Graphics.FromImage(image))
+            {
+                // Some settings to help with resizing
+                graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+
+                // Draw the rest of the images
+                int i = 0;
+                for (int row = 0; row < rows; row++)
+                {
+                    for (int column = 0; column < columns; column++)
+                    {
+                        i++;
+                        if (i > emojiImages.Count)
+                            break; // If we run out of images then stop
+                        graphics.DrawImage(emojiImages[i-1],
+                            new Rectangle(new Point(column * 128, row * 128), new Size(128, 128)),
+                            new Rectangle(new Point(), emojiImages[i-1].Size),
+                            GraphicsUnit.Pixel);
+                    }
+                }
+            }
+
+            image.Save("hi.png");
+
+            await Context.Channel.SendFileAsync("hi.png");
         }
 
         // Convert a hexadecimal to an RGB value
@@ -163,7 +270,7 @@ namespace Gideon.Handlers
                 await Utilities.PrintError(Context.Channel, $"Please enter a valid blue value, {Context.User.Mention}.");
                 return;
 			}
-			await Utilities.SendEmbed(Context.Channel, "RGB to Hexadecimal", $"`{R}, {G}, {B}` = `#{R:X2}{G:X2}{B:X2}`", new Color(R, G, B), "", "");
+			await Utilities.SendEmbed(Context.Channel, "RGB to Hexadecimal", $"`{R}, {G}, {B}` = `#{R:X2}{G:X2}{B:X2}`", new Discord.Color(R, G, B), "", "");
 		}
 
         // Send a random picture of Alani
@@ -173,48 +280,6 @@ namespace Gideon.Handlers
             string pic = Config.AlaniPictures[Utilities.GetRandomNumber(0, Config.AlaniPictures.Count)];
             await Context.Channel.SendMessageAsync("", false, Utilities.ImageEmbed("", "", Utilities.DomColorFromURL(pic), "", pic));
         }
-
-        // Give xp to a user
-        [IsOwner]
-        [Command("xp add")]
-        public async Task AddXP(SocketUser user, int xp)
-        {
-            RankHandler.GiveUserXP(user, xp);
-            await RankHandler.CheckXP(Context, user);
-            await Utilities.PrintSuccess(Context.Channel, $"Gave {user.Mention} {xp} xp.");
-        }
-
-        [Command("xp")]
-        [Alias("level", "rank")]
-        public async Task ViewXP(SocketUser user = null) => await RankHandler.DisplayLevelAndXP(Context, user ?? Context.User);
-
-        [Command("ranks")]
-        [Alias("levels")]
-        public async Task ViewRanks()
-        {
-            StringBuilder ranks = new StringBuilder()
-                .AppendLine("Level 0-5 Noob")
-                .AppendLine("Level 6-10 Symbiote")
-                .AppendLine("Level 11-15 Speedster")
-                .AppendLine("Level 16-20 Kaiju Slayer")
-                .AppendLine("Level 21-25 Watchmen")
-                .AppendLine("Level 26+ Avenger");
-            await Utilities.SendEmbed(Context.Channel, "Ranks", ranks.ToString(), Colors.LightBlue, "You get 15-25 xp for sending a message, but only once a minute.", "");
-        }
-
-        private string FindPeopleWithRoles(string targetRole)
-        {
-            SocketRole role = Context.Guild.Roles.FirstOrDefault(x => x.Name == targetRole);
-            StringBuilder description = new StringBuilder();
-            foreach (SocketGuildUser user in Context.Guild.Users.ToArray())
-                if (user.Roles.Contains(role))
-                    description.AppendLine($"{user.Mention}, Level {UserAccounts.GetAccount(user).level}");
-            return description.ToString();
-        }
-
-        // Find the users that are in a certain role.
-        [Command("roles")]
-        public async Task FindPeopleInRoles([Remainder]string role) => await Utilities.SendEmbed(Context.Channel, "", FindPeopleWithRoles(role), Context.Guild.Roles.FirstOrDefault(x => x.Name == role).Color, "", "");
 
         // Get the dominant color of an image
         [Command("color")]
@@ -233,23 +298,10 @@ namespace Gideon.Handlers
             var account = UserAccounts.GetAccount(user ?? Context.User);
             StringBuilder data = new StringBuilder()
                 .AppendLine("```json\n  {")
-                .AppendLine($"    \"userID\": {(user == null ? Context.User.Id : user.Id)},")
-                .AppendLine($"    \"coins\": {account.coins},")
-                .AppendLine($"    \"xp\": {account.xp},")
-                .AppendLine($"    \"level\": {account.level}")
+                .AppendLine($"    \"UserID\": {(user == null ? Context.User.Id : user.Id)},")
+                .AppendLine($"    \"Coins\": {account.Coins},")
                 .AppendLine("  }```");
             await Context.Channel.SendMessageAsync(data.ToString());
-        }
-
-        [Command("create emote")]
-        public async Task MakEmote(string url, string name)
-        {
-            using (HttpClient client = new HttpClient())
-            {
-                var response = await client.GetAsync(new Uri(url));
-                var emote = await Context.Guild.CreateEmoteAsync(name, new Image(await response.Content.ReadAsStreamAsync()));
-                await Utilities.PrintSuccess(Context.Channel, $"Created: {emote}");
-            }
         }
 
         // Display how long the bot has been online
@@ -258,7 +310,7 @@ namespace Gideon.Handlers
         {
             var time = DateTime.UtcNow - Process.GetCurrentProcess().StartTime.ToUniversalTime();
             string uptime = $"{time.Hours} hours, {time.Minutes}m {time.Seconds}s";
-            await Utilities.SendEmbed(Context.Channel, "", uptime, Colors.Blue, "", "");
+            await Utilities.SendEmbed(Context.Channel, "", uptime, Utilities.ClearColor, "", "");
         }
 
         // Display a random shower thought from the subreddit
@@ -268,7 +320,7 @@ namespace Gideon.Handlers
 
         // Restart one of my bots (in case of an error or crash)
         [Command("restart")]
-        [RequireRole("Administrator")]
+        [RequireRole("root")]
         public async Task RestartBot(SocketGuildUser Bot)
         {
             if (!Bot.IsBot)
@@ -282,32 +334,43 @@ namespace Gideon.Handlers
                 return;
             }
 
-            string path = "";
-            string fileName = "";
+            Config.RestartBot(Bot.Id);
 
-            if (Bot.Id == 436780808745910282) // Alani
-            {
-                path = @"C:\Users\Administrator\Desktop\AlaniBot";
-                fileName = @"C:\Users\Administrator\Desktop\AlaniBot\AlaniBot.exe";
-            }
-            else if (Bot.Id == 477287091798278145) // Rotten Tomatoes
-            {
-                path = @"C:\Users\Administrator\Desktop\RTBot";
-                fileName = @"C:\Users\Administrator\Desktop\RTBot\RottenTomatoes.exe";
-            }
-            else if (Bot.Id == 529569000028373002) // Time Bot
-            {
-                path = @"C:\Users\Administrator\Desktop\TimeBot";
-                fileName = @"C:\Users\Administrator\Desktop\TimeBot\TimeBot.exe";
-            }
-
-            var procceses = Process.GetProcessesByName(fileName.Substring(fileName.LastIndexOf("\\") + 1).Replace(".exe", "")); // one less variable ok??
-            if (procceses != null)
-                foreach (var process in procceses)
-                    process.Kill();
-
-            Process.Start(new ProcessStartInfo { FileName = fileName, WorkingDirectory = path });
-            await Utilities.SendEmbed(Context.Channel, "Back Online", $"{Bot.Mention} has been restarted by {Context.User.Mention}.", Colors.Green, "", Bot.GetAvatarUrl());
+            await Utilities.SendEmbed(Context.Channel, "Back Online", $"{Bot.Mention} has been restarted by {Context.User.Mention}.", Utilities.ClearColor, "", Bot.GetAvatarUrl());
         }
+
+        //[Command("printmessage")]
+        //[RequireOwner]
+        //public async Task Say()
+        //{
+        //    var description = new StringBuilder()
+        //        .AppendLine("React to one of the numbers if you want a colored name, or 9 to remove your color.")
+        //        .AppendLine()
+        //        .AppendLine("1 - Red")
+        //        .AppendLine("2 - Blue")
+        //        .AppendLine("3 - Pink")
+        //        .AppendLine("4 - Teal")
+        //        .AppendLine("5 - Green")
+        //        .AppendLine("6 - Purple")
+        //        .AppendLine("7 - Yellow")
+        //        .AppendLine("8 - Orange")
+        //        .AppendLine("9 - [Remove Color]")
+        //        .ToString();
+
+        //    var msg = await Context.Channel.SendMessageAsync(null, false, new EmbedBuilder()
+        //        .WithDescription(description)
+        //        .WithColor(Colors.Orange)
+        //        .Build());
+
+        //    await msg.AddReactionAsync(new Emoji("1\u20e3"));
+        //    await msg.AddReactionAsync(new Emoji("2\u20e3"));
+        //    await msg.AddReactionAsync(new Emoji("3\u20e3"));
+        //    await msg.AddReactionAsync(new Emoji("4\u20e3"));
+        //    await msg.AddReactionAsync(new Emoji("5\u20e3"));
+        //    await msg.AddReactionAsync(new Emoji("6\u20e3"));
+        //    await msg.AddReactionAsync(new Emoji("7\u20e3"));
+        //    await msg.AddReactionAsync(new Emoji("8\u20e3"));
+        //    await msg.AddReactionAsync(new Emoji("9\u20e3"));
+        //}
     }
 }

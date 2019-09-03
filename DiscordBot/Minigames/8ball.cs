@@ -12,13 +12,13 @@ namespace Gideon.Minigames
         // Display the 8-Ball menu
         public static async Task Greet8Ball(SocketCommandContext context)
         {
-            await Utilities.SendEmbed(context.Channel, "8-Ball", "Welcome to 8-Ball! Ask me anything.\n\nExample:\n`!8ball am I cool?`", Colors.Purple, "", "");
+            await Utilities.SendEmbed(context.Channel, "8-Ball", "Welcome to 8-Ball! Ask me anything.\n\nExample:\n`!8ball am I cool?`", Utilities.ClearColor, "", "");
         }
 
         // Play 8-Ball
         public static async Task Play8Ball(SocketCommandContext context)
         {
-            await Utilities.SendEmbed(context.Channel, "8-Ball", context.User.Mention, Colors.Purple, "", answers[Utilities.GetRandomNumber(0, answers.Length)]);
+            await Utilities.SendEmbed(context.Channel, "8-Ball", context.User.Mention, Utilities.ClearColor, "", answers[Utilities.GetRandomNumber(0, answers.Length)]);
         }
     }
 }

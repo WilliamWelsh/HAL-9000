@@ -35,7 +35,7 @@ namespace Gideon.Minigames
         {
             await GameMessage.ModifyAsync(m => { m.Embed = new EmbedBuilder()
                 .WithTitle("Tic-Tac-Toe")
-                .WithColor(Colors.White)
+                .WithColor(Utilities.ClearColor)
                 .WithDescription(Description)
                 .Build(); ;});
         }
@@ -48,7 +48,7 @@ namespace Gideon.Minigames
 				isGameGoing = true;
 			}
 			else return;
-			await Utilities.SendEmbed(context.Channel, "Tic-Tac-Toe", $"{Player1.Mention} has started a game of Tic-Tac-Toe! Type `!ttt join` to play.", Colors.White, "", "");
+			await Utilities.SendEmbed(context.Channel, "Tic-Tac-Toe", $"{Player1.Mention} has started a game of Tic-Tac-Toe! Type `!ttt join` to play.", Utilities.ClearColor, "", "");
 		}
 
 		public async Task JoinGame(SocketCommandContext context)
@@ -60,7 +60,7 @@ namespace Gideon.Minigames
             hasGameStarted = true;
             GameMessage = await context.Channel.SendMessageAsync(null, false, new EmbedBuilder()
                 .WithTitle("Tic-Tac-Toe")
-                .WithColor(Colors.Red)
+                .WithColor(Utilities.ClearColor)
                 .WithDescription("Please wait for the game to load...")
                 .Build());
 

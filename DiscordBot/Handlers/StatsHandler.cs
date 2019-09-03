@@ -41,9 +41,7 @@ namespace Gideon.Handlers
             embed.AddField($"{(user.Roles.Count <= 2 ? "Role" : "Roles")}", r == ", @everyone" ? "none" : r.Substring(2, r.Length - 2).Replace("@everyone, ", ""));
 
             var account = UserAccounts.GetAccount(user);
-            embed.AddField("Coins", account.coins.ToString("#,##0"))
-                .AddField("Level", account.level.ToString())
-                .AddField("XP", account.xp.ToString("#,##0"))
+            embed.AddField("Coins", account.Coins.ToString("#,##0"))
                 .WithColor(Utilities.DomColorFromURL(user.GetAvatarUrl()))
                 .WithThumbnailUrl(user.GetAvatarUrl());
             await context.Channel.SendMessageAsync(null, false, embed.Build());

@@ -4,7 +4,6 @@ using System.IO;
 using System.Net;
 using System.Drawing;
 using ColorThiefDotNet;
-using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
 
@@ -12,6 +11,8 @@ namespace Gideon
 {
     static class Utilities
     {
+        public readonly static Discord.Color ClearColor = new Discord.Color(54, 57, 63);
+
         // Universal Web Client
         public static readonly WebClient webClient = new WebClient();
 
@@ -44,21 +45,26 @@ namespace Gideon
             .Build();
 
         // Print a success message
-        public static async Task PrintSuccess(ISocketMessageChannel channel, string description) => await SendEmbed(channel, "Success", description, Colors.Green, "", "").ConfigureAwait(false);
+        public static async Task PrintSuccess(ISocketMessageChannel channel, string description) => await SendEmbed(channel, "Success", description, ClearColor, "", "").ConfigureAwait(false);
 
         // Print an error
-        public static async Task PrintError(ISocketMessageChannel channel, string description) => await SendEmbed(channel, "Error", description, Colors.Red, "", "").ConfigureAwait(false);
+        public static async Task PrintError(ISocketMessageChannel channel, string description) => await SendEmbed(channel, "Error", description, ClearColor, "", "").ConfigureAwait(false);
 
         // Get a dominant color from an image (url)
         public static Discord.Color DomColorFromURL(string url)
         {
-            using (WebClient client = new WebClient())
-            using (MemoryStream ms = new MemoryStream(client.DownloadData(url)))
-            using (Bitmap bitmap = new Bitmap(System.Drawing.Image.FromStream(ms)))
+            using (Bitmap bitmap = new Bitmap(DownloadImage(url)))
             {
                 // Remove the '#' from the string and get the hexadecimal
                 return HexToRGB(colorThief.GetColor(bitmap).Color.ToString().Substring(1));
             }
+        }
+
+        public static System.Drawing.Image DownloadImage(string url)
+        {
+            using (WebClient client = new WebClient())
+            using (MemoryStream ms = new MemoryStream(client.DownloadData(url)))
+            return System.Drawing.Image.FromStream(ms);
         }
 
 		// Convert a hexidecimal to an RGB value (input does not include the '#')

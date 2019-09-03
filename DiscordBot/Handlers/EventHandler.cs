@@ -1,7 +1,5 @@
 ﻿using System;
 using Discord;
-using System.Linq;
-using Discord.Rest;
 using Gideon.Handlers;
 using Discord.Commands;
 using System.Reflection;
@@ -16,7 +14,8 @@ namespace Gideon
         CommandService _service;
 
         SocketGuild Guild;
-        SocketTextChannel GeneralChat;
+        SocketGuildUser Owner;
+        SocketTextChannel LogChat;
 
         public async Task InitializeAsync(DiscordSocketClient client)
         {
@@ -25,18 +24,13 @@ namespace Gideon
 
             await Task.Delay(3000).ConfigureAwait(false); // Allow time to log in
 
-            Guild = client.GetGuild(294699220743618561);
-            GeneralChat = Guild.GetTextChannel(294699220743618561);
+            Guild = client.GetGuild(294699220743618561); // My server
+            Owner = Guild.GetUser(354458973572956160); // Me (the owner, bot master or whatever)
+            LogChat = Guild.GetTextChannel(575737318904823808); // General channel
 
             await _service.AddModulesAsync(Assembly.GetEntryAssembly(), null);
 
             _client.MessageReceived += HandleCommandAsync;
-
-            _client.UserBanned += HandleUserBanned;
-            _client.UserUnbanned += HandleUserUnbanned;
-
-            _client.UserJoined += HandleUserJoining;
-            _client.UserLeft += HandleUserLeaving;
 
             _client.GuildMemberUpdated += HandleGuildMemberUpdate;
 
@@ -47,17 +41,13 @@ namespace Gideon
         private async Task HandleGuildMemberUpdate(SocketGuildUser before, SocketGuildUser after)
         {
             // If the SocketGuildUser isn't my bot, then we don't care
-            if (!before.IsBot || !Config.MyBots.Contains(before.Id)) return;
+            if (!Config.MyBots.Contains(before.Id)) return;
 
+            // One of my bots has gone offline
             if (before.Status == UserStatus.Online && after.Status == UserStatus.Offline)
             {
-                await GeneralChat.SendMessageAsync("<@354458973572956160> ");
-                await Utilities.SendEmbed(GeneralChat, "Bot Error", $"{before.Mention} has gone offline!", Colors.Red, "", before.GetAvatarUrl());
-            }
-
-            if (before.Status == UserStatus.Offline && after.Status == UserStatus.Online)
-            {
-                await Utilities.SendEmbed(GeneralChat, "Bot Online", $"{before.Mention} is back online!", Colors.Green, "", before.GetAvatarUrl());
+                await Utilities.SendEmbed(LogChat, "", $"Restarted {before.Mention}.", Utilities.ClearColor, "", before.GetAvatarUrl());
+                Config.RestartBot(before.Id);
             }
         }
 
@@ -66,76 +56,6 @@ namespace Gideon
         {
             Console.WriteLine(arg);
             return Task.CompletedTask;
-        }
-
-        // Send a message in #general saying a user has been unbanned
-        private async Task HandleUserUnbanned(SocketUser arg1, SocketGuild arg2)
-        {
-            await Utilities.SendEmbed(GeneralChat, "Pardon", $"{arg1} has been unbanned.", Colors.Green, "", arg1.GetAvatarUrl());
-        }
-
-        // Send a message in #general saying a user has been banned
-        private async Task HandleUserBanned(SocketUser arg1, SocketGuild arg2)
-        {
-            var bans = arg2.GetBansAsync().Result.ToList();
-            string reason = "";
-            foreach (var ban in bans)
-                if (ban.User.Id == arg1.Id)
-                    reason = string.IsNullOrEmpty(ban.Reason) ? "" : $" for `{ban.Reason}`";
-            await Utilities.SendEmbed(GeneralChat, "Ban", $"{arg1} has been banned{reason}.", Colors.Red, "", arg1.GetAvatarUrl());
-        }
-
-        // Send a message in #general saying a user as joined
-        private async Task HandleUserJoining(SocketGuildUser arg)
-        {
-            if (arg.IsBot)
-            {
-                await (arg as IGuildUser).AddRoleAsync(arg.Guild.Roles.FirstOrDefault(x => x.Name == "Bot"));
-                await Utilities.SendEmbed(GeneralChat, "New Bot", $"The {arg.Username} bot has been added to the server.", Colors.Green, "", arg.GetAvatarUrl());
-                return;
-            }
-            string desc = $"{arg} has joined the server.";
-            if (UserAccounts.GetAccount(arg).level != 0)
-            {
-                string rank = RankHandler.LevelToRank(UserAccounts.GetAccount(arg).level);
-                await (arg as IGuildUser).AddRoleAsync(arg.Guild.Roles.FirstOrDefault(x => x.Name == rank));
-                desc += $" Their rank has been restored to {rank}.";
-            }
-            await Utilities.SendEmbed(GeneralChat, "New User", desc, Colors.Green, "", arg.GetAvatarUrl());
-        }
-
-        // Send a message in #general saying a user as left or has been kicked
-        private async Task HandleUserLeaving(SocketGuildUser arg)
-        {
-            // If they're banned, don't show that they're leaving
-            var bans = arg.Guild.GetBansAsync().Result.ToList();
-            foreach (var ban in bans)
-                if (ban.User.Id == arg.Id)
-                    return;
-
-            // If they're kicked, send a kick message instead
-            foreach (var log in await Guild.GetAuditLogsAsync(5).ToArray())
-                foreach (var item in log.ToList())
-                    if (item.Action == ActionType.Kick)
-                        if ((item.Data as KickAuditLogData).Target.Id == arg.Id)
-                        {
-                            await HandleUserKicked(item).ConfigureAwait(false);
-                            return;
-                        }
-
-            if (arg.IsBot)
-                await Utilities.SendEmbed(GeneralChat, "Bot Removed", $"The {arg.Username} bot has been removed from the server.", Colors.Red, "", arg.GetAvatarUrl());
-            else
-                await Utilities.SendEmbed(GeneralChat, "User Left", $"{arg} has left the server.", Colors.Red, "", arg.GetAvatarUrl());
-        }
-
-        // Send a message in #general saying a use has been kicked
-        private async Task HandleUserKicked(RestAuditLogEntry Log)
-        {
-            var Target = (Log.Data as KickAuditLogData).Target;
-            var Kicker = Log.User.Mention;
-            var Reason = Log.Reason ?? "No reason specified";
-            await Utilities.SendEmbed(GeneralChat, "User Kicked", $"{Target} has been kicked from the server by {Kicker} for `{Reason}`.", Color.Red, "", Target.GetAvatarUrl());
         }
 
         // Spelling mistakes and corresponding fixes
@@ -148,13 +68,11 @@ namespace Gideon
 
             var context = new SocketCommandContext(_client, msg);
 
-            await RankHandler.TryToGiveUserXP(context, msg.Author);
+            string m = msg.Content.ToLower();
 
             int argPos = 0;
             if (msg.HasStringPrefix("!", ref argPos))
                 await _service.ExecuteAsync(context, argPos, null, MultiMatchHandling.Exception);
-
-            string m = msg.Content.ToLower();
 
             // Answer minigames
             if (context.Channel.Id == 518846214603669537)
@@ -181,7 +99,8 @@ namespace Gideon
 
             // Print a DM message to console
             if (s.Channel.Name.StartsWith("@"))
-                Console.WriteLine($" ----------\n DIRECT MESSAGE\n From: {s.Channel}\n {s}\n ----------");
+                if (s.Author.Id != 354458973572956160) // Me
+                    await Owner.SendMessageAsync($"FROM: `{s.Author}`\n\n{s}");
         }
     }
 }

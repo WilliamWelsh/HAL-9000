@@ -39,7 +39,7 @@ namespace Gideon.Handlers
         // Display available minigames
         public static async Task DisplayGames(SocketCommandContext context)
         {
-            await Utilities.SendEmbed(context.Channel, "MiniGames", "Trivia\n`!trivia`\n\nTic-Tac-Toe\n`!ttt`\n\nNumber Guess\n`!play ng`\n\nRussian Roulette\n`!rr`\n\n8-Ball\n`!8ball`", Colors.Green, "", "");
+            await Utilities.SendEmbed(context.Channel, "MiniGames", "Trivia\n`!trivia`\n\nTic-Tac-Toe\n`!ttt`\n\nNumber Guess\n`!play ng`\n\nRussian Roulette\n`!rr`\n\n8-Ball\n`!8ball`", Utilities.ClearColor, "", "");
         }
 
         public async Task TryToStartTrivia(SocketCommandContext context, string input)
@@ -86,7 +86,7 @@ namespace Gideon.Handlers
         // Print TTT option
         public static async Task PrintTTTOptions(ISocketMessageChannel Channel)
         {
-            await Utilities.SendEmbed(Channel, "Tic-Tac-Toe Options", "`!ttt 2` - 2 Player\n\n`!join ttt` - Join 2 player TTT\n\n`!ttt ai` - Play with Gideon", Colors.Blue, "", "");
+            await Utilities.SendEmbed(Channel, "Tic-Tac-Toe Options", "`!ttt 2` - 2 Player\n\n`!join ttt` - Join 2 player TTT\n\n`!ttt ai` - Play with Gideon", Utilities.ClearColor, "", "");
         }
 
         // Reset a game
@@ -94,27 +94,27 @@ namespace Gideon.Handlers
         {
             if (game == "trivia")
             {
-                await Utilities.SendEmbed(context.Channel, "MiniGames", $"{context.User.Mention} has reset Trivia.", Colors.Green, "", "");
+                await Utilities.SendEmbed(context.Channel, "MiniGames", $"{context.User.Mention} has reset Trivia.", Utilities.ClearColor, "", "");
                 Trivia.ResetTrivia();
             }
             else if (game == "rr")
             {
-                await Utilities.SendEmbed(context.Channel, "MiniGames", $"{context.User.Mention} has reset Russian Roulette.", Colors.Green, "", "");
+                await Utilities.SendEmbed(context.Channel, "MiniGames", $"{context.User.Mention} has reset Russian Roulette.", Utilities.ClearColor, "", "");
                 RR.Reset();
             }
             else if (game == "ttt")
             {
-                await Utilities.SendEmbed(context.Channel, "MiniGames", $"{context.User.Mention} has reset Tic-Tac-Toe.", Colors.Green, "", "");
+                await Utilities.SendEmbed(context.Channel, "MiniGames", $"{context.User.Mention} has reset Tic-Tac-Toe.", Utilities.ClearColor, "", "");
                 ResetTTT();
             }
             else if (game == "ng")
             {
-                await Utilities.SendEmbed(context.Channel, "MiniGames", $"{context.User.Mention} has reset the Number Guess game.", Colors.Green, "", "");
+                await Utilities.SendEmbed(context.Channel, "MiniGames", $"{context.User.Mention} has reset the Number Guess game.", Utilities.ClearColor, "", "");
                 NG.Reset();
             }
             else if (game == "wsi")
             {
-                await Utilities.SendEmbed(context.Channel, "MiniGames", $"{context.User.Mention} has reset the Who Said It.", Colors.Green, "", "");
+                await Utilities.SendEmbed(context.Channel, "MiniGames", $"{context.User.Mention} has reset the Who Said It.", Utilities.ClearColor, "", "");
                 WSI.Reset();
             }
             else if (game == "")

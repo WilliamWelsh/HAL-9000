@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace Gideon
 {
     /// <summary>
-    /// Require the comman to be a specific channel
+    /// Require the command to be a specific channel
     /// </summary>
     public class RequireChannel : PreconditionAttribute
     {

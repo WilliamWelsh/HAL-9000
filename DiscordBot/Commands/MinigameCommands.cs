@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 namespace Gideon.Handlers
 {
     [RequireContext(ContextType.Guild)]
-    [RequireChannel(Config.MiniGamesChannel)]
     public class MinigameCommands : ModuleBase<SocketCommandContext>
     {
         // Display a list of MiniGames
@@ -14,7 +13,7 @@ namespace Gideon.Handlers
 
         // Reset a game
         [Command("reset")]
-        [RequireRole("Administrator")]
+        [RequireRole("root")]
         public async Task ResetAGame([Remainder]string game = "") => await MinigameHandler.ResetGame(Context, game);
 
         // Start a "Who Said It?" game
