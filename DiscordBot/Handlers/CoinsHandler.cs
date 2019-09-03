@@ -12,10 +12,11 @@ namespace DiscordBot.Handlers
 {
     static class CoinsHandler
     {
+        private static readonly Color Gold = new Color(215, 154, 14);
         private const string icon = "https://i.imgur.com/w09rWQg.png";
 
-        private static async Task PrintEmbed(ISocketMessageChannel channel, string description) => await Utilities.SendEmbed(channel, "Coins", description, Utilities.ClearColor, "", icon);
-        private static async Task PrintEmbedNoFooter(ISocketMessageChannel channel, string description) => await Utilities.SendEmbed(channel, "Coins", description, Utilities.ClearColor, "", "");
+        private static async Task PrintEmbed(ISocketMessageChannel channel, string description) => await Utilities.SendEmbed(channel, "Coins", description, Gold, "", icon);
+        private static async Task PrintEmbedNoFooter(ISocketMessageChannel channel, string description) => await Utilities.SendEmbed(channel, "Coins", description, Gold, "", "");
 
         // Give coins to another user (from your own amount)
         public static async Task GiveCoins(SocketCommandContext context, SocketGuildUser sender, SocketGuildUser reciever, int amount)
@@ -67,13 +68,13 @@ namespace DiscordBot.Handlers
         // Display how many coins a user has
         public static async Task DisplayCoins(SocketCommandContext context, SocketGuildUser user, ISocketMessageChannel channel)
         {
-            await Utilities.SendEmbed(channel, user.Nickname ?? user.Username, $"{UserAccounts.GetAccount(user).Coins.ToString("#,##0")} Coins", Utilities.ClearColor, "", icon);
+            await Utilities.SendEmbed(channel, user.Nickname ?? user.Username, $"{UserAccounts.GetAccount(user).Coins.ToString("#,##0")} Coins", Gold, "", icon);
         }
 
         // Display coin store
         public static async Task DisplayCoinsStore(SocketCommandContext context, SocketGuildUser user, ISocketMessageChannel channel)
         {
-            await Utilities.SendEmbed(channel, "Coins Store", $"1000 - Space Stone\n\nType !store buy <number> to buy an item.", Utilities.ClearColor, $"You have {UserAccounts.GetAccount(user).Coins} Coins.", icon);
+            await Utilities.SendEmbed(channel, "Coins Store", $"1000 - Space Stone\n\nType !store buy <number> to buy an item.", Gold, $"You have {UserAccounts.GetAccount(user).Coins} Coins.", icon);
         }
 
         // Buy an item from the coin store
@@ -88,7 +89,7 @@ namespace DiscordBot.Handlers
             account.Coins -= 1000;
             UserAccounts.SaveAccounts();
             await (context.User as IGuildUser).AddRoleAsync(context.Guild.Roles.FirstOrDefault(x => x.Name == "Space"));
-            await Utilities.SendEmbed(channel, "Coins Store", "You have purchased the Space Stone.", Utilities.ClearColor, $"You have {account.Coins} Coins.", icon);
+            await Utilities.SendEmbed(channel, "Coins Store", "You have purchased the Space Stone.", Gold, $"You have {account.Coins} Coins.", icon);
         }
 
         #region Pickpocket Related
@@ -97,7 +98,7 @@ namespace DiscordBot.Handlers
         {
             if (target == null)
             {
-                await Utilities.SendEmbed(context.Channel, "PickPocket", "Attempt to pickpocket others with `!pickpocket @user`", Utilities.ClearColor, "", icon);
+                await Utilities.SendEmbed(context.Channel, "PickPocket", "Attempt to pickpocket others with `!pickpocket @user`", Gold, "", icon);
                 return;
             }
 
@@ -118,7 +119,7 @@ namespace DiscordBot.Handlers
                             timeLeft = $"{Math.Round(12 - ((DateTime.Now - ppu.TimeStamp).TotalMinutes), 0)} minutes";
                         else
                             timeLeft = $"{Math.Round(12 - ((DateTime.Now - ppu.TimeStamp).TotalHours), 0)} hours";
-                        await Utilities.SendEmbed(context.Channel, "PickPocket", $"You must wait {timeLeft} before pickpocketing again.", Utilities.ClearColor, "", icon);
+                        await Utilities.SendEmbed(context.Channel, "PickPocket", $"You must wait {timeLeft} before pickpocketing again.", Gold, "", icon);
                         return;
                     }
                     PickPocketHistory.Remove(ppu);
@@ -128,7 +129,7 @@ namespace DiscordBot.Handlers
             {
                 // Successful pickpocket
                 int CoinsGained = (int)(UserAccounts.GetAccount(target).Coins * 0.1);
-                await Utilities.SendEmbed(context.Channel, "PickPocket", $"{self.Mention} successfully pickpocketed {CoinsGained} coins from {target.Mention}.", Utilities.ClearColor, "", icon);
+                await Utilities.SendEmbed(context.Channel, "PickPocket", $"{self.Mention} successfully pickpocketed {CoinsGained} coins from {target.Mention}.", Gold, "", icon);
                 AdjustCoins(self, CoinsGained);
                 AdjustCoins(target, -CoinsGained);
             }
@@ -136,7 +137,7 @@ namespace DiscordBot.Handlers
             {
                 // Failed pickpocket
                 int CoinsLost = (int)(UserAccounts.GetAccount(self).Coins * 0.1);
-                await Utilities.SendEmbed(context.Channel, "PickPocket", $"{self.Mention} attempted to pickpocket {target.Mention} and failed, losing {CoinsLost} coins.", Utilities.ClearColor, "", icon);
+                await Utilities.SendEmbed(context.Channel, "PickPocket", $"{self.Mention} attempted to pickpocket {target.Mention} and failed, losing {CoinsLost} coins.", Gold, "", icon);
                 AdjustCoins(self, -CoinsLost);
             }
             PickPocketHistory.Add(new PickPocketUser(self, DateTime.Now));
@@ -169,7 +170,7 @@ namespace DiscordBot.Handlers
                 }
             }
 
-            await Utilities.SendEmbed(context.Channel, "Top 10 Users With The Most Coins", description.ToString(), Utilities.ClearColor, "", "");
+            await Utilities.SendEmbed(context.Channel, "Top 10 Users With The Most Coins", description.ToString(), Gold, "", "");
         }
 
         #region Lottery Related
@@ -250,19 +251,10 @@ namespace DiscordBot.Handlers
             TimeStamp = timeStamp;
         }
 
-        public bool Equals(PickPocketUser other)
-        {
-            return User.Id == other.User.Id;
-        }
+        public bool Equals(PickPocketUser other) => User.Id == other.User.Id;
 
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as PickPocketUser);
-        }
+        public override bool Equals(object obj) => Equals(obj as PickPocketUser);
 
-        public override int GetHashCode()
-        {
-            return 0; // Sorry
-        }
+        public override int GetHashCode() => 0; // Sorry
     }
 }

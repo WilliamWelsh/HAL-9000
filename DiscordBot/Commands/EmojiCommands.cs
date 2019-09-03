@@ -93,7 +93,7 @@ namespace DiscordBot.Handlers
             if (emojis.Length == 2) // 2 because there's a leftover ">"
                 await PrintEmoji(emojis[0] + ">").ConfigureAwait(false);
             else // Print the emojis in one big picture
-                await PrintBigEmojiPicture(emojis, Context);
+                await PrintBigEmojiPicture(emojis, Context).ConfigureAwait(false);
         }
 
         private async Task PrintEmoji(string emoji)

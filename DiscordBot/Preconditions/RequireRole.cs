@@ -25,15 +25,15 @@ namespace DiscordBot
             {
                 // If this command was executed by a user with the appropriate role, return a success
                 if (gUser.Roles.Any(r => r.Name == roleName))
-                    return await Task.FromResult(PreconditionResult.FromSuccess());
+                    return await Task.FromResult(PreconditionResult.FromSuccess()).ConfigureAwait(false);
                 else
                 {
                     await Utilities.PrintError((ISocketMessageChannel)context.Channel, $"You must have the {roleName} role to run this command.");
-                    return await Task.FromResult(PreconditionResult.FromError($"You must have the {roleName} role to run this command."));
+                    return await Task.FromResult(PreconditionResult.FromError($"You must have the {roleName} role to run this command.")).ConfigureAwait(false);
                 }
             }
             else
-                return await Task.FromResult(PreconditionResult.FromError("You must be in a guild to run this command."));
+                return await Task.FromResult(PreconditionResult.FromError("You must be in a guild to run this command.")).ConfigureAwait(false);
         }
     }
 }

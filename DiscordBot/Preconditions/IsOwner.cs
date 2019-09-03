@@ -19,15 +19,15 @@ namespace DiscordBot
             {
                 // If this command was executed by a user with the appropriate role, return a success
                 if (context.Guild.OwnerId == context.User.Id)
-                    return await Task.FromResult(PreconditionResult.FromSuccess());
+                    return await Task.FromResult(PreconditionResult.FromSuccess()).ConfigureAwait(false);
                 else
                 {
                     await Utilities.PrintError((ISocketMessageChannel)context.Channel, $"You do not have permission to perform this command.");
-                    return await Task.FromResult(PreconditionResult.FromError($"You do not have permission to perform this command."));
+                    return await Task.FromResult(PreconditionResult.FromError($"You do not have permission to perform this command.")).ConfigureAwait(false);
                 }
             }
             else
-                return await Task.FromResult(PreconditionResult.FromError("You must be in a guild to run this command."));
+                return await Task.FromResult(PreconditionResult.FromError("You must be in a guild to run this command.")).ConfigureAwait(false);
         }
     }
 }

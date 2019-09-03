@@ -13,7 +13,6 @@ namespace DiscordBot
         DiscordSocketClient _client;
         CommandService _service;
 
-        SocketGuild Guild;
         SocketGuildUser Owner;
 
         public async Task InitializeAsync(DiscordSocketClient client)
@@ -23,7 +22,7 @@ namespace DiscordBot
 
             await Task.Delay(3000).ConfigureAwait(false); // Allow time to log in
 
-            Guild = client.GetGuild(294699220743618561); // My server
+            var Guild = client.GetGuild(294699220743618561); // My server
             Owner = Guild.GetUser(354458973572956160); // Me
 
             await _service.AddModulesAsync(Assembly.GetEntryAssembly(), null);

@@ -9,8 +9,6 @@ namespace DiscordBot
 {
     class Program
     {
-        DiscordSocketClient client;
-
         static void Main(string[] args) => new Program().StartAsync().GetAwaiter().GetResult();
 
         public async Task StartAsync()
@@ -19,7 +17,7 @@ namespace DiscordBot
 
             Config.Setup();
 
-            client = new DiscordSocketClient(new DiscordSocketConfig { LogLevel = LogSeverity.Verbose });
+            var client = new DiscordSocketClient(new DiscordSocketConfig { LogLevel = LogSeverity.Verbose });
             client.Log += Log;
             client.ReactionAdded += OnReactionAdded;
 
@@ -49,7 +47,7 @@ namespace DiscordBot
 
             // Rock-Paper-Scissors
             if (MinigameHandler.RPS.MessageID == Reaction.MessageId && MinigameHandler.RPS.Player.Id == Reaction.UserId)
-                await MinigameHandler.RPS.ViewPlay(Reaction.Emote.ToString(), Channel);
+                await MinigameHandler.RPS.ViewPlay(Reaction.Emote.ToString());
 
             // Tic-Tac-Toe
             if (MinigameHandler.TTT.GameMessage.Id == Reaction.MessageId)

@@ -24,15 +24,15 @@ namespace DiscordBot
             {
                 // If this command was executed by a user with the appropriate role, return a success
                 if (context.Channel.Id == channelID)
-                    return await Task.FromResult(PreconditionResult.FromSuccess());
+                    return await Task.FromResult(PreconditionResult.FromSuccess()).ConfigureAwait(false);
                 else
                 {
                     await Utilities.PrintError((ISocketMessageChannel)context.Channel, $"Please use the {(await context.Guild.GetTextChannelAsync(channelID)).Mention} chat for that, {context.User.Mention}.");
-                    return await Task.FromResult(PreconditionResult.FromError(""));
+                    return await Task.FromResult(PreconditionResult.FromError("")).ConfigureAwait(false);
                 }
             }
             else
-                return await Task.FromResult(PreconditionResult.FromError("You must be in a guild to run this command."));
+                return await Task.FromResult(PreconditionResult.FromError("You must be in a guild to run this command.")).ConfigureAwait(false);
         }
     }
 }
