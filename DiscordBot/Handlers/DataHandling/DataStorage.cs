@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace Gideon
+namespace DiscordBot
 {
     public static class DateStorage
     {

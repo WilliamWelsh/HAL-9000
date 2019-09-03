@@ -1,12 +1,12 @@
 ﻿using System;
 using Discord;
-using Gideon.Handlers;
+using DiscordBot.Handlers;
 using Discord.Commands;
 using System.Reflection;
 using Discord.WebSocket;
 using System.Threading.Tasks;
 
-namespace Gideon
+namespace DiscordBot
 {
     class EventHandler
     {

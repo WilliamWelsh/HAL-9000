@@ -1,4 +1,4 @@
-﻿namespace Gideon
+﻿namespace DiscordBot
 {
     public class UserAccount
     {

@@ -2,7 +2,7 @@
 using Discord.WebSocket;
 using System.Threading.Tasks;
 
-namespace Gideon.Handlers
+namespace DiscordBot.Handlers
 {
     [RequireContext(ContextType.Guild)]
     public class CoinsCommands : ModuleBase<SocketCommandContext>

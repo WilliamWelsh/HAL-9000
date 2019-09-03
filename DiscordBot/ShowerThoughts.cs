@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using Discord.WebSocket;
 using System.Threading.Tasks;
 
-namespace Gideon
+namespace DiscordBot
 {
     static class ShowerThoughts
     {

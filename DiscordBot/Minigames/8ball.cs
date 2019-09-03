@@ -1,7 +1,7 @@
 ﻿using Discord.Commands;
 using System.Threading.Tasks;
 
-namespace Gideon.Minigames
+namespace DiscordBot.Minigames
 {
     static class _8ball
     {

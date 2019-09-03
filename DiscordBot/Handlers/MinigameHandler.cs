@@ -1,14 +1,14 @@
 ﻿using System;
 using System.IO;
 using Newtonsoft.Json;
-using Gideon.Minigames;
+using DiscordBot.Minigames;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace Gideon.Handlers
+namespace DiscordBot.Handlers
 {
     class MinigameHandler
     {

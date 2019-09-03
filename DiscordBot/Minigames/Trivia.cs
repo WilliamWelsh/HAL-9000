@@ -2,13 +2,13 @@
 using Discord;
 using System.Linq;
 using System.Text;
-using Gideon.Handlers;
+using DiscordBot.Handlers;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace Gideon.Minigames
+namespace DiscordBot.Minigames
 {
     class Trivia
     {

@@ -1,13 +1,13 @@
 ﻿using Discord;
 using System.Text;
 using System.Linq;
-using Gideon.Handlers;
+using DiscordBot.Handlers;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace Gideon.Minigames
+namespace DiscordBot.Minigames
 {
     class RussianRoulette
     {

@@ -13,7 +13,7 @@ using System.Drawing;
 using System.IO;
 using System.Collections.Generic;
 
-namespace Gideon.Handlers
+namespace DiscordBot.Handlers
 {
     [RequireContext(ContextType.Guild)]
 	public class Misc : ModuleBase<SocketCommandContext>

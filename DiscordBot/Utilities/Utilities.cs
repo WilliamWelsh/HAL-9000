@@ -7,7 +7,7 @@ using ColorThiefDotNet;
 using Discord.WebSocket;
 using System.Threading.Tasks;
 
-namespace Gideon
+namespace DiscordBot
 {
     static class Utilities
     {

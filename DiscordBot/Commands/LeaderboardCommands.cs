@@ -5,7 +5,7 @@ using Discord.Commands;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace Gideon.Handlers
+namespace DiscordBot.Handlers
 {
     [RequireContext(ContextType.Guild)]
     public class LeaderboardCommands : ModuleBase<SocketCommandContext>

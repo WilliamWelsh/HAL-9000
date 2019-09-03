@@ -2,7 +2,7 @@
 using Discord.WebSocket;
 using System.Collections.Generic;
 
-namespace Gideon
+namespace DiscordBot
 {
     public static class UserAccounts
     {

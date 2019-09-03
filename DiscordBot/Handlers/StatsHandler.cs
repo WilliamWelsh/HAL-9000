@@ -5,7 +5,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
 
-namespace Gideon.Handlers
+namespace DiscordBot.Handlers
 {
     static class StatsHandler
     {

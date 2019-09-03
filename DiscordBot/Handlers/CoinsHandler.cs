@@ -8,7 +8,7 @@ using Discord.WebSocket;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace Gideon.Handlers
+namespace DiscordBot.Handlers
 {
     static class CoinsHandler
     {

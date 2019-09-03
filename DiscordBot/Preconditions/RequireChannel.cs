@@ -3,7 +3,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
 
-namespace Gideon
+namespace DiscordBot
 {
     /// <summary>
     /// Require the command to be a specific channel

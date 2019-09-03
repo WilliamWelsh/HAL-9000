@@ -2,11 +2,11 @@
 using Discord;
 using System.IO;
 using System.Linq;
-using Gideon.Handlers;
+using DiscordBot.Handlers;
 using Discord.WebSocket;
 using System.Threading.Tasks;
 
-namespace Gideon
+namespace DiscordBot
 {
     class Program
     {

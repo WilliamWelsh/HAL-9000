@@ -1,10 +1,10 @@
 ﻿using System.IO;
-using Gideon.Handlers;
+using DiscordBot.Handlers;
 using System.Reflection;
 using System.Diagnostics;
 using System.Collections.Generic;
 
-namespace Gideon
+namespace DiscordBot
 {
     static class Config
     {

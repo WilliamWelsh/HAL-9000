@@ -1,12 +1,12 @@
 ﻿using Discord;
 using Discord.Rest;
-using Gideon.Handlers;
+using DiscordBot.Handlers;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace Gideon.Minigames
+namespace DiscordBot.Minigames
 {
 	class TicTacToe
 	{

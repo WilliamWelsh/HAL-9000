@@ -4,7 +4,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
 
-namespace Gideon
+namespace DiscordBot
 {
     /// <summary>
     /// Require a role to perform a command.
