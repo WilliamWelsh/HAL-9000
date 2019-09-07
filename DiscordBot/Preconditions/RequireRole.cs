@@ -21,7 +21,7 @@ namespace DiscordBot
         public override async Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context, CommandInfo command, IServiceProvider services)
         {
             // Check if this user is a Guild User, which is the only context where roles exist
-            if (context.User is SocketGuildUser)
+            if (context.User is SocketGuildUser gUser)
             {
                 // If this command was executed by a user with the appropriate role, return a success
                 if (gUser.Roles.Any(r => r.Name == roleName))
