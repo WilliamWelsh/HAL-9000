@@ -7,11 +7,6 @@ using Discord.WebSocket;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-using System.Collections.Specialized;
-using System.Net;
-using System.Drawing;
-using System.IO;
-using System.Collections.Generic;
 
 namespace DiscordBot.Handlers
 {

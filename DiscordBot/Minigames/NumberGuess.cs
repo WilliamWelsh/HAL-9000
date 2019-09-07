@@ -2,9 +2,9 @@
 using Discord;
 using System.Text;
 using System.Linq;
-using DiscordBot.Handlers;
 using Discord.Commands;
 using Discord.WebSocket;
+using DiscordBot.Handlers;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 

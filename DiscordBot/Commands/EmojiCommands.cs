@@ -2,8 +2,8 @@
 using System.Drawing;
 using Discord.Commands;
 using System.Threading.Tasks;
-using System.Text.RegularExpressions;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace DiscordBot.Handlers
 {

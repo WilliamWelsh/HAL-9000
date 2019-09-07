@@ -1,8 +1,8 @@
 ﻿using Discord;
 using Discord.Rest;
-using DiscordBot.Handlers;
 using Discord.Commands;
 using Discord.WebSocket;
+using DiscordBot.Handlers;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 

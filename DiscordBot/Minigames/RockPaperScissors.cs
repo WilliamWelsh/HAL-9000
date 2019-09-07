@@ -68,6 +68,5 @@ namespace DiscordBot.Minigames
                 return $"{Player.Mention} won and got 3 coins!";
             return "I won! You lose 3 coins.";
         }
-
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.IO;
-using DiscordBot.Handlers;
 using System.Reflection;
 using System.Diagnostics;
+using DiscordBot.Handlers;
 using System.Collections.Generic;
 
 namespace DiscordBot
