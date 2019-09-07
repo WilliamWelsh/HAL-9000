@@ -332,3 +332,7 @@ ASALocalRun/
 
 # Local History for Visual Studio
 .localhistory/
+
+# Mac Generated Files
+.DS_Store
+.DS_Store?
