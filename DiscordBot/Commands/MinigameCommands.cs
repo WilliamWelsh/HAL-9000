@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace DiscordBot.Handlers
 {
-    [RequireChannel(Config.MiniGamesChannel)]
+    //[RequireChannel(Config.MiniGamesChannel)]
     [RequireContext(ContextType.Guild)]
     public class MinigameCommands : ModuleBase<SocketCommandContext>
     {
@@ -83,6 +83,19 @@ namespace DiscordBot.Handlers
                 await Minigames._8ball.Play8Ball(Context);
             else
                 await Minigames._8ball.Greet8Ball(Context);
+        }
+
+        // Play FloodIt
+        [Command("f")]
+        public async Task PlayFloodIt()
+        {
+            await MinigameHandler.FloodIt.Initialize(Context.Channel);
+        }
+
+        [Command("green")]
+        public async Task PlayFlooditGreen()
+        {
+            await MinigameHandler.FloodIt.PlayGreen(Context.Channel);
         }
     }
 }

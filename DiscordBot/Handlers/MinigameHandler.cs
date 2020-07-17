@@ -7,6 +7,7 @@ using System.Reflection;
 using DiscordBot.Minigames;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Gideon.Minigames;
 
 namespace DiscordBot.Handlers
 {
@@ -16,6 +17,7 @@ namespace DiscordBot.Handlers
         public static TriviaQuestions TriviaQuestions;
 
         public static TicTacToe TTT = new TicTacToe();
+        public static FloodIt FloodIt = new FloodIt();
         public static NumberGuess NG = new NumberGuess();
         public static RussianRoulette RR = new RussianRoulette();
         public static RockPaperScissors RPS = new RockPaperScissors();

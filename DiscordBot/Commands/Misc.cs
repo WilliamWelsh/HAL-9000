@@ -1,12 +1,13 @@
 ﻿using System;
 using Discord;
 using System.Text;
-using System.Linq;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using System.Net;
+using System.IO;
 
 namespace DiscordBot.Handlers
 {
@@ -21,6 +22,46 @@ namespace DiscordBot.Handlers
             await Context.Channel.DeleteMessageAsync(Context.Message.Id);
 			await Context.Channel.SendMessageAsync(message);
 		}
+
+        // Convert epoch time to readable time
+        [Command("epoch")]
+        public async Task EpochToTime(long seconds)
+        {
+            DateTimeOffset date = DateTimeOffset.FromUnixTimeSeconds(seconds);
+            await Context.Channel.SendMessageAsync(date.ToString("MMM dd, yyyy HH:mm:ss"));
+        }
+
+        [Command("lights on")]
+        public async Task LightsOn()
+        {
+            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("https://maker.ifttt.com/trigger/Turn_Lights_On/with/key/i2RVUwTaXnGhu1wYgPcmXwHT4mMYTYrHbM2h-AQ4s5W");
+            request.Method = "GET";
+            String test = String.Empty;
+            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+            {
+                Stream dataStream = response.GetResponseStream();
+                StreamReader reader = new StreamReader(dataStream);
+                test = reader.ReadToEnd();
+                reader.Close();
+                dataStream.Close();
+            }
+        }
+
+        [Command("lights off")]
+        public async Task LightsOff()
+        {
+            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("https://maker.ifttt.com/trigger/Turn_Lights_Off/with/key/i2RVUwTaXnGhu1wYgPcmXwHT4mMYTYrHbM2h-AQ4s5W");
+            request.Method = "GET";
+            String test = String.Empty;
+            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+            {
+                Stream dataStream = response.GetResponseStream();
+                StreamReader reader = new StreamReader(dataStream);
+                test = reader.ReadToEnd();
+                reader.Close();
+                dataStream.Close();
+            }
+        }
 
         // Make Gideon DM someone something
         [IsOwner]
@@ -70,8 +111,8 @@ namespace DiscordBot.Handlers
 		public async Task DeleteMessage(int amount)
 		{
             var channel = (ITextChannel)Context.Channel;
-            var messages = await channel.GetMessagesAsync(++amount).Flatten().ToList();
-            await channel.DeleteMessagesAsync(messages);
+            //var messages = await channel.GetMessagesAsync(++amount).Flatten().ToList();
+            //await channel.DeleteMessagesAsync(messages);
 		}
 
         // Nickname a user
@@ -153,6 +194,10 @@ namespace DiscordBot.Handlers
             await Utilities.SendEmbed(Context.Channel, "Dominant Color", $"The dominant color for the image is:\n\nHexadecimal:\n`#{color.R:X2}{color.G:X2}{color.B:X2}`\n\nRGB:\n`Red: {color.R}`\n`Green: {color.G}`\n`Blue: {color.B}`", color, "", url);
         }
 
+        // View the dominant color of your avatar
+        [Command("mycolor")]
+        public async Task MyColor(SocketUser target = null) => await GetDomColor(target == null ? Context.User.GetAvatarUrl() : target.GetAvatarUrl());
+
         [Command("ping")]
         public async Task Pong() => await Context.Channel.SendMessageAsync("pong!");
 
@@ -201,6 +246,12 @@ namespace DiscordBot.Handlers
             Config.RestartBot(Bot.Id);
 
             await Utilities.SendEmbed(Context.Channel, "Back Online", $"{Bot.Mention} has been restarted by {Context.User.Mention}.", Utilities.ClearColor, "", Bot.GetAvatarUrl());
+        }
+
+        [Command("test")]
+        public async Task Test()
+        {
+
         }
     }
 }

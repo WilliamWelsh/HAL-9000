@@ -14,6 +14,8 @@ namespace DiscordBot
         public static readonly List<ulong> MyBots = new List<ulong> {
             477287091798278145, // Rotten Tomatoes
             529569000028373002, // Time Bot
+            708136238980399195, // TradeStation Bot
+            710949840833740881, // TOSOption Bot
         };
 
         public static void Setup()
@@ -46,6 +48,16 @@ namespace DiscordBot
             {
                 path = @"C:\Users\Administrator\Desktop\TimeBot";
                 fileName = @"C:\Users\Administrator\Desktop\TimeBot\TimeBot.exe";
+            }
+            else if (botID == 708136238980399195) // TradeStation Bot
+            {
+                path = @"C:\Users\Administrator\Desktop\TradeStationBot";
+                fileName = @"C:\Users\Administrator\Desktop\TradeStationBot\TradeStationBot.exe";
+            }
+            else if (botID == 710949840833740881) // TOSOption Bot
+            {
+                path = @"C:\Users\Administrator\Desktop\TOSOptionBot";
+                fileName = @"C:\Users\Administrator\Desktop\TOSOptionBot\TOSOptionBot.exe";
             }
 
             // Find the existing bot process and kill it

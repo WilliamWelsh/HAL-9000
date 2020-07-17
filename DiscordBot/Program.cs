@@ -4,6 +4,7 @@ using System.IO;
 using Discord.WebSocket;
 using DiscordBot.Handlers;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace DiscordBot
 {
@@ -11,8 +12,14 @@ namespace DiscordBot
     {
         static void Main(string[] args) => new Program().StartAsync().GetAwaiter().GetResult();
 
+        public EventHandler _handler;
+
         public async Task StartAsync()
         {
+            // Position the console
+            IntPtr ptr = GetConsoleWindow();
+            MoveWindow(ptr, 2010, 355 * 2, 550, 355, true);
+
             if (string.IsNullOrEmpty(File.ReadAllText("Resources/token.txt"))) return;
 
             Config.Setup();
@@ -23,9 +30,10 @@ namespace DiscordBot
 
 			await client.LoginAsync(TokenType.Bot, File.ReadAllText("Resources/token.txt"));
             await client.StartAsync();
-            await client.SetGameAsync("on Mars", null, ActivityType.Playing);
+            await client.SetGameAsync(" ", null, ActivityType.Watching);
+            await client.SetStatusAsync(UserStatus.DoNotDisturb);
 
-            EventHandler _handler = new EventHandler();
+            _handler = new EventHandler();
             await _handler.InitializeAsync(client);
 
             await Task.Delay(-1).ConfigureAwait(false);
@@ -53,5 +61,11 @@ namespace DiscordBot
             if (MinigameHandler.TTT.GameMessage.Id == Reaction.MessageId)
                 await MinigameHandler.TTT.Play(Reaction, Reaction.User);
         }
-	}
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        static extern IntPtr GetConsoleWindow();
+
+        [DllImport("user32.dll", SetLastError = true)]
+        internal static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
+    }
 }

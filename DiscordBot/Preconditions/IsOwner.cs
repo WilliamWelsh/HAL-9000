@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
@@ -22,7 +21,7 @@ namespace DiscordBot
                     return await Task.FromResult(PreconditionResult.FromSuccess()).ConfigureAwait(false);
                 else
                 {
-                    await Utilities.PrintError((ISocketMessageChannel)context.Channel, $"You do not have permission to perform this command.");
+                    await Utilities.PrintError((ISocketMessageChannel)context.Channel, $"I'm sorry, {context.User.Username}. I'm afraid I can't let you do that.");
                     return await Task.FromResult(PreconditionResult.FromError($"You do not have permission to perform this command.")).ConfigureAwait(false);
                 }
             }

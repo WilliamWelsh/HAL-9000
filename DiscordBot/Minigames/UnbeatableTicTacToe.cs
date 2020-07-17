@@ -157,7 +157,7 @@ namespace DiscordBot.Minigames
             string emote = Reaction.Emote.ToString();
 
             // Loop through all the available emoji reactions
-            for (int i = 0; i < Emojis.Count; i ++)
+            for (int i = 0; i < Emojis.Count; i++)
             {
                 // If the slot is valid, then set the player's move to that slot on the board
                 if (emote == Emojis[i] && IsValidSlot(i))

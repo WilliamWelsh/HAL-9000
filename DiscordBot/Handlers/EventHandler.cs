@@ -10,7 +10,7 @@ namespace DiscordBot
 {
     class EventHandler
     {
-        DiscordSocketClient _client;
+        public DiscordSocketClient _client;
         CommandService _service;
 
         SocketGuildUser Owner;
