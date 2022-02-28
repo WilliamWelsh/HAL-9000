@@ -1,39 +1,20 @@
-﻿using System.IO;
-using System.Reflection;
-using System.Diagnostics;
-using DiscordBot.Handlers;
 using System.Collections.Generic;
+using System.Diagnostics;
 
-namespace DiscordBot
+namespace HAL9000
 {
-    static class Config
+    public static class Bots
     {
-        public static List<string> AlaniPictures;
-        public const ulong MiniGamesChannel = 618549807623045132;
-
-        public static readonly List<ulong> MyBots = new List<ulong> {
+        // All of my bots
+        public static List<ulong> List = new List<ulong> {
             477287091798278145, // Rotten Tomatoes
             529569000028373002, // Time Bot
             708136238980399195, // TradeStation Bot
             710949840833740881, // TOSOption Bot
+            811803089853874226, // ARK Invest Bot
         };
 
-        public static void Setup()
-        {
-            // Set up trivia questions & who said it? questions
-            MinigameHandler.SetUpMinigames();
-
-            // Create my resources folder if it doesn't exist
-            if (!Directory.Exists("Resources"))
-                Directory.CreateDirectory("Resources");
-
-            // Set the AlaniPictures list up
-            AlaniPictures = new List<string>();
-            using (StreamReader sr = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Gideon.AlaniPictures.txt")))
-                while (sr.Peek() >= 0)
-                    AlaniPictures.Add(sr.ReadLine());
-        }
-
+        // Restart a bot
         public static void RestartBot(ulong botID)
         {
             string path = "";
@@ -59,6 +40,11 @@ namespace DiscordBot
                 path = @"C:\Users\Administrator\Desktop\TOSOptionBot";
                 fileName = @"C:\Users\Administrator\Desktop\TOSOptionBot\TOSOptionBot.exe";
             }
+            else if (botID == 710949840833740881) // ARK Invest Bot
+            {
+                path = @"C:\Users\Administrator\Desktop\ARK Bot";
+                fileName = @"C:\Users\Administrator\Desktop\ARK Bot\ARK-Invest-Bot.exe";
+            }
 
             // Find the existing bot process and kill it
             var procceses = Process.GetProcessesByName(fileName.Substring(fileName.LastIndexOf("\\") + 1).Replace(".exe", ""));
@@ -67,7 +53,7 @@ namespace DiscordBot
                     process.Kill();
 
             // Start the bot
-            Process.Start(new ProcessStartInfo { FileName = fileName, WorkingDirectory = path });
+            Process.Start(new ProcessStartInfo { FileName = fileName, WorkingDirectory = path, UseShellExecute = true });
         }
     }
 }
